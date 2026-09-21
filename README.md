@@ -95,13 +95,35 @@ Phone photos in daylight are fine. Shot straight-on, in focus, no flash.
 
 ## Deploying
 
-**Netlify** — connect the repo. `netlify.toml` sets `node build.js` → `dist`.
-**Vercel / Cloudflare Pages** — build `node build.js`, output `dist`.
-**GitHub Pages** — `.github/workflows/deploy.yml` builds and deploys on push to
-`main`; enable Pages with source "GitHub Actions" in repo settings.
+**GitHub Pages** is wired up. `.github/workflows/deploy.yml` builds and deploys
+on every push to the default branch. One manual step is needed once, because the
+API can't do it: **Settings → Pages → Build and deployment → Source: GitHub
+Actions**. After that every push deploys itself.
 
-Set the real domain in `content/business.json` → `url` **before** going live. It
-feeds the canonical tags, `hreflang`, Open Graph, `sitemap.xml` and `robots.txt`.
+The workflow runs `actions/configure-pages` *before* the build and passes the URL
+Pages assigns to the generator as `SITE_URL`. That matters because a project site
+is served from a sub-path (`/Era-Project-02/`), so canonical tags, `hreflang`,
+Open Graph and the sitemap have to advertise that, not the production domain. All
+in-page links and asset paths are document-relative, so they work at any depth.
+
+**Netlify** — connect the repo; `netlify.toml` sets `node build.js` → `dist`.
+**Vercel / Cloudflare Pages** — build `node build.js`, output `dist`.
+
+### Going live on the real domain
+
+`SITE_URL` overrides `content/business.json` → `url`, which is the fallback for
+local and non-Pages builds. When the custom domain is ready:
+
+```bash
+SITE_URL=https://erasanitary.com.bd node build.js   # one-off check
+```
+
+Then set `url` in `content/business.json` to the real domain, and on GitHub add
+the domain under Settings → Pages → Custom domain (which makes
+`configure-pages` report it, so `SITE_URL` follows automatically).
+
+Getting this wrong is not cosmetic: canonical tags pointing at the wrong origin
+tell Google the real site is a duplicate.
 
 ## Accessibility
 

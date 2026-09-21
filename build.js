@@ -17,6 +17,11 @@ const OUT = path.join(ROOT, 'dist');
 const biz = require('./content/business.json');
 const copy = require('./content/copy.json');
 
+/* Absolute URLs (canonical, hreflang, Open Graph, sitemap, robots) need the
+   real origin. SITE_URL overrides content/business.json so a Pages or preview
+   build advertises itself rather than the production domain. */
+const SITE = (process.env.SITE_URL || biz.url).replace(/\/+$/, '');
+
 const PAGES = ['home', 'products', 'about', 'contact'];
 const FILE = { home: 'index.html', products: 'products.html', about: 'about.html', contact: 'contact.html' };
 
@@ -408,7 +413,7 @@ const META = {
 
 function urlFor(lang, page) {
   const p = lang === 'en' ? '' : 'bn/';
-  return biz.url.replace(/\/$/, '') + '/' + p + (page === 'home' ? '' : FILE[page]);
+  return SITE + '/' + p + (page === 'home' ? '' : FILE[page]);
 }
 
 function jsonLd(t, lang) {
@@ -416,15 +421,15 @@ function jsonLd(t, lang) {
   return {
     '@context': 'https://schema.org',
     '@type': 'HardwareStore',
-    '@id': biz.url.replace(/\/$/, '') + '/#store',
+    '@id': SITE + '/#store',
     name: biz.name,
     alternateName: lang === 'bn' ? 'ইরা স্যানিটারি অ্যান্ড প্লাম্বিং সলিউশনস' : biz.shortName,
     description: META[lang].home.desc,
     slogan: t.tagline,
-    url: biz.url,
+    url: SITE + '/',
     foundingDate: biz.sinceISO,
-    logo: biz.url.replace(/\/$/, '') + '/' + biz.images.logo,
-    image: biz.url.replace(/\/$/, '') + '/' + biz.images.banner,
+    logo: SITE + '/' + biz.images.logo,
+    image: SITE + '/' + biz.images.banner,
     telephone: primary.tel,
     ...(biz.email ? { email: biz.email } : {}),
     address: {
@@ -483,7 +488,7 @@ function layout({ lang, page, body, t }) {
 <meta property="og:title" content="${attr(meta.title)}">
 <meta property="og:description" content="${attr(meta.desc)}">
 <meta property="og:url" content="${attr(urlFor(lang, page))}">
-<meta property="og:image" content="${attr(biz.url.replace(/\/$/, '') + '/' + biz.images.banner)}">
+<meta property="og:image" content="${attr(SITE + '/' + biz.images.banner)}">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="${base}assets/img/favicon.svg" type="image/svg+xml">
@@ -552,10 +557,12 @@ ${['en', 'bn'].map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="$
 </urlset>
 `;
   fs.writeFileSync(path.join(OUT, 'sitemap.xml'), sitemap);
+  fs.writeFileSync(path.join(OUT, '.nojekyll'), '');
   fs.writeFileSync(path.join(OUT, 'robots.txt'),
-    `User-agent: *\nAllow: /\n\nSitemap: ${biz.url.replace(/\/$/, '')}/sitemap.xml\n`);
+    `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
 
   console.log(`Built ${count} pages (${PAGES.length} × en/bn) + sitemap + robots into dist/`);
+  console.log(`Site origin: ${SITE}${process.env.SITE_URL ? ' (from SITE_URL)' : ' (from business.json)'}`);
   if (!biz.email) console.log('NOTE: business.email is null — no email is shown anywhere on the site.');
 }
 
