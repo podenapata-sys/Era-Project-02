@@ -284,9 +284,20 @@ table { border-collapse: collapse; width: 100%; }
 .card__list + .card__label,
 .link-more + .card__label { margin-top: 26px; }
 .card__addr { font-size: 16px; color: var(--text); margin-bottom: 10px; }
-.card__list { display: grid; gap: 10px; margin-bottom: 22px; }
-.card__list li { display: flex; align-items: center; gap: 10px; }
+.card__list { display: grid; gap: 12px; margin-bottom: 22px; }
+.card__list li { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .card__list a { font-family: var(--font-display); font-size: 19px; font-weight: 700; }
+/* Both numbers take WhatsApp, so each row carries its own chat action. */
+.card__list .chat-link {
+  display: inline-flex; align-items: center; gap: 6px; margin-left: auto;
+  padding: 5px 12px; border: 1px solid var(--line-ui); border-radius: 999px;
+  font-size: 13px; font-weight: 600; color: var(--muted);
+  transition: border-color .16s ease, color .16s ease;
+}
+.card__list .chat-link:hover { border-color: var(--amber); color: var(--amber); }
+.card__list .chat-link .ic { width: 15px; height: 15px; }
+/* The address is long enough to need breaking; the numbers are not. */
+.card__list--email a { font-size: 16px; overflow-wrap: anywhere; }
 .card .muted { margin: 12px 0 0; }
 .card--form h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
 
@@ -318,6 +329,7 @@ table { border-collapse: collapse; width: 100%; }
 .footer__col a:hover { color: var(--amber); }
 .footer__contact li { display: flex; align-items: flex-start; gap: 10px; }
 .footer__contact .ic { color: var(--amber); margin-top: 3px; }
+.footer__contact .wrap { overflow-wrap: anywhere; }
 .footer__legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: clamp(30px, 3.5vw, 46px); padding-block: 18px; border-top: 1px solid var(--line); }
 .footer__legal p { margin: 0; font-size: 13px; color: var(--muted-2); }
 

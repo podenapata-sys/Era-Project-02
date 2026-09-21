@@ -161,7 +161,7 @@
     "fList": "ITEM LIST / QUANTITIES",
     "phList": "e.g. 1 inch C-PVC pipe × 40, 1 inch elbow × 60, delivery to Badda",
     "formSend": "Send on WhatsApp",
-    "formFoot": "Or call 01711-954094 — we quote most lists the same day.",
+    "formFoot": "Or call 01711-954094 or 01611-954094 — we quote most lists the same day.",
     "footerBlurb": "5/1, West Hazipara, D.I.T Road, Rampura, Dhaka-1219, Bangladesh. Retail & wholesale supplier of sanitary and plumbing products since 2003.",
     "footerPages": "PAGES",
     "footerReach": "REACH US",
@@ -323,7 +323,8 @@
         "slug": "kitchen"
       }
     ],
-    "formErr": "Add your item list or a phone number so we can quote it."
+    "formErr": "Add your item list or a phone number so we can quote it.",
+    "emailLabel": "EMAIL"
   },
   "bn": {
     "topbar": "খুচরা ও পাইকারি · সপ্তাহে ৭ দিন খোলা, সকাল ৭টা – রাত ১০টা",
@@ -487,7 +488,7 @@
     "fList": "মালের তালিকা / পরিমাণ",
     "phList": "যেমন: ১ ইঞ্চি সি-পিভিসি পাইপ × ৪০, ১ ইঞ্চি এলবো × ৬০, বাড্ডায় ডেলিভারি",
     "formSend": "হোয়াটসঅ্যাপে পাঠান",
-    "formFoot": "অথবা কল করুন ০১৭১১-৯৫৪০৯৪ — বেশিরভাগ তালিকার দাম একই দিনে জানিয়ে দিই।",
+    "formFoot": "অথবা কল করুন ০১৭১১-৯৫৪০৯৪ বা ০১৬১১-৯৫৪০৯৪ — বেশিরভাগ তালিকার দাম একই দিনে জানিয়ে দিই।",
     "footerBlurb": "৫/১, পশ্চিম হাজীপাড়া, ডি.আই.টি রোড, রামপুরা, ঢাকা-১২১৯, বাংলাদেশ। ২০০৩ সাল থেকে স্যানিটারি ও প্লাম্বিং পণ্যের খুচরা ও পাইকারি সরবরাহকারী।",
     "footerPages": "পেজ",
     "footerReach": "যোগাযোগ",
@@ -649,6 +650,7 @@
         "slug": "kitchen"
       }
     ],
-    "formErr": "দাম জানাতে মালের তালিকা অথবা ফোন নম্বর দিন।"
+    "formErr": "দাম জানাতে মালের তালিকা অথবা ফোন নম্বর দিন।",
+    "emailLabel": "ইমেইল"
   }
 }

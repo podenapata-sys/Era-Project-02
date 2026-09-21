@@ -28,7 +28,7 @@ const attr = esc;
 const primary = biz.phones.find(p => p.primary) || biz.phones[0];
 const addressLine = `${biz.address.street}, ${biz.address.locality}, ${biz.address.region}-${biz.address.postalCode}, ${biz.address.countryName}`;
 const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(`${biz.name}, ${addressLine}`);
-const waLink = (text) => `https://wa.me/${primary.whatsapp}?text=${encodeURIComponent(text)}`;
+const waLink = (text, phone) => `https://wa.me/${(phone || primary).whatsapp}?text=${encodeURIComponent(text)}`;
 
 /* ------------------------------------------------------------------ icons */
 const icon = (d, opts = {}) =>
@@ -44,6 +44,7 @@ const ICONS = {
   arrow: icon('<path d="M4 12h15m-5-5.5L19.5 12 14 17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'),
   store: icon('<path d="M4 9.5V20h16V9.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3 5.5h18l-1 4H4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 20v-5.5h4V20" stroke="currentColor" stroke-width="1.7"/>'),
   card: icon('<rect x="3" y="5.5" width="18" height="13" rx="2.4" stroke="currentColor" stroke-width="1.7"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.7"/>'),
+  mail: icon('<rect x="3" y="5.5" width="18" height="13" rx="2.4" stroke="currentColor" stroke-width="1.7"/><path d="m4 7.5 8 5.5 8-5.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>'),
 };
 
 /* ------------------------------------------------------------- components */
@@ -106,6 +107,8 @@ function footer(t, lang, base) {
   const navLinks = PAGES.map(id => `<li><a href="${FILE[id]}">${esc(t.nav[id])}</a></li>`).join('');
   const phones = biz.phones.map(p =>
     `<li>${ICONS.phone}<a href="tel:${attr(p.tel)}">${esc(phoneLabel(p, lang))}</a></li>`).join('');
+  const email = biz.email
+    ? `<li>${ICONS.mail}<a href="mailto:${attr(biz.email)}" class="wrap">${esc(biz.email)}</a></li>` : '';
   return `
 <footer class="site-footer">
   <div class="shell footer__grid">
@@ -125,6 +128,7 @@ function footer(t, lang, base) {
       <ul class="footer__contact">
         <li>${ICONS.pin}<a href="${attr(mapsUrl)}" target="_blank" rel="noopener">${esc(t.address)}</a></li>
         ${phones}
+        ${email}
       </ul>
     </div>
   </div>
@@ -305,8 +309,18 @@ function aboutPage(t) {
 }
 
 function contactPage(t, lang) {
+  // Both numbers are on WhatsApp, so each gets its own call and chat action.
   const phones = biz.phones.map(p => `
-        <li>${ICONS.phone}<a href="tel:${attr(p.tel)}">${esc(phoneLabel(p, lang))}</a></li>`).join('');
+        <li>
+          ${ICONS.phone}<a href="tel:${attr(p.tel)}">${esc(phoneLabel(p, lang))}</a>
+          <a class="chat-link" href="${attr(waLink(t.orderMsg, p))}" target="_blank" rel="noopener"
+             aria-label="${attr(t.whatsapp + ' ' + p.display)}">${ICONS.whatsapp}${esc(t.whatsapp)}</a>
+        </li>`).join('');
+  const email = biz.email ? `
+    <h2 class="card__label">${esc(t.emailLabel)}</h2>
+    <ul class="card__list card__list--email">
+      <li>${ICONS.mail}<a href="mailto:${attr(biz.email)}">${esc(biz.email)}</a></li>
+    </ul>` : '';
   const hours = t.hours.map(h => `
         <tr><th scope="row">${esc(h.label)}</th><td>${esc(h.value)}</td></tr>`).join('');
   const options = t.categories.map(c => `<option>${esc(c.title)}</option>`)
@@ -327,10 +341,7 @@ function contactPage(t, lang) {
 
     <h2 class="card__label">${esc(t.callLabel)}</h2>
     <ul class="card__list">${phones}</ul>
-
-    <a class="btn btn--accent btn--block" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">
-      ${ICONS.whatsapp}${esc(t.chatNow)}
-    </a>
+${email}
     <p class="muted">${ICONS.clock}${esc(t.replies)}</p>
   </div>
 
@@ -415,6 +426,7 @@ function jsonLd(t, lang) {
     logo: biz.url.replace(/\/$/, '') + '/' + biz.images.logo,
     image: biz.url.replace(/\/$/, '') + '/' + biz.images.banner,
     telephone: primary.tel,
+    ...(biz.email ? { email: biz.email } : {}),
     address: {
       '@type': 'PostalAddress',
       streetAddress: biz.address.street,

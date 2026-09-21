@@ -119,14 +119,17 @@ numerals in Bengali copy while `tel:` links stay in Latin digits so dialling wor
 
 ## Open questions for the client
 
-1. **Email address** — asked for but not supplied, so no email appears anywhere.
-   Add it to `content/business.json` → `email` and it can be surfaced.
-2. **Which number is primary?** Both 01711-954094 and 01611-954094 are on the
-   banner. 01711 is currently the WhatsApp and form target.
-3. **"U-PVC — add tube wells and vents"** — vents are already listed. Confirm
+1. **"U-PVC — add tube wells and vents"** — vents are already listed. Confirm
    whether tube-well pipe should sit under U-PVC as well as Pressure PVC-U.
-4. **Logo** — the mark on the site is cropped out of the printed banner. A
+2. **Logo** — the mark on the site is cropped out of the printed banner. A
    transparent PNG or vector original would be sharper, and is needed for print.
+
+Answered: the email is `erasanitary2003@gmail.com`, and both numbers are treated
+as equal — each is listed with its own call and WhatsApp action, both appear in
+the footer and in `contactPoint` in the structured data. The header CTA, the hero
+button and the quote form need a single destination, so they use whichever phone
+is flagged `"primary": true` in `content/business.json`; flip that flag to swap
+them over.
 
 ## Content decisions made during the port
 
