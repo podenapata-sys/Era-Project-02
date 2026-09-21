@@ -26,12 +26,16 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       # Must run before the build: it reports the URL Pages will serve from,
       # which the generator needs for canonical, hreflang, OG and sitemap.
+      # enablement turns Pages on via the API on the first run, so the repo
+      # needs no manual settings change (public repo, pages: write above).
       - id: pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Build
         run: node build.js

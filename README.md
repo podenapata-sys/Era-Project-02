@@ -95,10 +95,12 @@ Phone photos in daylight are fine. Shot straight-on, in focus, no flash.
 
 ## Deploying
 
-**GitHub Pages** is wired up. `.github/workflows/deploy.yml` builds and deploys
-on every push to the default branch. One manual step is needed once, because the
-API can't do it: **Settings → Pages → Build and deployment → Source: GitHub
-Actions**. After that every push deploys itself.
+**GitHub Pages** is wired up and self-enabling. `.github/workflows/deploy.yml`
+builds and deploys on every push to the default branch; `configure-pages` runs
+with `enablement: true`, so the first run turns Pages on through the API and no
+repository setting has to be touched by hand. (That needs a public repo or a
+plan with Pages for private repos, plus the `pages: write` permission the
+workflow already declares.)
 
 The workflow runs `actions/configure-pages` *before* the build and passes the URL
 Pages assigns to the generator as `SITE_URL`. That matters because a project site
