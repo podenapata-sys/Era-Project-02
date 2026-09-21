@@ -1,0 +1,65 @@
+{
+  "name": "ERA Sanitary & Plumbing Solutions",
+  "shortName": "ERA Sanitary",
+  "since": "2003",
+  "sinceISO": "2003-01",
+  "url": "https://erasanitary.com.bd",
+  "phones": [
+    {
+      "display": "01711-954094",
+      "tel": "+8801711954094",
+      "whatsapp": "8801711954094",
+      "primary": true,
+      "displayBn": "০১৭১১-৯৫৪০৯৪"
+    },
+    {
+      "display": "01611-954094",
+      "tel": "+8801611954094",
+      "whatsapp": "8801611954094",
+      "primary": false,
+      "displayBn": "০১৬১১-৯৫৪০৯৪"
+    }
+  ],
+  "email": null,
+  "address": {
+    "street": "5/1, West Hazipara, D.I.T Road",
+    "locality": "Rampura",
+    "region": "Dhaka",
+    "postalCode": "1219",
+    "country": "BD",
+    "countryName": "Bangladesh"
+  },
+  "hours": {
+    "shop": {
+      "opens": "07:00",
+      "closes": "22:00"
+    },
+    "delivery": {
+      "opens": "07:00",
+      "closes": "21:00"
+    },
+    "pickup": {
+      "opens": "07:00",
+      "closes": "20:00"
+    }
+  },
+  "payments": [
+    "Cash",
+    "Credit cards",
+    "Debit cards",
+    "NFC mobile payments",
+    "Cheques",
+    "VISA",
+    "Mastercard",
+    "American Express",
+    "China Union Pay",
+    "JCB",
+    "Discover",
+    "Diners Club"
+  ],
+  "socials": [],
+  "images": {
+    "logo": "assets/img/era-logo.png",
+    "banner": "assets/img/era-banner.jpg"
+  }
+}

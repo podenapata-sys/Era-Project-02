@@ -1,0 +1,12 @@
+{
+  "name": "era-sanitary-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static site for ERA Sanitary & Plumbing Solutions, Rampura, Dhaka",
+  "scripts": {
+    "build": "node build.js",
+    "serve": "node build.js && npx --yes serve dist",
+    "start": "npm run serve"
+  },
+  "engines": { "node": ">=18" }
+}

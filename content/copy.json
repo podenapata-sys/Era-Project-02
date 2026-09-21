@@ -1,0 +1,654 @@
+{
+  "en": {
+    "topbar": "Retail & wholesale · Open 7 days, 7:00–22:00",
+    "delivery": "Delivery across Dhaka · Wholesale rates for contractors",
+    "whatsapp": "WhatsApp",
+    "tagline": "Your trust, our priority",
+    "nav": {
+      "home": "Home",
+      "products": "Products",
+      "about": "About",
+      "contact": "Contact"
+    },
+    "heroBadge": "Supplying Dhaka since 2003",
+    "heroA": "Pipes, fittings & sanitary ware —",
+    "heroB": "in stock today.",
+    "heroBody": "C-PVC, U-PVC and pressure PVC-U pipe systems, bathroom fittings and plumbing accessories for homes, apartments, offices and construction sites. Wholesale rates for contractors, single pieces for homeowners.",
+    "ctaOrder": "Order on WhatsApp",
+    "ctaQuote": "Request a quote",
+    "orderMsg": "Hello ERA Sanitary, I want to order plumbing items.",
+    "heroFacts": [
+      {
+        "value": "2003",
+        "label": "Supplying since"
+      },
+      {
+        "value": "7 days",
+        "label": "Open 7:00–22:00"
+      },
+      {
+        "value": "12+",
+        "label": "Delivery areas"
+      }
+    ],
+    "pillars": [
+      {
+        "n": "01",
+        "title": "Quality products",
+        "body": "Pipe systems and fittings we would use in our own building — no seconds, no mystery stock."
+      },
+      {
+        "n": "02",
+        "title": "Reliable service",
+        "body": "Open every day of the week, with delivery until 21:00 and pick-up for online orders."
+      },
+      {
+        "n": "03",
+        "title": "Professional solutions",
+        "body": "Bring a drawing or a problem. We help you size the line and pick matching fittings."
+      }
+    ],
+    "supplyTitle": "What we supply",
+    "seeAll": "See full range",
+    "whyTitle": "Why contractors keep coming back",
+    "reasons": [
+      {
+        "title": "Deep stock, not a catalogue",
+        "body": "Fittings in matching sizes on the shelf, so a stalled site restarts the same morning."
+      },
+      {
+        "title": "Wholesale and retail on one counter",
+        "body": "Contractor rates for volume, a single elbow for a homeowner — same shop, same advice."
+      },
+      {
+        "title": "Delivery you can plan around",
+        "body": "Deliveries across Dhaka daily 7:00–21:00, plus in-store pick-up for online orders."
+      },
+      {
+        "title": "Over 20 years in Rampura",
+        "body": "The same business at the same address since 2003 — we're accountable for what we sell."
+      }
+    ],
+    "areasTitle": "We deliver across Dhaka & beyond",
+    "bandTitle": "Send us your item list — we'll quote it the same day.",
+    "bandBody": "Photos of a drawing or a handwritten list work fine. Delivery available across Rampura, Malibag, Badda, Bashundhara and the wider Dhaka area.",
+    "bandWa": "WhatsApp your list",
+    "bandCall": "Call 01711-954094",
+    "productsIntro": "Everything below is stocked for both retail and wholesale. Sizes and brands vary with availability — message us for current stock and rates.",
+    "notListed": "Need something not listed?",
+    "notListedBody": "We source most plumbing and sanitary items on request. Send the spec and quantity.",
+    "aboutTitle": "About us",
+    "aboutP1": "ERA Sanitary & Plumbing Solutions has been supplying sanitary and plumbing materials from Rampura, Dhaka since January 2003. What started as a neighbourhood counter is now a supplier that contractors, developers and homeowners across the city rely on for pipe systems and bathroom fittings.",
+    "aboutP2": "We keep C-PVC, U-PVC and pressure PVC-U pipes and fittings, bathroom fittings and plumbing accessories on the shelf — so a site that stops work at 9am can be back on it by 11. Retail customers get the same product and the same advice as our wholesale accounts.",
+    "aboutP3": "Our shop is open every day of the week, 7:00 to 22:00, with delivery until 21:00 and pick-up for online orders until 20:00.",
+    "stats": [
+      {
+        "value": "2003",
+        "label": "Trading since"
+      },
+      {
+        "value": "7",
+        "label": "Product categories stocked"
+      },
+      {
+        "value": "7 days",
+        "label": "Open every week, 7:00–22:00"
+      },
+      {
+        "value": "12+",
+        "label": "Areas we deliver to"
+      }
+    ],
+    "amenitiesTitle": "In store & service options",
+    "amenities": [
+      "In-store shopping",
+      "Delivery",
+      "Pick-up for online orders",
+      "On-site services",
+      "Assembly service",
+      "Free Wi-Fi",
+      "On-site parking",
+      "Free street parking"
+    ],
+    "paymentsTitle": "Payments accepted",
+    "payments": [
+      "Cash",
+      "Credit cards",
+      "Debit cards",
+      "NFC mobile payments",
+      "Cheques",
+      "VISA",
+      "Mastercard",
+      "American Express",
+      "China Union Pay",
+      "JCB",
+      "Discover",
+      "Diners Club"
+    ],
+    "contactTitle": "Contact & quote",
+    "storeLabel": "STORE",
+    "address": "5/1, West Hazipara, D.I.T Road, Rampura, Dhaka-1219, Bangladesh",
+    "directions": "Get directions →",
+    "callLabel": "CALL",
+    "chatNow": "Chat now",
+    "replies": "Replies 7:00–22:00",
+    "hoursTitle": "Opening hours",
+    "hours": [
+      {
+        "label": "Shop, Monday – Sunday",
+        "value": "07:00 – 22:00"
+      },
+      {
+        "label": "Delivery",
+        "value": "07:00 – 21:00"
+      },
+      {
+        "label": "Pick-up for online orders",
+        "value": "07:00 – 20:00"
+      },
+      {
+        "label": "Online orders & WhatsApp",
+        "value": "24 hours"
+      }
+    ],
+    "hoursNote": "Open every day, including public holidays. Appointment required for on-site service visits.",
+    "formTitle": "Request a quote",
+    "formBody": "Fill this in and we'll open WhatsApp with your details ready to send.",
+    "fName": "YOUR NAME",
+    "phName": "Md. Rahman",
+    "fPhone": "PHONE",
+    "fNeed": "WHAT DO YOU NEED?",
+    "fList": "ITEM LIST / QUANTITIES",
+    "phList": "e.g. 1 inch C-PVC pipe × 40, 1 inch elbow × 60, delivery to Badda",
+    "formSend": "Send on WhatsApp",
+    "formFoot": "Or call 01711-954094 — we quote most lists the same day.",
+    "footerBlurb": "5/1, West Hazipara, D.I.T Road, Rampura, Dhaka-1219, Bangladesh. Retail & wholesale supplier of sanitary and plumbing products since 2003.",
+    "footerPages": "PAGES",
+    "footerReach": "REACH US",
+    "footerHours": "Open daily 7:00–22:00 · Delivery until 21:00",
+    "somethingElse": "Something else",
+    "msgHello": "Hello ERA Sanitary & Plumbing Solutions,",
+    "msgName": "Name",
+    "msgPhone": "Phone",
+    "msgCat": "Category",
+    "msgItems": "Items",
+    "msgClose": "Please send me a quote.",
+    "areas": [
+      "Rampura",
+      "Malibag",
+      "Badda",
+      "Banasree",
+      "Dhaka",
+      "Savar",
+      "Tongi",
+      "Ashulia",
+      "Tarabo",
+      "Birulia",
+      "Aminbazar",
+      "Jalshiri Abason",
+      "Bashundhara Riverview",
+      "Purbachal New Town"
+    ],
+    "categories": [
+      {
+        "title": "C-PVC pipes & fittings",
+        "blurb": "Pressure water supply lines — hot, cold and mains.",
+        "long": "CPVC pipe systems for internal hot and cold water distribution — the standard choice for apartment plumbing, geyser lines and bathroom risers. Solvent-welded joints, full fitting range available in matching sizes.",
+        "items": [
+          "Pipes",
+          "Elbows 90°/45°",
+          "Tees",
+          "Sockets",
+          "Reducers",
+          "Male & female adapters",
+          "Unions",
+          "Gate & ball valves",
+          "Tank connectors",
+          "Adhesive gum & solvent cement"
+        ],
+        "size": "1/2\" – 6\"",
+        "slug": "cpvc"
+      },
+      {
+        "title": "U-PVC pipes & fittings",
+        "blurb": "Soil, waste, drainage and vent lines.",
+        "long": "UPVC drainage systems for waste, soil and vent lines in residential and commercial buildings. Lightweight, corrosion-free and quick to install, with the full range of bends, junctions and traps.",
+        "items": [
+          "Pipes",
+          "Bends",
+          "Single & double Y-tees",
+          "P & S traps",
+          "Cowls",
+          "Door bends",
+          "Reducers",
+          "Pipe clips & clamps",
+          "Solvent cement"
+        ],
+        "size": "1.25\" – 12\"",
+        "slug": "upvc"
+      },
+      {
+        "title": "Pressure PVC-U",
+        "blurb": "Pressure water supply lines — hot, cold and mains.",
+        "long": "Pressure-rated PVC-U pipes and fittings for water supply mains, pump delivery lines, deep tube-well casing and irrigation. Available in multiple pressure classes — tell us the head and we'll match the class.",
+        "items": [
+          "Pressure pipes",
+          "Sockets",
+          "Elbows",
+          "Tees",
+          "End caps",
+          "Flange adapters",
+          "Threaded adapters",
+          "Solvent cement"
+        ],
+        "size": "1/2\" – 4\"",
+        "slug": "pressure"
+      },
+      {
+        "title": "Bathroom fittings",
+        "blurb": "Taps, mixers, showers and bathroom hardware.",
+        "long": "Bathroom fittings for new builds and replacements — from a single bib cock to a full apartment set. Chrome-plated brass and economy ranges side by side, so you can spec to budget.",
+        "items": [
+          "Shower mixers",
+          "Bath mixers",
+          "Basin mixers",
+          "Concealed stop cocks",
+          "Bib cocks",
+          "Pillar cocks",
+          "Long body taps",
+          "Shower sets",
+          "Rain showers",
+          "Push showers",
+          "Health faucets",
+          "Angle valves",
+          "Bottle traps",
+          "Basin wastes"
+        ],
+        "size": "Brass & CP finish",
+        "slug": "bathroom-fittings"
+      },
+      {
+        "title": "Plumbing accessories & hardware",
+        "blurb": "Bathroom hardware, stainless steel and the small parts that finish the job.",
+        "long": "The consumables and hardware a site runs out of mid-job. We keep them in depth so one trip covers the whole list.",
+        "items": [
+          "Towel rails",
+          "Towel racks",
+          "Towel rings",
+          "Soap cases",
+          "Tissue holders",
+          "Tumbler holders",
+          "Coat hooks",
+          "Glass shelves",
+          "Gratings",
+          "PTFE / teflon tape",
+          "Water tank connectors",
+          "Float valves",
+          "Flexible hoses",
+          "Pipe brackets & clamps"
+        ],
+        "size": "Hardware & SS",
+        "slug": "accessories"
+      },
+      {
+        "title": "Ceramic items",
+        "blurb": "Commodes, urinals and wash basins.",
+        "long": "Sanitary ceramics for homes, apartments and commercial buildings — commodes in every mounting style, wall and floor urinals, and wash basins from compact cloakroom sizes up. Tell us the rough-in and we'll match it.",
+        "items": [
+          "Wall-hung commodes",
+          "Floor-type commodes",
+          "Low commodes",
+          "Wall urinals",
+          "Floor urinals",
+          "Wash basins — all types"
+        ],
+        "size": "Ceramic",
+        "slug": "ceramic"
+      },
+      {
+        "title": "Kitchen items",
+        "blurb": "Sinks, mixers, stoves and kitchen hardware.",
+        "long": "Kitchen fit-out from the sink down — stainless steel, fibre and ceramic bowls with matching mixers and wastes, plus stoves, hoods and the accessories that go around them.",
+        "items": [
+          "Stainless steel sinks",
+          "Fibre sinks",
+          "Ceramic sinks",
+          "Sink mixers — all types",
+          "Sink wastes",
+          "Stoves",
+          "Kitchen hoods",
+          "Kitchen accessories"
+        ],
+        "size": "Kitchen",
+        "slug": "kitchen"
+      }
+    ],
+    "formErr": "Add your item list or a phone number so we can quote it."
+  },
+  "bn": {
+    "topbar": "খুচরা ও পাইকারি · সপ্তাহে ৭ দিন খোলা, সকাল ৭টা – রাত ১০টা",
+    "delivery": "ঢাকা জুড়ে ডেলিভারি · ঠিকাদারদের জন্য পাইকারি দাম",
+    "whatsapp": "হোয়াটসঅ্যাপ",
+    "tagline": "আপনার বিশ্বাস, আমাদের অগ্রাধিকার",
+    "nav": {
+      "home": "হোম",
+      "products": "পণ্য",
+      "about": "পরিচিতি",
+      "contact": "যোগাযোগ"
+    },
+    "heroBadge": "২০০৩ সাল থেকে ঢাকায় সরবরাহ",
+    "heroA": "পাইপ, ফিটিংস ও স্যানিটারি সামগ্রী —",
+    "heroB": "আজই স্টকে আছে।",
+    "heroBody": "বাসা, অ্যাপার্টমেন্ট, অফিস ও নির্মাণ প্রকল্পের জন্য সি-পিভিসি, ইউ-পিভিসি ও প্রেশার পিভিসি-ইউ পাইপ, ফিটিংস, বাথরুম ফিটিংস এবং প্লাম্বিং সামগ্রী। ঠিকাদারদের জন্য পাইকারি দাম, গ্রাহকদের জন্য একটি পিসও।",
+    "ctaOrder": "হোয়াটসঅ্যাপে অর্ডার করুন",
+    "ctaQuote": "দাম জানতে চাই",
+    "orderMsg": "আসসালামু আলাইকুম, ইরা স্যানিটারি — আমি প্লাম্বিং সামগ্রী অর্ডার করতে চাই।",
+    "heroFacts": [
+      {
+        "value": "২০০৩",
+        "label": "সাল থেকে সরবরাহ"
+      },
+      {
+        "value": "৭ দিন",
+        "label": "খোলা ৭টা – ১০টা"
+      },
+      {
+        "value": "১২+",
+        "label": "ডেলিভারি এলাকা"
+      }
+    ],
+    "pillars": [
+      {
+        "n": "০১",
+        "title": "গুণগত পণ্য",
+        "body": "যে পাইপ ও ফিটিংস আমরা নিজেদের বাড়িতে ব্যবহার করব, সেটিই আপনাকে দিই — কোনো নিম্নমানের মাল নয়।"
+      },
+      {
+        "n": "০২",
+        "title": "নির্ভরযোগ্য সেবা",
+        "body": "সপ্তাহের সাত দিনই খোলা, রাত ৯টা পর্যন্ত ডেলিভারি এবং অনলাইন অর্ডারের পিকআপ সুবিধা।"
+      },
+      {
+        "n": "০৩",
+        "title": "পেশাদার সমাধান",
+        "body": "ড্রয়িং বা সমস্যা নিয়ে আসুন — লাইনের সাইজ ঠিক করা ও মিল ফিটিংস বেছে নিতে আমরা সাহায্য করি।"
+      }
+    ],
+    "supplyTitle": "আমরা যা সরবরাহ করি",
+    "seeAll": "সম্পূর্ণ তালিকা দেখুন",
+    "whyTitle": "ঠিকাদাররা কেন বারবার আসেন",
+    "reasons": [
+      {
+        "title": "শুধু ক্যাটালগ নয়, স্টকে মাল",
+        "body": "মিল সাইজের ফিটিংস শেলফেই থাকে, তাই থেমে থাকা কাজ সেই সকালেই আবার শুরু হয়।"
+      },
+      {
+        "title": "এক দোকানেই পাইকারি ও খুচরা",
+        "body": "বেশি পরিমাণে ঠিকাদারি দাম, আর গ্রাহকের একটি এলবো — একই দোকান, একই পরামর্শ।"
+      },
+      {
+        "title": "সময় মেনে ডেলিভারি",
+        "body": "প্রতিদিন সকাল ৭টা – রাত ৯টা ঢাকা জুড়ে ডেলিভারি, সঙ্গে অনলাইন অর্ডারের ইন-স্টোর পিকআপ।"
+      },
+      {
+        "title": "রামপুরায় ২০ বছরের বেশি",
+        "body": "২০০৩ সাল থেকে একই ঠিকানায় একই প্রতিষ্ঠান — যা বিক্রি করি তার দায় আমাদের।"
+      }
+    ],
+    "areasTitle": "ঢাকা ও এর বাইরে ডেলিভারি",
+    "bandTitle": "আপনার মালের তালিকা পাঠান — একই দিনে দাম জানিয়ে দেব।",
+    "bandBody": "ড্রয়িংয়ের ছবি বা হাতে লেখা তালিকা হলেও চলবে। রামপুরা, মালিবাগ, বাড্ডা, বসুন্ধরা ও বৃহত্তর ঢাকায় ডেলিভারি।",
+    "bandWa": "হোয়াটসঅ্যাপে তালিকা পাঠান",
+    "bandCall": "কল করুন ০১৭১১-৯৫৪০৯৪",
+    "productsIntro": "নিচের সব পণ্যই খুচরা ও পাইকারি — দুইভাবেই পাওয়া যায়। সাইজ ও ব্র্যান্ড স্টক অনুযায়ী পরিবর্তিত হয়; বর্তমান স্টক ও দাম জানতে আমাদের মেসেজ করুন।",
+    "notListed": "তালিকায় নেই এমন কিছু দরকার?",
+    "notListedBody": "চাহিদা অনুযায়ী প্রায় সব প্লাম্বিং ও স্যানিটারি পণ্য আমরা এনে দিই। স্পেসিফিকেশন ও পরিমাণ পাঠান।",
+    "aboutTitle": "আমাদের সম্পর্কে",
+    "aboutP1": "২০০৩ সালের জানুয়ারি থেকে ইরা স্যানিটারি অ্যান্ড প্লাম্বিং সলিউশনস রামপুরা, ঢাকা থেকে স্যানিটারি ও প্লাম্বিং সামগ্রী সরবরাহ করছে। পাড়ার ছোট দোকান থেকে শুরু করে আজ শহরের ঠিকাদার, ডেভেলপার ও গ্রাহকরা পাইপ ও বাথরুম ফিটিংসের জন্য আমাদের ওপর ভরসা করেন।",
+    "aboutP2": "সি-পিভিসি, ইউ-পিভিসি ও প্রেশার পিভিসি-ইউ পাইপ-ফিটিংস, বাথরুম ফিটিংস ও প্লাম্বিং সামগ্রী আমরা সবসময় স্টকে রাখি — যাতে সকাল ৯টায় থেমে যাওয়া কাজ ১১টার মধ্যেই আবার চলে। খুচরা গ্রাহকও পাইকারি ক্রেতার মতো একই পণ্য ও একই পরামর্শ পান।",
+    "aboutP3": "আমাদের দোকান সপ্তাহের সাত দিনই সকাল ৭টা থেকে রাত ১০টা পর্যন্ত খোলা; ডেলিভারি রাত ৯টা পর্যন্ত এবং অনলাইন অর্ডারের পিকআপ রাত ৮টা পর্যন্ত।",
+    "stats": [
+      {
+        "value": "২০০৩",
+        "label": "সাল থেকে ব্যবসা"
+      },
+      {
+        "value": "৭",
+        "label": "পণ্যের ক্যাটাগরি"
+      },
+      {
+        "value": "৭ দিন",
+        "label": "সপ্তাহে খোলা, ৭টা – ১০টা"
+      },
+      {
+        "value": "১২+",
+        "label": "ডেলিভারি এলাকা"
+      }
+    ],
+    "amenitiesTitle": "দোকান ও সেবা সুবিধা",
+    "amenities": [
+      "দোকানে কিনুন",
+      "ডেলিভারি",
+      "অনলাইন অর্ডারের পিকআপ",
+      "সাইটে সেবা",
+      "অ্যাসেম্বলি সেবা",
+      "ফ্রি ওয়াই-ফাই",
+      "নিজস্ব পার্কিং",
+      "ফ্রি রাস্তার পার্কিং"
+    ],
+    "paymentsTitle": "গ্রহণযোগ্য পেমেন্ট",
+    "payments": [
+      "নগদ",
+      "ক্রেডিট কার্ড",
+      "ডেবিট কার্ড",
+      "এনএফসি মোবাইল পেমেন্ট",
+      "চেক",
+      "VISA",
+      "Mastercard",
+      "American Express",
+      "China Union Pay",
+      "JCB",
+      "Discover",
+      "Diners Club"
+    ],
+    "contactTitle": "যোগাযোগ ও দাম",
+    "storeLabel": "দোকান",
+    "address": "৫/১, পশ্চিম হাজীপাড়া, ডি.আই.টি রোড, রামপুরা, ঢাকা-১২১৯, বাংলাদেশ",
+    "directions": "পথনির্দেশ দেখুন →",
+    "callLabel": "কল",
+    "chatNow": "চ্যাট করুন",
+    "replies": "উত্তর ৭টা – ১০টা",
+    "hoursTitle": "খোলার সময়",
+    "hours": [
+      {
+        "label": "দোকান, শনি – শুক্র",
+        "value": "৭:০০ – ২২:০০"
+      },
+      {
+        "label": "ডেলিভারি",
+        "value": "৭:০০ – ২১:০০"
+      },
+      {
+        "label": "অনলাইন অর্ডারের পিকআপ",
+        "value": "৭:০০ – ২০:০০"
+      },
+      {
+        "label": "অনলাইন অর্ডার ও হোয়াটসঅ্যাপ",
+        "value": "২৪ ঘণ্টা"
+      }
+    ],
+    "hoursNote": "সরকারি ছুটিসহ প্রতিদিন খোলা। সাইট ভিজিটের জন্য আগে অ্যাপয়েন্টমেন্ট নিতে হয়।",
+    "formTitle": "দাম জানতে চাই",
+    "formBody": "নিচের তথ্য দিন — আপনার বিবরণসহ হোয়াটসঅ্যাপ মেসেজ তৈরি হয়ে যাবে।",
+    "fName": "আপনার নাম",
+    "phName": "মোঃ রহমান",
+    "fPhone": "ফোন নম্বর",
+    "fNeed": "কী প্রয়োজন?",
+    "fList": "মালের তালিকা / পরিমাণ",
+    "phList": "যেমন: ১ ইঞ্চি সি-পিভিসি পাইপ × ৪০, ১ ইঞ্চি এলবো × ৬০, বাড্ডায় ডেলিভারি",
+    "formSend": "হোয়াটসঅ্যাপে পাঠান",
+    "formFoot": "অথবা কল করুন ০১৭১১-৯৫৪০৯৪ — বেশিরভাগ তালিকার দাম একই দিনে জানিয়ে দিই।",
+    "footerBlurb": "৫/১, পশ্চিম হাজীপাড়া, ডি.আই.টি রোড, রামপুরা, ঢাকা-১২১৯, বাংলাদেশ। ২০০৩ সাল থেকে স্যানিটারি ও প্লাম্বিং পণ্যের খুচরা ও পাইকারি সরবরাহকারী।",
+    "footerPages": "পেজ",
+    "footerReach": "যোগাযোগ",
+    "footerHours": "প্রতিদিন খোলা ৭:০০ – ২২:০০ · ডেলিভারি ২১:০০ পর্যন্ত",
+    "somethingElse": "অন্য কিছু",
+    "msgHello": "আসসালামু আলাইকুম, ইরা স্যানিটারি অ্যান্ড প্লাম্বিং সলিউশনস,",
+    "msgName": "নাম",
+    "msgPhone": "ফোন",
+    "msgCat": "ক্যাটাগরি",
+    "msgItems": "মাল",
+    "msgClose": "দয়া করে দাম জানাবেন।",
+    "areas": [
+      "রামপুরা",
+      "মালিবাগ",
+      "বাড্ডা",
+      "বনশ্রী",
+      "ঢাকা",
+      "সাভার",
+      "টঙ্গী",
+      "আশুলিয়া",
+      "তারাবো",
+      "বিরুলিয়া",
+      "আমিনবাজার",
+      "জলসিঁড়ি আবাসন",
+      "বসুন্ধরা রিভারভিউ",
+      "পূর্বাচল নিউ টাউন"
+    ],
+    "categories": [
+      {
+        "title": "সি-পিভিসি পাইপ ও ফিটিংস",
+        "blurb": "প্রেশার পানি সরবরাহ লাইন — গরম, ঠান্ডা ও মেইন।",
+        "long": "ঘরের ভেতরের গরম ও ঠান্ডা পানির লাইনের জন্য সিপিভিসি পাইপ — অ্যাপার্টমেন্টের প্লাম্বিং, গিজার লাইন ও বাথরুম রাইজারের স্বাভাবিক পছন্দ। সলভেন্ট জোড়া, মিল সাইজে পূর্ণ ফিটিংস।",
+        "items": [
+          "পাইপ",
+          "এলবো ৯০°/৪৫°",
+          "টি",
+          "সকেট",
+          "রিডিউসার",
+          "মেল ও ফিমেল অ্যাডাপ্টার",
+          "ইউনিয়ন",
+          "গেট ও বল ভালভ",
+          "ট্যাংক কানেক্টর",
+          "আঠা ও সলভেন্ট সিমেন্ট"
+        ],
+        "size": "১/২\" – ৬\"",
+        "slug": "cpvc"
+      },
+      {
+        "title": "ইউ-পিভিসি পাইপ ও ফিটিংস",
+        "blurb": "পয়ঃনিষ্কাশন, বর্জ্য ও ভেন্ট লাইন।",
+        "long": "বাসাবাড়ি ও বাণিজ্যিক ভবনের বর্জ্য, পয়ঃ ও ভেন্ট লাইনের জন্য ইউপিভিসি ড্রেনেজ সিস্টেম। হালকা, মরিচা ধরে না এবং দ্রুত বসানো যায় — সঙ্গে বেন্ড, জাংশন ও ট্র্যাপের পূর্ণ তালিকা।",
+        "items": [
+          "পাইপ",
+          "বেন্ড",
+          "সিঙ্গেল ও ডাবল ওয়াই-টি",
+          "পি ও এস ট্র্যাপ",
+          "কাউল",
+          "ডোর বেন্ড",
+          "রিডিউসার",
+          "পাইপ ক্লিপ ও ক্ল্যাম্প",
+          "সলভেন্ট সিমেন্ট"
+        ],
+        "size": "১.২৫\" – ১২\"",
+        "slug": "upvc"
+      },
+      {
+        "title": "প্রেশার পিভিসি-ইউ",
+        "blurb": "প্রেশার পানি সরবরাহ লাইন — গরম, ঠান্ডা ও মেইন।",
+        "long": "পানি সরবরাহের মেইন লাইন, পাম্পের ডেলিভারি লাইন, ডিপ টিউবওয়েল কেসিং ও সেচের জন্য প্রেশার-রেটেড পিভিসি-ইউ পাইপ ও ফিটিংস। বিভিন্ন প্রেশার ক্লাসে পাওয়া যায় — হেড জানালে ক্লাস মিলিয়ে দেব।",
+        "items": [
+          "প্রেশার পাইপ",
+          "সকেট",
+          "এলবো",
+          "টি",
+          "এন্ড ক্যাপ",
+          "ফ্ল্যাঞ্জ অ্যাডাপ্টার",
+          "থ্রেডেড অ্যাডাপ্টার",
+          "সলভেন্ট সিমেন্ট"
+        ],
+        "size": "১/২\" – ৪\"",
+        "slug": "pressure"
+      },
+      {
+        "title": "বাথরুম ফিটিংস",
+        "blurb": "ট্যাপ, মিক্সার, শাওয়ার ও বাথরুম হার্ডওয়্যার।",
+        "long": "নতুন কাজ ও বদলানোর জন্য বাথরুম ফিটিংস — একটি বিব কক থেকে পুরো অ্যাপার্টমেন্টের সেট পর্যন্ত। ক্রোম-প্লেটেড ব্রাস ও সাশ্রয়ী রেঞ্জ পাশাপাশি, বাজেট অনুযায়ী বেছে নিন।",
+        "items": [
+          "শাওয়ার মিক্সার",
+          "বাথ মিক্সার",
+          "বেসিন মিক্সার",
+          "কনসিল স্টপ কক",
+          "বিব কক",
+          "পিলার কক",
+          "লং বডি ট্যাপ",
+          "শাওয়ার সেট",
+          "রেইন শাওয়ার",
+          "পুশ শাওয়ার",
+          "হেলথ ফসেট",
+          "অ্যাঙ্গেল ভালভ",
+          "বোতল ট্র্যাপ",
+          "বেসিন ওয়েস্ট"
+        ],
+        "size": "ব্রাস ও সিপি ফিনিশ",
+        "slug": "bathroom-fittings"
+      },
+      {
+        "title": "প্লাম্বিং সামগ্রী ও হার্ডওয়্যার",
+        "blurb": "বাথরুম হার্ডওয়্যার, স্টেইনলেস স্টিল ও কাজ শেষ করার ছোট সামগ্রী।",
+        "long": "কাজের মাঝপথে যেসব ছোট জিনিস ফুরিয়ে যায়, সেগুলো আমরা পর্যাপ্ত রাখি — এক ট্রিপেই পুরো তালিকা মেলে।",
+        "items": [
+          "টাওয়েল রেল",
+          "টাওয়েল র‍্যাক",
+          "টাওয়েল রিং",
+          "সোপ কেস",
+          "টিস্যু হোল্ডার",
+          "টাম্বলার হোল্ডার",
+          "কোট হুক",
+          "গ্লাস শেলফ",
+          "গ্রেটিং",
+          "পিটিএফই / টেফলন টেপ",
+          "পানির ট্যাংক কানেক্টর",
+          "ফ্লোট ভালভ",
+          "ফ্লেক্সিবল হোস",
+          "পাইপ ব্র্যাকেট ও ক্ল্যাম্প"
+        ],
+        "size": "হার্ডওয়্যার ও এসএস",
+        "slug": "accessories"
+      },
+      {
+        "title": "সিরামিক সামগ্রী",
+        "blurb": "কমোড, ইউরিনাল ও ওয়াশ বেসিন।",
+        "long": "বাসা, অ্যাপার্টমেন্ট ও বাণিজ্যিক ভবনের জন্য স্যানিটারি সিরামিক — সব ধরনের কমোড, ওয়াল ও ফ্লোর ইউরিনাল এবং ছোট থেকে বড় সব মাপের ওয়াশ বেসিন। রাফ-ইন মাপ জানালে আমরা মিলিয়ে দেব।",
+        "items": [
+          "ওয়াল হ্যাংগিং কমোড",
+          "ফ্লোর টাইপ কমোড",
+          "লো কমোড",
+          "ওয়াল ইউরিনাল",
+          "ফ্লোর ইউরিনাল",
+          "সব ধরনের ওয়াশ বেসিন"
+        ],
+        "size": "সিরামিক",
+        "slug": "ceramic"
+      },
+      {
+        "title": "কিচেন সামগ্রী",
+        "blurb": "সিংক, মিক্সার, চুলা ও কিচেন হার্ডওয়্যার।",
+        "long": "সিংক থেকে শুরু করে পুরো কিচেন — স্টেইনলেস স্টিল, ফাইবার ও সিরামিক বোল, সঙ্গে মিল মিক্সার ও ওয়েস্ট, আর চুলা, হুড ও আনুষঙ্গিক সামগ্রী।",
+        "items": [
+          "স্টেইনলেস স্টিল সিংক",
+          "ফাইবার সিংক",
+          "সিরামিক সিংক",
+          "সব ধরনের সিংক মিক্সার",
+          "সিংক ওয়েস্ট",
+          "চুলা",
+          "কিচেন হুড",
+          "কিচেন আনুষঙ্গিক সামগ্রী"
+        ],
+        "size": "কিচেন",
+        "slug": "kitchen"
+      }
+    ],
+    "formErr": "দাম জানাতে মালের তালিকা অথবা ফোন নম্বর দিন।"
+  }
+}

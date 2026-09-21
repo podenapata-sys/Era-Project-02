@@ -1,119 +1,137 @@
-# Era-Project-02 — PlumbPro Landing Page
+# ERA Sanitary & Plumbing Solutions — website
 
-A production-ready, single-page marketing site for a plumbing company, built to the
-attached reference design. Static HTML, CSS and vanilla JavaScript — **no build step,
-no dependencies, no framework**. Clone it, open `index.html`, ship it.
-
-![Desktop and mobile](assets/img/og-cover.svg)
-
-## Why it's built this way
-
-| Decision | Reason |
-| --- | --- |
-| No framework, no bundler | Deploys anywhere in seconds; nothing to break or update six months from now |
-| CSS custom properties for the whole palette | Re-skin for a new client by editing ~15 lines |
-| Semantic HTML + real `<button>` / `<a>` / ARIA | Keyboard- and screen-reader-accessible out of the box |
-| `Plumber` JSON-LD schema | Eligible for rich results and local-pack signals from day one |
-| SVG placeholder art | The page looks finished before the client sends photos |
-
-## Run it locally
-
-Any static server works — or just open the file.
+Bilingual (English / বাংলা) static site for a sanitary and plumbing materials
+supplier in Rampura, Dhaka. Every page is generated from two JSON files by one
+zero-dependency Node script — **no framework, no npm install, no lock file.**
 
 ```bash
-# Option 1: open directly
-open index.html          # macOS   (use `start` on Windows, `xdg-open` on Linux)
-
-# Option 2: serve it (needed if you add fetch/XHR later)
-npx serve .              # then visit http://localhost:3000
-python3 -m http.server 8000
+node build.js     # writes dist/
+npm run serve     # build, then serve dist/ on localhost
 ```
 
-## Project layout
+## How it works
 
 ```
-.
-├── index.html            # The entire page: header → hero → services → about →
-│                         # process → why-us → FAQ → testimonials → CTA → footer
-├── assets/
-│   ├── css/styles.css    # Tokens, base, sections, then responsive + print
-│   ├── js/main.js        # Nav, dropdown, accordion, carousel, reveal, counters
-│   └── img/              # SVG placeholders — replace with real photography
-├── netlify.toml          # Zero-config deploy + cache headers
-├── robots.txt
-└── sitemap.xml
+content/business.json   Facts: name, phones, address, hours, payments
+content/copy.json       All copy, en + bn, in parity (69 keys each)
+build.js                Renders dist/ — 4 pages × 2 languages + sitemap + robots
+src/assets/             CSS, JS and images, copied to dist/assets verbatim
 ```
 
-## Re-skinning for a different client
+Output:
 
-Every colour, font and radius is a custom property at the top of
-`assets/css/styles.css`. Change these and the whole page follows:
+| URL | Bengali |
+| --- | --- |
+| `/` | `/bn/` |
+| `/products.html` | `/bn/products.html` |
+| `/about.html` | `/bn/about.html` |
+| `/contact.html` | `/bn/contact.html` |
 
-```css
-:root {
-  --brand-600: #1366d6;   /* primary — buttons, links, icon chips */
-  --brand-700: #0e52ae;   /* hover / gradient end */
-  --brand-050: #eaf2fd;   /* tints and soft backgrounds */
-  --ink-900:   #0a2647;   /* headings, dark sections, footer */
-  --accent-400:#ffc233;   /* CTA buttons, highlights */
-  --font-display: "Archivo", sans-serif;
-  --font-body:    "Plus Jakarta Sans", sans-serif;
+**`dist/` is generated and git-ignored.** Run `node build.js` after any content
+change. Both deploy paths below build from source, so what ships is never stale.
+
+### Why real URLs instead of a language toggle
+
+The design this was ported from switched language in JavaScript and remembered
+the choice in `localStorage`. That means one URL, so Google only ever indexes
+one language and nobody can share a Bengali link. Here each language is its own
+crawlable page, cross-linked with `hreflang` (plus `x-default` → English), and
+the switch in the header is an ordinary `<a href>` that works with JavaScript
+off. Nothing else changed about how it behaves.
+
+## Editing content
+
+Almost everything is in `content/copy.json`. **Keep `en` and `bn` in step** — the
+build reads the same keys from both, so a key added to one and not the other
+renders empty on that language's pages.
+
+Adding a product category — append an object to `categories` in *both* `en` and
+`bn`:
+
+```json
+{
+  "title": "Water pumps",
+  "slug": "pumps",
+  "size": "0.5 HP – 2 HP",
+  "blurb": "One line for the home page card.",
+  "long": "A paragraph for the products page.",
+  "items": ["Centrifugal pumps", "Submersible pumps"]
 }
 ```
 
-Swap the two Google Fonts in the `<link>` in `index.html` to match.
+The card, the products-page block, the quote-form dropdown and the `OfferCatalog`
+in the structured data all pick it up. If the new count leaves one card alone on
+the last row, that card widens to fill the row by itself — no layout work needed.
 
-## Replacing the placeholder images
+Prices are deliberately absent. Stock and rates move; the site sends people to
+WhatsApp for a current quote instead of going stale.
 
-Files in `assets/img/` are labelled SVG stand-ins. Drop a real photo in at the same
-path (any web format) and update the `src` — keep the stated aspect ratio so nothing
-reflows:
+## The quote form
 
-| File | Used for | Ratio |
+`contact.html` has no backend. On submit it composes a WhatsApp message —
+greeting, name, phone, category, item list, sign-off, in whichever language the
+visitor is reading — and opens `wa.me/8801711954094`. It needs either an item
+list or a phone number, and says so in the right language if given neither. If a
+popup blocker stops the new tab it navigates in place rather than failing
+silently.
+
+To change the number, edit `phones` in `content/business.json`; the `primary`
+entry is the one the form and the CTAs use.
+
+## Photography — the one thing still outstanding
+
+Six photo slots render as labelled placeholders. They are **not** broken images;
+they're sized to hold the real thing. Replace `photoSlot(...)` in `build.js` with
+an `<img>` as each photo arrives:
+
+| Slot | Shot needed | Ratio |
 | --- | --- | --- |
-| `hero-plumber.svg` | Hero photo | 18:13 |
-| `about-technician.svg` | About portrait — a **cut-out PNG** sits best over the blue blob | ~23:22 |
-| `why-team.svg` | Why-choose-us photo | 13:9 |
-| `faq-tools.svg` | FAQ photo | 19:15 |
-| `svc-*.svg` | Six service cards | 13:10 |
-| `avatar-1..6.svg` | Testimonial portraits | 1:1 |
-| `og-cover.svg` | Social share image | 1200×630 |
+| Hero | The shop front or a wall of pipe stock | ~4:3 |
+| Why us | The counter, or a delivery going out | ~5:4 |
+| About | Shopfront or the team | ~5:4 |
+| 7 × category | One representative shot per category | ~4:3 |
 
-## Before going live — content checklist
-
-Search `index.html` for these and replace every occurrence:
-
-- [ ] `(123) 456-7890` — phone, in the header card, CTA band, footer and JSON-LD
-- [ ] `info@plumbpro.com` — email
-- [ ] `123 Plumbing Street, New York, NY 10001` — address (also in JSON-LD)
-- [ ] `https://www.plumbpro.example/` — canonical URL, OG tags, `robots.txt`, `sitemap.xml`
-- [ ] `[YOUR CITY]` / `[YOUR SERVICE RADIUS]` — the "What areas do you serve?" answer
-- [ ] `[YOUR LICENCE NUMBER]` — footer
-- [ ] Social links in the footer (currently pointing at bare domains)
-- [ ] `aggregateRating` in the JSON-LD — **remove it unless the ratings are real**;
-      fabricated review markup is a manual-action risk
-- [ ] Stat figures (`15+`, `2500+`, `3500+`) and the six testimonials
+Phone photos in daylight are fine. Shot straight-on, in focus, no flash.
 
 ## Deploying
 
-**Netlify** — connect the repo; `netlify.toml` handles the rest.
-**Vercel** — import the repo, framework preset "Other", output directory `.`.
-**GitHub Pages** — Settings → Pages → deploy from `main` / root.
-**Cloudflare Pages** — build command empty, output directory `/`.
+**Netlify** — connect the repo. `netlify.toml` sets `node build.js` → `dist`.
+**Vercel / Cloudflare Pages** — build `node build.js`, output `dist`.
+**GitHub Pages** — `.github/workflows/deploy.yml` builds and deploys on push to
+`main`; enable Pages with source "GitHub Actions" in repo settings.
 
-## Browser support & accessibility
+Set the real domain in `content/business.json` → `url` **before** going live. It
+feeds the canonical tags, `hreflang`, Open Graph, `sitemap.xml` and `robots.txt`.
 
-Tested at 1440px and 390px. Works in current Chrome, Firefox, Safari and Edge.
+## Accessibility
 
-- Skip link, visible focus rings, `:focus-visible` outlines
-- Accordion and dropdown driven by `aria-expanded` / `aria-controls`
-- Carousel marks off-screen cards `aria-hidden` and exposes page dots as tabs
-- Icon-only controls carry `aria-label`
-- Full `prefers-reduced-motion` support — reveals, counters and autoplay all stand down
-- Print stylesheet strips chrome and forces content visible
+Every foreground/background pair was measured, not eyeballed. Body text is
+17.7:1, muted copy 12.1:1, the lightest grey 7.8:1 — all past the 4.5:1 AA
+minimum. Form-field and ghost-button borders use a separate lighter token
+(`--line-ui`, 3.75:1) because the border is the only thing marking those
+controls; the decorative borders stay dark. Also: skip link, visible focus
+rings, `aria-expanded` on the menu, `aria-current` on the active nav item, real
+`<label>`s, `role="alert"` on the form error, and a full
+`prefers-reduced-motion` path that stops the delivery-areas marquee.
 
-## Licence
+Bengali sets `lang="bn"` and renders in Hind Siliguri; phone numbers use Bengali
+numerals in Bengali copy while `tel:` links stay in Latin digits so dialling works.
 
-Code in this repository is yours to use and modify. The reference design it was built
-from belongs to its original author — commission or licence artwork before commercial
-release.
+## Open questions for the client
+
+1. **Email address** — asked for but not supplied, so no email appears anywhere.
+   Add it to `content/business.json` → `email` and it can be surfaced.
+2. **Which number is primary?** Both 01711-954094 and 01611-954094 are on the
+   banner. 01711 is currently the WhatsApp and form target.
+3. **"U-PVC — add tube wells and vents"** — vents are already listed. Confirm
+   whether tube-well pipe should sit under U-PVC as well as Pressure PVC-U.
+4. **Logo** — the mark on the site is cropped out of the printed banner. A
+   transparent PNG or vector original would be sharper, and is needed for print.
+
+## Content decisions made during the port
+
+Trade-list spellings were normalised to standard English for search and
+credibility: mixture → mixer, angel → angle, heath → health, conseal →
+concealed, sope → soap, tamber → tumbler, court hook → coat hook, gratin →
+grating, sinck → sink, siramic/cramic → ceramic, foset → faucet, adsesive →
+adhesive. The Bengali is unaffected.

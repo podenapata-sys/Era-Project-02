@@ -1,7 +1,6 @@
-# Static site — nothing to build. Publish the repo root as-is.
 [build]
-  publish = "."
-  command = ""
+  command = "node build.js"
+  publish = "dist"
 
 [[headers]]
   for = "/assets/*"
@@ -13,3 +12,4 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"

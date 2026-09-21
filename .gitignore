@@ -1,18 +1,12 @@
-# OS
 .DS_Store
 Thumbs.db
-
-# Editors
 .vscode/
 .idea/
-*.swp
-
-# Dependencies / build output
 node_modules/
-dist/
 .cache/
-
-# Logs & env
 *.log
 .env
 .env.*
+
+# Build output — regenerate with `npm run build`
+dist/
