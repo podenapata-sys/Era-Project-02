@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#0a2647"/><stop offset="1" stop-color="#0e52ae"/></linearGradient></defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <path d="M110 92c26 31 46 56 46 80a46 46 0 0 1-92 0c0-24 20-49 46-80Z" fill="#1366d6"/>
+  <text x="182" y="160" font-family="Archivo, Segoe UI, sans-serif" font-size="46" font-weight="800" fill="#fff">PlumbPro</text>
+  <text x="80" y="330" font-family="Archivo, Segoe UI, sans-serif" font-size="74" font-weight="800" fill="#fff">Expert Plumbing Solutions</text>
+  <text x="80" y="412" font-family="Archivo, Segoe UI, sans-serif" font-size="74" font-weight="800" fill="#1366d6">for a Healthier Home</text>
+  <text x="80" y="486" font-family="Plus Jakarta Sans, Segoe UI, sans-serif" font-size="28" fill="#b9cde8">24/7 emergency service &#183; Licensed &amp; insured &#183; Upfront pricing</text>
+  <rect x="80" y="528" width="300" height="62" rx="31" fill="#ffc233"/>
+  <text x="230" y="568" text-anchor="middle" font-family="Archivo, Segoe UI, sans-serif" font-size="24" font-weight="700" fill="#0a2647">(123) 456-7890</text>
+</svg>
