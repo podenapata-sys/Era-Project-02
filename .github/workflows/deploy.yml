@@ -30,12 +30,15 @@ jobs:
 
       # Must run before the build: it reports the URL Pages will serve from,
       # which the generator needs for canonical, hreflang, OG and sitemap.
-      # enablement turns Pages on via the API on the first run, so the repo
-      # needs no manual settings change (public repo, pages: write above).
+      #
+      # This step fails until Pages is switched on for the repository, under
+      # Settings -> Pages -> Source: GitHub Actions. The action's `enablement`
+      # input cannot do it for us: creating a Pages site needs repo-admin
+      # rights and GITHUB_TOKEN has none, whatever permissions are declared
+      # above ("Resource not accessible by integration"). It is a one-time
+      # click; every push deploys by itself afterwards.
       - id: pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Build
         run: node build.js

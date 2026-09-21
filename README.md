@@ -95,12 +95,18 @@ Phone photos in daylight are fine. Shot straight-on, in focus, no flash.
 
 ## Deploying
 
-**GitHub Pages** is wired up and self-enabling. `.github/workflows/deploy.yml`
-builds and deploys on every push to the default branch; `configure-pages` runs
-with `enablement: true`, so the first run turns Pages on through the API and no
-repository setting has to be touched by hand. (That needs a public repo or a
-plan with Pages for private repos, plus the `pages: write` permission the
-workflow already declares.)
+**GitHub Pages** is wired up. `.github/workflows/deploy.yml` builds and deploys
+on every push to the default branch — but Pages has to be switched on once by
+hand first:
+
+> **Settings → Pages → Build and deployment → Source: _GitHub Actions_**
+
+That step cannot be automated from the workflow. Creating a Pages site requires
+repo-admin rights, and the `GITHUB_TOKEN` a workflow runs with does not have
+them no matter what `permissions:` declares — `configure-pages` with
+`enablement: true` returns *Resource not accessible by integration*. It would
+need a personal access token with `repo` scope stored as a secret, which is not
+worth it for one click. After that click, every push deploys itself.
 
 The workflow runs `actions/configure-pages` *before* the build and passes the URL
 Pages assigns to the generator as `SITE_URL`. That matters because a project site
