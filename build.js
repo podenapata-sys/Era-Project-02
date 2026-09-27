@@ -22,8 +22,10 @@ const copy = require('./content/copy.json');
    build advertises itself rather than the production domain. */
 const SITE = (process.env.SITE_URL || biz.url).replace(/\/+$/, '');
 
-const PAGES = ['home', 'products', 'about', 'contact'];
-const FILE = { home: 'index.html', products: 'products.html', about: 'about.html', contact: 'contact.html' };
+const PAGES = ['home', 'products', 'services', 'about', 'contact'];
+const FILE = { home: 'index.html', products: 'products.html', services: 'services.html', about: 'about.html', contact: 'contact.html' };
+
+const ETC = new Set(['etc.', 'ইত্যাদি']);
 
 const esc = s => String(s ?? '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -49,6 +51,7 @@ const ICONS = {
   arrow: icon('<path d="M4 12h15m-5-5.5L19.5 12 14 17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'),
   store: icon('<path d="M4 9.5V20h16V9.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3 5.5h18l-1 4H4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 20v-5.5h4V20" stroke="currentColor" stroke-width="1.7"/>'),
   card: icon('<rect x="3" y="5.5" width="18" height="13" rx="2.4" stroke="currentColor" stroke-width="1.7"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.7"/>'),
+  tools: icon('<path d="M14.8 4.4a4.7 4.7 0 0 0-5.7 6.1l-5 5a1.9 1.9 0 0 0 0 2.7l1.7 1.7a1.9 1.9 0 0 0 2.7 0l5-5a4.7 4.7 0 0 0 6.1-5.7l-2.9 2.9-2.7-.7-.7-2.7Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>'),
   mail: icon('<rect x="3" y="5.5" width="18" height="13" rx="2.4" stroke="currentColor" stroke-width="1.7"/><path d="m4 7.5 8 5.5 8-5.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>'),
 };
 
@@ -221,11 +224,22 @@ function homePage(t, lang, base) {
   <div class="marquee" data-marquee><ul class="marquee__track">${areas}</ul></div>
 </section>
 
+<section class="section svc-strip">
+  <div class="shell">
+    <header class="section-head">
+      <h2>${ICONS.tools}${esc(t.servicesTitle)}</h2>
+      <a class="link-more" href="services.html">${esc(t.servicesAll)} ${ICONS.arrow}</a>
+    </header>
+    <p class="lede">${esc(t.servicesIntro)}</p>
+    <ul class="chips chips--svc">${t.services.map(sv => `<li>${esc(sv.title)}</li>`).join('')}</ul>
+  </div>
+</section>
+
 <section class="band">
   <div class="shell band__inner">
     <div>
       <h2>${esc(t.bandTitle)}</h2>
-      <p>${esc(t.bandBody)}</p>
+      <p>${esc(t.bandBody)} ${esc(t.bandDelivery)} ${esc(t.areas.join(', '))}${lang === 'bn' ? '।' : '.'}</p>
     </div>
     <div class="band__actions">
       <a class="btn btn--accent" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">${ICONS.whatsapp}${esc(t.bandWa)}</a>
@@ -243,7 +257,7 @@ function productsPage(t) {
         <p class="cat__n"><span>${String(i + 1).padStart(2, '0')}</span> ${esc(c.size)}</p>
         <h2>${esc(c.title)}</h2>
         <p class="cat__long">${esc(c.long)}</p>
-        <ul class="chips">${c.items.map(it => `<li>${esc(it)}</li>`).join('')}</ul>
+        <ul class="chips">${c.items.map(it => `<li${ETC.has(it) ? ' class="is-etc"' : ''}>${esc(it)}</li>`).join('')}</ul>
       </div>
     </article>`).join('');
 
@@ -262,6 +276,40 @@ function productsPage(t) {
     <div>
       <h2>${esc(t.notListed)}</h2>
       <p>${esc(t.notListedBody)}</p>
+    </div>
+    <div class="band__actions">
+      <a class="btn btn--accent" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">${ICONS.whatsapp}${esc(t.bandWa)}</a>
+      <a class="btn btn--ghost" href="contact.html">${esc(t.ctaQuote)} ${ICONS.arrow}</a>
+    </div>
+  </div>
+</section>`;
+}
+
+function servicesPage(t) {
+  const cards = t.services.map((sv, i) => `
+      <article class="svc">
+        <p class="svc__n">${String(i + 1).padStart(2, '0')}</p>
+        <h2>${esc(sv.title)}</h2>
+        <p>${esc(sv.blurb)}</p>
+      </article>`).join('');
+
+  return `
+<section class="section page-head">
+  <div class="shell">
+    <h1>${esc(t.servicesTitle)}</h1>
+    <p class="lede">${esc(t.servicesIntro)}</p>
+  </div>
+</section>
+
+<div class="shell">
+  <div class="svc-grid">${cards}</div>
+</div>
+
+<section class="band">
+  <div class="shell band__inner">
+    <div>
+      <h2>${esc(t.bandTitle)}</h2>
+      <p>${esc(t.bandBody)}</p>
     </div>
     <div class="band__actions">
       <a class="btn btn--accent" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">${ICONS.whatsapp}${esc(t.bandWa)}</a>
@@ -394,6 +442,8 @@ const META = {
                 desc: 'Retail and wholesale supplier of C-PVC, U-PVC and pressure PVC-U pipe systems, bathroom fittings, ceramics and kitchen items. Rampura, Dhaka since 2003. Open 7 days, delivery across Dhaka.' },
     products: { title: `What We Supply — ${biz.shortName}`,
                 desc: 'C-PVC, U-PVC and pressure PVC-U pipes and fittings, bathroom fittings, plumbing hardware, sanitary ceramics and kitchen items — stocked for retail and wholesale in Rampura, Dhaka.' },
+    services: { title: `Our Services — Plumbing, Tiling, Waterproofing & Civil Work | ${biz.shortName}`,
+                desc: 'Plumbing and sanitary work, tiles, marble and granite, core cutting, deep tube well, swimming pool, damp and water proofing, electrical, painting and civil work in Rampura, Dhaka.' },
     about:    { title: `About Us — ${biz.shortName}`,
                 desc: 'Supplying sanitary and plumbing materials from Rampura, Dhaka since 2003. Retail and wholesale on one counter, open every day 07:00–22:00.' },
     contact:  { title: `Contact & Quote — ${biz.shortName}`,
@@ -404,6 +454,8 @@ const META = {
                 desc: 'সি-পিভিসি, ইউ-পিভিসি ও প্রেশার পিভিসি-ইউ পাইপ-ফিটিংস, বাথরুম ফিটিংস, সিরামিক ও কিচেন সামগ্রীর খুচরা ও পাইকারি সরবরাহকারী। ২০০৩ সাল থেকে রামপুরা, ঢাকা। সপ্তাহে ৭ দিন খোলা।' },
     products: { title: `আমরা যা সরবরাহ করি — ${biz.shortName}`,
                 desc: 'সি-পিভিসি, ইউ-পিভিসি ও প্রেশার পিভিসি-ইউ পাইপ ও ফিটিংস, বাথরুম ফিটিংস, প্লাম্বিং হার্ডওয়্যার, সিরামিক ও কিচেন সামগ্রী — রামপুরা, ঢাকায় খুচরা ও পাইকারি।' },
+    services: { title: `আমাদের সেবাসমূহ — প্লাম্বিং, টাইলস, ওয়াটার প্রুফিং ও সিভিল কাজ | ${biz.shortName}`,
+                desc: 'রামপুরা, ঢাকায় প্লাম্বিং ও স্যানিটারি কাজ, টাইলস, মার্বেল ও গ্রানাইট, কোর কাটিং, ডিপ টিউবওয়েল, সুইমিং পুল, ড্যাম্প ও ওয়াটার প্রুফিং, ইলেকট্রিক, পেইন্টিং এবং সিভিল কাজ।' },
     about:    { title: `আমাদের সম্পর্কে — ${biz.shortName}`,
                 desc: '২০০৩ সাল থেকে রামপুরা, ঢাকা থেকে স্যানিটারি ও প্লাম্বিং সামগ্রী সরবরাহ। এক দোকানেই খুচরা ও পাইকারি, প্রতিদিন খোলা ৭:০০ – ২২:০০।' },
     contact:  { title: `যোগাযোগ ও দাম — ${biz.shortName}`,
@@ -420,7 +472,7 @@ function jsonLd(t, lang) {
   const h = biz.hours.shop;
   return {
     '@context': 'https://schema.org',
-    '@type': 'HardwareStore',
+    '@type': ['HardwareStore', 'GeneralContractor'],
     '@id': SITE + '/#store',
     name: biz.name,
     alternateName: lang === 'bn' ? 'ইরা স্যানিটারি অ্যান্ড প্লাম্বিং সলিউশনস' : biz.shortName,
@@ -450,6 +502,10 @@ function jsonLd(t, lang) {
     }],
     areaServed: copy.en.areas.map(a => ({ '@type': 'Place', name: a })),
     paymentAccepted: biz.payments.join(', '),
+    makesOffer: t.services.map(sv => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: sv.title, description: sv.blurb },
+    })),
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: t.supplyTitle,
@@ -514,7 +570,7 @@ ${footer(t, lang, base)}
 }
 
 /* ------------------------------------------------------------------- main */
-const RENDER = { home: homePage, products: productsPage, about: aboutPage, contact: contactPage };
+const RENDER = { home: homePage, products: productsPage, services: servicesPage, about: aboutPage, contact: contactPage };
 
 function copyDir(from, to) {
   fs.mkdirSync(to, { recursive: true });
@@ -527,6 +583,16 @@ function copyDir(from, to) {
 }
 
 function build() {
+  // The street appears in business.json (schema) and again in copy.json's
+  // display strings, which must also carry it in Bengali. Catch drift here:
+  // they silently disagreed once and the footer shipped the old address.
+  for (const key of ['address', 'footerBlurb']) {
+    if (!copy.en[key].includes(biz.address.street)) {
+      throw new Error(`content mismatch: business.json street "${biz.address.street}" ` +
+        `is not in copy.en.${key} — update both, and the Bengali alongside it.`);
+    }
+  }
+
   fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
   copyDir(path.join(ROOT, 'src', 'assets'), path.join(OUT, 'assets'));

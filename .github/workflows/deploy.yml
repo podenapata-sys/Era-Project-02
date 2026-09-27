@@ -49,7 +49,9 @@ jobs:
         run: |
           test -f dist/index.html
           test -f dist/bn/index.html
-          test "$(find dist -name '*.html' | wc -l)" -eq 8
+          test -f dist/services.html
+          test -f dist/bn/services.html
+          test "$(find dist -name '*.html' | wc -l)" -eq 10
 
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -8,12 +8,13 @@
       "home": "Home",
       "products": "Products",
       "about": "About",
-      "contact": "Contact"
+      "contact": "Contact",
+      "services": "Services"
     },
     "heroBadge": "Supplying Dhaka since 2003",
-    "heroA": "Pipes, fittings & sanitary ware —",
-    "heroB": "in stock today.",
-    "heroBody": "C-PVC, U-PVC and pressure PVC-U pipe systems, bathroom fittings and plumbing accessories for homes, apartments, offices and construction sites. Wholesale rates for contractors, single pieces for homeowners.",
+    "heroA": "Pipes, fittings &",
+    "heroB": "sanitary ware",
+    "heroBody": "C-PVC, U-PVC and pressure PVC-U pipe systems, bathroom fittings and plumbing accessories for homes, apartments, offices and construction sites.",
     "ctaOrder": "Order on WhatsApp",
     "ctaQuote": "Request a quote",
     "orderMsg": "Hello ERA Sanitary, I want to order plumbing items.",
@@ -71,16 +72,16 @@
     ],
     "areasTitle": "We deliver across Dhaka & beyond",
     "bandTitle": "Send us your item list — we'll quote it the same day.",
-    "bandBody": "Photos of a drawing or a handwritten list work fine. Delivery available across Rampura, Malibag, Badda, Bashundhara and the wider Dhaka area.",
+    "bandBody": "Photos of a drawing or a handwritten list work fine.",
     "bandWa": "WhatsApp your list",
     "bandCall": "Call 01711-954094",
     "productsIntro": "Everything below is stocked for both retail and wholesale. Sizes and brands vary with availability — message us for current stock and rates.",
     "notListed": "Need something not listed?",
     "notListedBody": "We source most plumbing and sanitary items on request. Send the spec and quantity.",
     "aboutTitle": "About us",
-    "aboutP1": "ERA Sanitary & Plumbing Solutions has been supplying sanitary and plumbing materials from Rampura, Dhaka since January 2003. What started as a neighbourhood counter is now a supplier that contractors, developers and homeowners across the city rely on for pipe systems and bathroom fittings.",
+    "aboutP1": "ERA Sanitary & Plumbing Solutions has been supplying sanitary and plumbing materials from Rampura, Dhaka since September 2003. What started as a neighbourhood counter is now a supplier that contractors, developers and homeowners across the city rely on for pipe systems and bathroom fittings.",
     "aboutP2": "We keep C-PVC, U-PVC and pressure PVC-U pipes and fittings, bathroom fittings and plumbing accessories on the shelf — so a site that stops work at 9am can be back on it by 11. Retail customers get the same product and the same advice as our wholesale accounts.",
-    "aboutP3": "Our shop is open every day of the week, 7:00 to 22:00, with delivery until 21:00 and pick-up for online orders until 20:00.",
+    "aboutP3": "Our shop is open every day of the week, 7:00 to 22:00, with delivery until 21:00. Online orders are taken 24 hours.",
     "stats": [
       {
         "value": "2003",
@@ -127,7 +128,7 @@
     ],
     "contactTitle": "Contact & quote",
     "storeLabel": "STORE",
-    "address": "5/1, West Hazipara, D.I.T Road, Rampura, Dhaka-1219, Bangladesh",
+    "address": "5/1, West Hazipara (Chowdhury Para), D.I.T Road, Rampura, Dhaka-1219, Bangladesh",
     "directions": "Get directions →",
     "callLabel": "CALL",
     "chatNow": "Chat now",
@@ -151,7 +152,7 @@
         "value": "24 hours"
       }
     ],
-    "hoursNote": "Open every day, including public holidays. Appointment required for on-site service visits.",
+    "hoursNote": "Open every day, including public holidays. On Friday we close briefly for Jummah prayers. Appointment required for on-site service visits.",
     "formTitle": "Request a quote",
     "formBody": "Fill this in and we'll open WhatsApp with your details ready to send.",
     "fName": "YOUR NAME",
@@ -162,7 +163,7 @@
     "phList": "e.g. 1 inch C-PVC pipe × 40, 1 inch elbow × 60, delivery to Badda",
     "formSend": "Send on WhatsApp",
     "formFoot": "Or call 01711-954094 or 01611-954094 — we quote most lists the same day.",
-    "footerBlurb": "5/1, West Hazipara, D.I.T Road, Rampura, Dhaka-1219, Bangladesh. Retail & wholesale supplier of sanitary and plumbing products since 2003.",
+    "footerBlurb": "5/1, West Hazipara (Chowdhury Para), D.I.T Road, Rampura, Dhaka-1219, Bangladesh. Retail & wholesale supplier of sanitary and plumbing products since 2003.",
     "footerPages": "PAGES",
     "footerReach": "REACH US",
     "footerHours": "Open daily 7:00–22:00 · Delivery until 21:00",
@@ -193,7 +194,7 @@
       {
         "title": "C-PVC pipes & fittings",
         "blurb": "Pressure water supply lines — hot, cold and mains.",
-        "long": "CPVC pipe systems for internal hot and cold water distribution — the standard choice for apartment plumbing, geyser lines and bathroom risers. Solvent-welded joints, full fitting range available in matching sizes.",
+        "long": "CPVC pipe systems for internal hot and cold water distribution — the standard choice for apartment plumbing, geyser lines and bathroom risers. Joints made with adhesive gum, full fitting range available in matching sizes.",
         "items": [
           "Pipes",
           "Elbows 90°/45°",
@@ -204,7 +205,8 @@
           "Unions",
           "Gate & ball valves",
           "Tank connectors",
-          "Adhesive gum & solvent cement"
+          "Adhesive gum",
+          "etc."
         ],
         "size": "1/2\" – 6\"",
         "slug": "cpvc"
@@ -222,7 +224,10 @@
           "Door bends",
           "Reducers",
           "Pipe clips & clamps",
-          "Solvent cement"
+          "Solvent cement",
+          "Tube wells",
+          "Vents",
+          "etc."
         ],
         "size": "1.25\" – 12\"",
         "slug": "upvc"
@@ -239,7 +244,8 @@
           "End caps",
           "Flange adapters",
           "Threaded adapters",
-          "Solvent cement"
+          "Adhesive gum",
+          "etc."
         ],
         "size": "1/2\" – 4\"",
         "slug": "pressure"
@@ -247,7 +253,7 @@
       {
         "title": "Bathroom fittings",
         "blurb": "Taps, mixers, showers and bathroom hardware.",
-        "long": "Bathroom fittings for new builds and replacements — from a single bib cock to a full apartment set. Chrome-plated brass and economy ranges side by side, so you can spec to budget.",
+        "long": "Bathroom finishing materials for new builds, older properties and renovation work — chrome-plated brass and economy ranges side by side, so you can choose to suit your budget.",
         "items": [
           "Shower mixers",
           "Bath mixers",
@@ -262,7 +268,8 @@
           "Health faucets",
           "Angle valves",
           "Bottle traps",
-          "Basin wastes"
+          "Basin wastes",
+          "etc."
         ],
         "size": "Brass & CP finish",
         "slug": "bathroom-fittings"
@@ -282,10 +289,12 @@
           "Glass shelves",
           "Gratings",
           "PTFE / teflon tape",
+          "Water heater / WC connectors",
           "Water tank connectors",
           "Float valves",
           "Flexible hoses",
-          "Pipe brackets & clamps"
+          "Pipe brackets & clamps",
+          "etc."
         ],
         "size": "Hardware & SS",
         "slug": "accessories"
@@ -293,14 +302,15 @@
       {
         "title": "Ceramic items",
         "blurb": "Commodes, urinals and wash basins.",
-        "long": "Sanitary ceramics for homes, apartments and commercial buildings — commodes in every mounting style, wall and floor urinals, and wash basins from compact cloakroom sizes up. Tell us the rough-in and we'll match it.",
+        "long": "Sanitary ceramics for homes, apartments and commercial buildings — commodes in every mounting system, wall and floor urinals, and wash basins from compact cloakroom sizes up. Tell us the rough-in and we'll match it.",
         "items": [
           "Wall-hung commodes",
           "Floor-type commodes",
           "Low commodes",
           "Wall urinals",
           "Floor urinals",
-          "Wash basins — all types"
+          "Wash basins — all types",
+          "etc."
         ],
         "size": "Ceramic",
         "slug": "ceramic"
@@ -308,23 +318,75 @@
       {
         "title": "Kitchen items",
         "blurb": "Sinks, mixers, stoves and kitchen hardware.",
-        "long": "Kitchen fit-out from the sink down — stainless steel, fibre and ceramic bowls with matching mixers and wastes, plus stoves, hoods and the accessories that go around them.",
+        "long": "Kitchen fit-out from the sink down — stainless steel, fibre and ceramic sinks with matching sink mixers and wastes, plus stoves, kitchen hoods and the accessories that go around them.",
         "items": [
           "Stainless steel sinks",
           "Fibre sinks",
           "Ceramic sinks",
+          "Smart sinks",
           "Sink mixers — all types",
           "Sink wastes",
           "Stoves",
           "Kitchen hoods",
-          "Kitchen accessories"
+          "Kitchen accessories",
+          "etc."
         ],
         "size": "Kitchen",
         "slug": "kitchen"
       }
     ],
     "formErr": "Add your item list or a phone number so we can quote it.",
-    "emailLabel": "EMAIL"
+    "emailLabel": "EMAIL",
+    "bandDelivery": "Delivery across",
+    "servicesTitle": "Our services",
+    "servicesAll": "See all services",
+    "servicesIntro": "ERA is not only a counter. We take on the work itself — supplied and fitted by our own team, from our own shelves. Send us the scope and we will quote it.",
+    "services": [
+      {
+        "title": "Plumbing & sanitary work",
+        "blurb": "Full supply-and-fit for new builds, replacements and repairs."
+      },
+      {
+        "title": "Tiles, marble & granite",
+        "blurb": "Floor, wall and stair finishing, cut and laid to line."
+      },
+      {
+        "title": "Core cutting",
+        "blurb": "Clean circular openings through slab and wall for pipe and duct runs."
+      },
+      {
+        "title": "Deep tube well",
+        "blurb": "Boring, casing and pump installation for year-round supply."
+      },
+      {
+        "title": "Swimming pool",
+        "blurb": "Pool plumbing, filtration and circulation lines."
+      },
+      {
+        "title": "Damp proofing",
+        "blurb": "Treating rising and lateral damp before it reaches the finish."
+      },
+      {
+        "title": "Water proofing",
+        "blurb": "Roofs, bathrooms, tanks and basements sealed against leaks."
+      },
+      {
+        "title": "Electric work",
+        "blurb": "Wiring, boards and fittings, coordinated with the plumbing run."
+      },
+      {
+        "title": "Painting work",
+        "blurb": "Interior and exterior, including preparation and putty."
+      },
+      {
+        "title": "High glass work",
+        "blurb": "Glass partitions, shower enclosures and façade glazing."
+      },
+      {
+        "title": "Civil work",
+        "blurb": "Masonry, plaster and structural repair alongside the trades above."
+      }
+    ]
   },
   "bn": {
     "topbar": "খুচরা ও পাইকারি · সপ্তাহে ৭ দিন খোলা, সকাল ৭টা – রাত ১০টা",
@@ -335,12 +397,13 @@
       "home": "হোম",
       "products": "পণ্য",
       "about": "পরিচিতি",
-      "contact": "যোগাযোগ"
+      "contact": "যোগাযোগ",
+      "services": "সেবা"
     },
     "heroBadge": "২০০৩ সাল থেকে ঢাকায় সরবরাহ",
-    "heroA": "পাইপ, ফিটিংস ও স্যানিটারি সামগ্রী —",
-    "heroB": "আজই স্টকে আছে।",
-    "heroBody": "বাসা, অ্যাপার্টমেন্ট, অফিস ও নির্মাণ প্রকল্পের জন্য সি-পিভিসি, ইউ-পিভিসি ও প্রেশার পিভিসি-ইউ পাইপ, ফিটিংস, বাথরুম ফিটিংস এবং প্লাম্বিং সামগ্রী। ঠিকাদারদের জন্য পাইকারি দাম, গ্রাহকদের জন্য একটি পিসও।",
+    "heroA": "পাইপ, ফিটিংস ও",
+    "heroB": "স্যানিটারি সামগ্রী",
+    "heroBody": "বাসা, অ্যাপার্টমেন্ট, অফিস ও নির্মাণ প্রকল্পের জন্য সি-পিভিসি, ইউ-পিভিসি ও প্রেশার পিভিসি-ইউ পাইপ, ফিটিংস, বাথরুম ফিটিংস এবং প্লাম্বিং সামগ্রী।",
     "ctaOrder": "হোয়াটসঅ্যাপে অর্ডার করুন",
     "ctaQuote": "দাম জানতে চাই",
     "orderMsg": "আসসালামু আলাইকুম, ইরা স্যানিটারি — আমি প্লাম্বিং সামগ্রী অর্ডার করতে চাই।",
@@ -398,16 +461,16 @@
     ],
     "areasTitle": "ঢাকা ও এর বাইরে ডেলিভারি",
     "bandTitle": "আপনার মালের তালিকা পাঠান — একই দিনে দাম জানিয়ে দেব।",
-    "bandBody": "ড্রয়িংয়ের ছবি বা হাতে লেখা তালিকা হলেও চলবে। রামপুরা, মালিবাগ, বাড্ডা, বসুন্ধরা ও বৃহত্তর ঢাকায় ডেলিভারি।",
+    "bandBody": "ড্রয়িংয়ের ছবি বা হাতে লেখা তালিকা হলেও চলবে।",
     "bandWa": "হোয়াটসঅ্যাপে তালিকা পাঠান",
     "bandCall": "কল করুন ০১৭১১-৯৫৪০৯৪",
     "productsIntro": "নিচের সব পণ্যই খুচরা ও পাইকারি — দুইভাবেই পাওয়া যায়। সাইজ ও ব্র্যান্ড স্টক অনুযায়ী পরিবর্তিত হয়; বর্তমান স্টক ও দাম জানতে আমাদের মেসেজ করুন।",
     "notListed": "তালিকায় নেই এমন কিছু দরকার?",
     "notListedBody": "চাহিদা অনুযায়ী প্রায় সব প্লাম্বিং ও স্যানিটারি পণ্য আমরা এনে দিই। স্পেসিফিকেশন ও পরিমাণ পাঠান।",
     "aboutTitle": "আমাদের সম্পর্কে",
-    "aboutP1": "২০০৩ সালের জানুয়ারি থেকে ইরা স্যানিটারি অ্যান্ড প্লাম্বিং সলিউশনস রামপুরা, ঢাকা থেকে স্যানিটারি ও প্লাম্বিং সামগ্রী সরবরাহ করছে। পাড়ার ছোট দোকান থেকে শুরু করে আজ শহরের ঠিকাদার, ডেভেলপার ও গ্রাহকরা পাইপ ও বাথরুম ফিটিংসের জন্য আমাদের ওপর ভরসা করেন।",
+    "aboutP1": "২০০৩ সালের সেপ্টেম্বর থেকে ইরা স্যানিটারি অ্যান্ড প্লাম্বিং সলিউশনস রামপুরা, ঢাকা থেকে স্যানিটারি ও প্লাম্বিং সামগ্রী সরবরাহ করছে। পাড়ার ছোট দোকান থেকে শুরু করে আজ শহরের ঠিকাদার, ডেভেলপার ও গ্রাহকরা পাইপ ও বাথরুম ফিটিংসের জন্য আমাদের ওপর ভরসা করেন।",
     "aboutP2": "সি-পিভিসি, ইউ-পিভিসি ও প্রেশার পিভিসি-ইউ পাইপ-ফিটিংস, বাথরুম ফিটিংস ও প্লাম্বিং সামগ্রী আমরা সবসময় স্টকে রাখি — যাতে সকাল ৯টায় থেমে যাওয়া কাজ ১১টার মধ্যেই আবার চলে। খুচরা গ্রাহকও পাইকারি ক্রেতার মতো একই পণ্য ও একই পরামর্শ পান।",
-    "aboutP3": "আমাদের দোকান সপ্তাহের সাত দিনই সকাল ৭টা থেকে রাত ১০টা পর্যন্ত খোলা; ডেলিভারি রাত ৯টা পর্যন্ত এবং অনলাইন অর্ডারের পিকআপ রাত ৮টা পর্যন্ত।",
+    "aboutP3": "আমাদের দোকান সপ্তাহের সাত দিনই সকাল ৭টা থেকে রাত ১০টা পর্যন্ত খোলা; ডেলিভারি রাত ৯টা পর্যন্ত। অনলাইন অর্ডার ২৪ ঘণ্টা।",
     "stats": [
       {
         "value": "২০০৩",
@@ -454,7 +517,7 @@
     ],
     "contactTitle": "যোগাযোগ ও দাম",
     "storeLabel": "দোকান",
-    "address": "৫/১, পশ্চিম হাজীপাড়া, ডি.আই.টি রোড, রামপুরা, ঢাকা-১২১৯, বাংলাদেশ",
+    "address": "৫/১, পশ্চিম হাজীপাড়া (চৌধুরী পাড়া), ডি.আই.টি রোড, রামপুরা, ঢাকা-১২১৯, বাংলাদেশ",
     "directions": "পথনির্দেশ দেখুন →",
     "callLabel": "কল",
     "chatNow": "চ্যাট করুন",
@@ -478,7 +541,7 @@
         "value": "২৪ ঘণ্টা"
       }
     ],
-    "hoursNote": "সরকারি ছুটিসহ প্রতিদিন খোলা। সাইট ভিজিটের জন্য আগে অ্যাপয়েন্টমেন্ট নিতে হয়।",
+    "hoursNote": "সরকারি ছুটিসহ প্রতিদিন খোলা। শুক্রবার জুমার নামাজের সময় কিছুক্ষণ বন্ধ থাকে। সাইট ভিজিটের জন্য আগে অ্যাপয়েন্টমেন্ট নিতে হয়।",
     "formTitle": "দাম জানতে চাই",
     "formBody": "নিচের তথ্য দিন — আপনার বিবরণসহ হোয়াটসঅ্যাপ মেসেজ তৈরি হয়ে যাবে।",
     "fName": "আপনার নাম",
@@ -489,7 +552,7 @@
     "phList": "যেমন: ১ ইঞ্চি সি-পিভিসি পাইপ × ৪০, ১ ইঞ্চি এলবো × ৬০, বাড্ডায় ডেলিভারি",
     "formSend": "হোয়াটসঅ্যাপে পাঠান",
     "formFoot": "অথবা কল করুন ০১৭১১-৯৫৪০৯৪ বা ০১৬১১-৯৫৪০৯৪ — বেশিরভাগ তালিকার দাম একই দিনে জানিয়ে দিই।",
-    "footerBlurb": "৫/১, পশ্চিম হাজীপাড়া, ডি.আই.টি রোড, রামপুরা, ঢাকা-১২১৯, বাংলাদেশ। ২০০৩ সাল থেকে স্যানিটারি ও প্লাম্বিং পণ্যের খুচরা ও পাইকারি সরবরাহকারী।",
+    "footerBlurb": "৫/১, পশ্চিম হাজীপাড়া (চৌধুরী পাড়া), ডি.আই.টি রোড, রামপুরা, ঢাকা-১২১৯, বাংলাদেশ। ২০০৩ সাল থেকে স্যানিটারি ও প্লাম্বিং পণ্যের খুচরা ও পাইকারি সরবরাহকারী।",
     "footerPages": "পেজ",
     "footerReach": "যোগাযোগ",
     "footerHours": "প্রতিদিন খোলা ৭:০০ – ২২:০০ · ডেলিভারি ২১:০০ পর্যন্ত",
@@ -520,7 +583,7 @@
       {
         "title": "সি-পিভিসি পাইপ ও ফিটিংস",
         "blurb": "প্রেশার পানি সরবরাহ লাইন — গরম, ঠান্ডা ও মেইন।",
-        "long": "ঘরের ভেতরের গরম ও ঠান্ডা পানির লাইনের জন্য সিপিভিসি পাইপ — অ্যাপার্টমেন্টের প্লাম্বিং, গিজার লাইন ও বাথরুম রাইজারের স্বাভাবিক পছন্দ। সলভেন্ট জোড়া, মিল সাইজে পূর্ণ ফিটিংস।",
+        "long": "ঘরের ভেতরের গরম ও ঠান্ডা পানির লাইনের জন্য সিপিভিসি পাইপ — অ্যাপার্টমেন্টের প্লাম্বিং, গিজার লাইন ও বাথরুম রাইজারের স্বাভাবিক পছন্দ। আঠা দিয়ে জোড়া, মিল সাইজে পূর্ণ ফিটিংস।",
         "items": [
           "পাইপ",
           "এলবো ৯০°/৪৫°",
@@ -531,7 +594,8 @@
           "ইউনিয়ন",
           "গেট ও বল ভালভ",
           "ট্যাংক কানেক্টর",
-          "আঠা ও সলভেন্ট সিমেন্ট"
+          "আঠা",
+          "ইত্যাদি"
         ],
         "size": "১/২\" – ৬\"",
         "slug": "cpvc"
@@ -549,7 +613,10 @@
           "ডোর বেন্ড",
           "রিডিউসার",
           "পাইপ ক্লিপ ও ক্ল্যাম্প",
-          "সলভেন্ট সিমেন্ট"
+          "সলভেন্ট সিমেন্ট",
+          "টিউবওয়েল",
+          "ভেন্ট",
+          "ইত্যাদি"
         ],
         "size": "১.২৫\" – ১২\"",
         "slug": "upvc"
@@ -566,7 +633,8 @@
           "এন্ড ক্যাপ",
           "ফ্ল্যাঞ্জ অ্যাডাপ্টার",
           "থ্রেডেড অ্যাডাপ্টার",
-          "সলভেন্ট সিমেন্ট"
+          "আঠা",
+          "ইত্যাদি"
         ],
         "size": "১/২\" – ৪\"",
         "slug": "pressure"
@@ -574,7 +642,7 @@
       {
         "title": "বাথরুম ফিটিংস",
         "blurb": "ট্যাপ, মিক্সার, শাওয়ার ও বাথরুম হার্ডওয়্যার।",
-        "long": "নতুন কাজ ও বদলানোর জন্য বাথরুম ফিটিংস — একটি বিব কক থেকে পুরো অ্যাপার্টমেন্টের সেট পর্যন্ত। ক্রোম-প্লেটেড ব্রাস ও সাশ্রয়ী রেঞ্জ পাশাপাশি, বাজেট অনুযায়ী বেছে নিন।",
+        "long": "নতুন, পুরাতন ও সংস্কারের কাজের জন্য বাথরুমের বিভিন্ন ফিনিশিং মালামাল — ক্রোম-প্লেটেড ব্রাস ও সাশ্রয়ী রেঞ্জ পাশাপাশি, সাশ্রয়ী বাজেট অনুযায়ী বেছে নিন।",
         "items": [
           "শাওয়ার মিক্সার",
           "বাথ মিক্সার",
@@ -589,7 +657,8 @@
           "হেলথ ফসেট",
           "অ্যাঙ্গেল ভালভ",
           "বোতল ট্র্যাপ",
-          "বেসিন ওয়েস্ট"
+          "বেসিন ওয়েস্ট",
+          "ইত্যাদি"
         ],
         "size": "ব্রাস ও সিপি ফিনিশ",
         "slug": "bathroom-fittings"
@@ -609,10 +678,12 @@
           "গ্লাস শেলফ",
           "গ্রেটিং",
           "পিটিএফই / টেফলন টেপ",
+          "ওয়াটার হিটার / ডব্লিউসি কানেক্টর",
           "পানির ট্যাংক কানেক্টর",
           "ফ্লোট ভালভ",
           "ফ্লেক্সিবল হোস",
-          "পাইপ ব্র্যাকেট ও ক্ল্যাম্প"
+          "পাইপ ব্র্যাকেট ও ক্ল্যাম্প",
+          "ইত্যাদি"
         ],
         "size": "হার্ডওয়্যার ও এসএস",
         "slug": "accessories"
@@ -620,14 +691,15 @@
       {
         "title": "সিরামিক সামগ্রী",
         "blurb": "কমোড, ইউরিনাল ও ওয়াশ বেসিন।",
-        "long": "বাসা, অ্যাপার্টমেন্ট ও বাণিজ্যিক ভবনের জন্য স্যানিটারি সিরামিক — সব ধরনের কমোড, ওয়াল ও ফ্লোর ইউরিনাল এবং ছোট থেকে বড় সব মাপের ওয়াশ বেসিন। রাফ-ইন মাপ জানালে আমরা মিলিয়ে দেব।",
+        "long": "বাসা, অ্যাপার্টমেন্ট ও বাণিজ্যিক ভবনের জন্য স্যানিটারি সিরামিক — সব মাউন্টিং সিস্টেমের কমোড, ওয়াল ও ফ্লোর ইউরিনাল এবং ছোট থেকে বড় সব মাপের ওয়াশ বেসিন। রাফ-ইন মাপ জানালে আমরা মিলিয়ে দেব।",
         "items": [
           "ওয়াল হ্যাংগিং কমোড",
           "ফ্লোর টাইপ কমোড",
           "লো কমোড",
           "ওয়াল ইউরিনাল",
           "ফ্লোর ইউরিনাল",
-          "সব ধরনের ওয়াশ বেসিন"
+          "সব ধরনের ওয়াশ বেসিন",
+          "ইত্যাদি"
         ],
         "size": "সিরামিক",
         "slug": "ceramic"
@@ -635,22 +707,74 @@
       {
         "title": "কিচেন সামগ্রী",
         "blurb": "সিংক, মিক্সার, চুলা ও কিচেন হার্ডওয়্যার।",
-        "long": "সিংক থেকে শুরু করে পুরো কিচেন — স্টেইনলেস স্টিল, ফাইবার ও সিরামিক বোল, সঙ্গে মিল মিক্সার ও ওয়েস্ট, আর চুলা, হুড ও আনুষঙ্গিক সামগ্রী।",
+        "long": "সিংক থেকে শুরু করে পুরো কিচেন — স্টেইনলেস স্টিল, ফাইবার ও সিরামিক সিংক, সঙ্গে মিল সিংক মিক্সার ও ওয়েস্ট, আর চুলা, কিচেন হুড ও আনুষঙ্গিক সামগ্রী।",
         "items": [
           "স্টেইনলেস স্টিল সিংক",
           "ফাইবার সিংক",
           "সিরামিক সিংক",
+          "স্মার্ট সিংক",
           "সব ধরনের সিংক মিক্সার",
           "সিংক ওয়েস্ট",
           "চুলা",
           "কিচেন হুড",
-          "কিচেন আনুষঙ্গিক সামগ্রী"
+          "কিচেন আনুষঙ্গিক সামগ্রী",
+          "ইত্যাদি"
         ],
         "size": "কিচেন",
         "slug": "kitchen"
       }
     ],
     "formErr": "দাম জানাতে মালের তালিকা অথবা ফোন নম্বর দিন।",
-    "emailLabel": "ইমেইল"
+    "emailLabel": "ইমেইল",
+    "bandDelivery": "ডেলিভারি —",
+    "servicesTitle": "আমাদের সেবাসমূহ",
+    "servicesAll": "সব সেবা দেখুন",
+    "servicesIntro": "ইরা শুধু দোকান নয় — আমরা কাজও করি। নিজস্ব টিম ও নিজের দোকানের মালামাল দিয়ে সরবরাহ ও ফিটিং। কাজের বিবরণ পাঠান, দাম জানিয়ে দেব।",
+    "services": [
+      {
+        "title": "প্লাম্বিং ও স্যানিটারি কাজ",
+        "blurb": "নতুন নির্মাণ, বদলানো ও মেরামতের সম্পূর্ণ কাজ — মালামালসহ।"
+      },
+      {
+        "title": "টাইলস, মার্বেল ও গ্রানাইট",
+        "blurb": "মেঝে, দেয়াল ও সিঁড়ির ফিনিশিং — মাপমতো কেটে বসানো।"
+      },
+      {
+        "title": "কোর কাটিং",
+        "blurb": "পাইপ ও ডাক্ট চালানোর জন্য স্ল্যাব ও দেয়ালে পরিষ্কার গোল ছিদ্র।"
+      },
+      {
+        "title": "ডিপ টিউবওয়েল",
+        "blurb": "বোরিং, কেসিং ও পাম্প বসানো — সারা বছরের পানি সরবরাহ।"
+      },
+      {
+        "title": "সুইমিং পুল",
+        "blurb": "পুলের প্লাম্বিং, ফিল্টার ও সার্কুলেশন লাইন।"
+      },
+      {
+        "title": "ড্যাম্প প্রুফিং",
+        "blurb": "ফিনিশিং নষ্ট হওয়ার আগেই স্যাঁতসেঁতে ভাব বন্ধ করা।"
+      },
+      {
+        "title": "ওয়াটার প্রুফিং",
+        "blurb": "ছাদ, বাথরুম, ট্যাংক ও বেসমেন্ট — লিক বন্ধ করে সিল করা।"
+      },
+      {
+        "title": "ইলেকট্রিক কাজ",
+        "blurb": "ওয়্যারিং, বোর্ড ও ফিটিংস — প্লাম্বিং লাইনের সঙ্গে মিলিয়ে।"
+      },
+      {
+        "title": "পেইন্টিং কাজ",
+        "blurb": "ভেতর ও বাইরের রং — প্রস্তুতি ও পুটিসহ।"
+      },
+      {
+        "title": "হাই গ্লাস কাজ",
+        "blurb": "গ্লাস পার্টিশন, শাওয়ার এনক্লোজার ও ফ্যাসাড গ্লেজিং।"
+      },
+      {
+        "title": "সিভিল কাজ",
+        "blurb": "গাঁথুনি, প্লাস্টার ও কাঠামো মেরামত — উপরের কাজগুলোর সঙ্গে।"
+      }
+    ]
   }
 }

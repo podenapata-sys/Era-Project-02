@@ -396,3 +396,38 @@ table { border-collapse: collapse; width: 100%; }
   .card, .stats, .chips li { border-color: #999; background: #fff; }
   .band { background: #fff; color: #000; }
 }
+
+/* ==========================================================================
+   Services — the contracting side of the business
+   ========================================================================== */
+
+.svc-strip { border-top: 1px solid var(--line); }
+.svc-strip .section-head h2 { display: flex; align-items: center; gap: 11px; }
+.svc-strip .section-head h2 .ic { color: var(--amber); width: 26px; height: 26px; }
+.svc-strip .lede { margin-bottom: 22px; }
+.chips--svc li { border-color: var(--line-2); color: var(--text); font-family: var(--font-display); font-weight: 600; }
+
+.svc-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px); padding-block: clamp(32px, 4vw, 56px);
+}
+.svc {
+  padding: 24px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r); transition: border-color .18s ease, transform .18s ease;
+}
+.svc:hover { border-color: var(--amber); transform: translateY(-3px); }
+.svc__n { margin: 0 0 10px; font-family: var(--font-display); font-size: 12px; font-weight: 800; letter-spacing: .16em; color: var(--amber); }
+.svc h2 { margin: 0 0 6px; font-size: 19px; font-weight: 700; }
+.svc p { margin: 0; font-size: 14.5px; color: var(--muted-2); }
+
+/* A trailing "etc." closes a list; it is not a product, so it reads quieter. */
+.chips li.is-etc { background: transparent; border-style: dashed; color: var(--muted-2); font-style: italic; }
+
+@media (max-width: 1024px) {
+  .svc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Five nav items no longer fit beside the brand and the WhatsApp button. */
+  .nav__list { gap: 2px; }
+}
+@media (max-width: 640px) {
+  .svc-grid { grid-template-columns: 1fr; }
+}
