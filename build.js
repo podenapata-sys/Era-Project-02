@@ -286,11 +286,26 @@ function productsPage(t) {
 }
 
 function servicesPage(t) {
-  const cards = t.services.map((sv, i) => `
-      <article class="svc">
-        <p class="svc__n">${String(i + 1).padStart(2, '0')}</p>
-        <h2>${esc(sv.title)}</h2>
-        <p>${esc(sv.blurb)}</p>
+  // Everything ERA offers, supply first then the trades they carry out.
+  const supply = t.categories.map(c => `
+      <a class="cat-card" href="products.html#${attr(c.slug)}">
+        ${photoSlot(c.title, 'slot--card')}
+        <div class="cat-card__body">
+          <p class="cat-card__size">${esc(c.size)}</p>
+          <h3>${esc(c.title)}</h3>
+          <p>${esc(c.blurb)}</p>
+          <span class="link-more">${esc(t.seeAll)} ${ICONS.arrow}</span>
+        </div>
+      </a>`).join('');
+
+  const works = t.services.map((sv, i) => `
+      <article class="svc" id="${attr(sv.slug)}">
+        ${photoSlot(sv.title, 'slot--svc')}
+        <div class="svc__body">
+          <p class="svc__n">${String(i + 1).padStart(2, '0')}</p>
+          <h3>${esc(sv.title)}</h3>
+          <p>${esc(sv.blurb)}</p>
+        </div>
       </article>`).join('');
 
   return `
@@ -301,9 +316,25 @@ function servicesPage(t) {
   </div>
 </section>
 
-<div class="shell">
-  <div class="svc-grid">${cards}</div>
-</div>
+<section class="section">
+  <div class="shell">
+    <header class="section-head">
+      <h2>${esc(t.supplyTitle)}</h2>
+      <a class="link-more" href="products.html">${esc(t.seeAll)} ${ICONS.arrow}</a>
+    </header>
+    <div class="cat-grid">${supply}</div>
+  </div>
+</section>
+
+<section class="section works">
+  <div class="shell">
+    <header class="section-head">
+      <h2>${ICONS.tools}${esc(t.worksTitle)}</h2>
+    </header>
+    <p class="lede">${esc(t.worksIntro)}</p>
+    <div class="svc-grid">${works}</div>
+  </div>
+</section>
 
 <section class="band">
   <div class="shell band__inner">

@@ -409,16 +409,32 @@ table { border-collapse: collapse; width: 100%; }
 
 .svc-grid {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(16px, 2vw, 24px); padding-block: clamp(32px, 4vw, 56px);
+  gap: clamp(16px, 2vw, 24px);
 }
+/* Each trade gets a photo. Until the client sends them the slot holds a
+   labelled placeholder at the right ratio, so nothing reflows on swap. */
 .svc {
-  padding: 24px; background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--r); transition: border-color .18s ease, transform .18s ease;
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  transition: border-color .18s ease, transform .18s ease;
 }
 .svc:hover { border-color: var(--amber); transform: translateY(-3px); }
-.svc__n { margin: 0 0 10px; font-family: var(--font-display); font-size: 12px; font-weight: 800; letter-spacing: .16em; color: var(--amber); }
-.svc h2 { margin: 0 0 6px; font-size: 19px; font-weight: 700; }
-.svc p { margin: 0; font-size: 14.5px; color: var(--muted-2); }
+.svc:hover .slot--svc { border-color: var(--amber); }
+.slot--svc {
+  min-height: 0; aspect-ratio: 4 / 3; padding: 16px;
+  border-radius: 0; border-width: 0 0 1px 0; border-color: var(--line);
+}
+.svc__body { display: flex; flex-direction: column; gap: 5px; padding: 20px 22px 24px; }
+.svc__n { margin: 0; font-family: var(--font-display); font-size: 12px; font-weight: 800; letter-spacing: .16em; color: var(--amber); }
+.svc h3 { margin: 0; font-size: 19px; font-weight: 700; }
+.svc p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--muted-2); }
+
+/* The works block sits on the alternate ground so it reads as its own half
+   of the page, separate from the supply grid above it. */
+.works { background: var(--bg-2); border-block: 1px solid var(--line); }
+.works .section-head h2 { display: flex; align-items: center; gap: 11px; }
+.works .section-head h2 .ic { color: var(--amber); width: 26px; height: 26px; }
+.works .lede { margin-bottom: 26px; }
 
 /* A trailing "etc." closes a list; it is not a product, so it reads quieter. */
 .chips li.is-etc { background: transparent; border-style: dashed; color: var(--muted-2); font-style: italic; }
