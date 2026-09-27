@@ -34,7 +34,13 @@ const esc = s => String(s ?? '')
 const attr = esc;
 const primary = biz.phones.find(p => p.primary) || biz.phones[0];
 const addressLine = `${biz.address.street}, ${biz.address.locality}, ${biz.address.region}-${biz.address.postalCode}, ${biz.address.countryName}`;
-const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(`${biz.name}, ${addressLine}`);
+// The client's own Google listing. Previously this was a name+address search,
+// which asks Google to guess which pin is meant — on a road of numbered plots
+// that can land somewhere else entirely.
+const mapsUrl = biz.maps
+  ? biz.maps.placeUrl
+  : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(`${biz.name}, ${addressLine}`);
+const directionsUrl = (biz.maps && biz.maps.directionsUrl) || mapsUrl;
 const waLink = (text, phone) => `https://wa.me/${(phone || primary).whatsapp}?text=${encodeURIComponent(text)}`;
 
 /* ------------------------------------------------------------------ icons */
@@ -421,7 +427,7 @@ function contactPage(t, lang) {
   <div class="card">
     <h2 class="card__label">${esc(t.storeLabel)}</h2>
     <p class="card__addr">${esc(t.address)}</p>
-    <a class="link-more" href="${attr(mapsUrl)}" target="_blank" rel="noopener">${esc(t.directions)}</a>
+    <a class="link-more" href="${attr(directionsUrl)}" target="_blank" rel="noopener">${esc(t.directions)}</a>
 
     <h2 class="card__label">${esc(t.callLabel)}</h2>
     <ul class="card__list">${phones}</ul>
@@ -522,6 +528,10 @@ function jsonLd(t, lang) {
       postalCode: biz.address.postalCode,
       addressCountry: biz.address.country,
     },
+    ...(biz.maps ? {
+      geo: { '@type': 'GeoCoordinates', latitude: biz.maps.lat, longitude: biz.maps.lng },
+      hasMap: biz.maps.placeUrl,
+    } : {}),
     contactPoint: biz.phones.map(p => ({
       '@type': 'ContactPoint', telephone: p.tel, contactType: 'sales',
       availableLanguage: ['en', 'bn'],

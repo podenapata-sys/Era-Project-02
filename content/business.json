@@ -61,5 +61,12 @@
   "images": {
     "logo": "assets/img/era-logo.png",
     "banner": "assets/img/era-banner.jpg"
+  },
+  "maps": {
+    "cid": "4041373625017767210",
+    "lat": "23.7562877",
+    "lng": "90.4161182",
+    "placeUrl": "https://maps.google.com/?cid=4041373625017767210",
+    "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=23.7562877%2C90.4161182"
   }
 }
