@@ -155,6 +155,34 @@ table { border-collapse: collapse; width: 100%; }
 .slot--cat { min-height: 260px; }
 .slot--why, .slot--about { min-height: 300px; }
 
+/* The real photographs, once they exist. Each variant matches the placeholder
+   it replaces — same corners, same edges, same position in its grid — so a page
+   with nine photos and twelve placeholders still reads as one page rather than
+   two half-finished ones. Kept together here, rather than beside each component,
+   because what matters is that they agree with the .slot rules above.
+
+   aspect-ratio does the work the placeholders' min-height did: the box is the
+   right shape before the image has loaded, so nothing moves as they arrive. The
+   files are already cut to these ratios, and object-fit: cover is insurance
+   against a hand-placed file that is not. */
+.photo {
+  display: block; overflow: hidden; border-radius: var(--r-lg);
+  background: var(--bg-2);
+}
+.photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+.photo--hero { aspect-ratio: 4 / 3; }
+.photo--why, .photo--about { aspect-ratio: 5 / 4; }
+.photo--cat { aspect-ratio: 4 / 3; }
+.photo--trade { aspect-ratio: 16 / 10; }
+.photo--card {
+  aspect-ratio: 16 / 9; border-radius: var(--r) var(--r) 0 0;
+}
+.photo--svc {
+  aspect-ratio: 4 / 3; border-radius: 0;
+  border-bottom: 1px solid var(--line);
+}
+
 /* ---------- Hero ---------- */
 .hero { padding-block: clamp(36px, 5vw, 66px) clamp(30px, 4vw, 48px); }
 .hero__grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(28px, 4vw, 52px); align-items: center; }

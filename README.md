@@ -80,18 +80,41 @@ entry is the one the form and the CTAs use.
 
 ## Photography — the one thing still outstanding
 
-Six photo slots render as labelled placeholders. They are **not** broken images;
-they're sized to hold the real thing. Replace `photoSlot(...)` in `build.js` with
-an `<img>` as each photo arrives:
+Twenty-one photographs cover the site: three of the shop, one per product
+category, one per trade. Until each one arrives its slot renders as a labelled
+placeholder. Those are **not** broken images — they are the right size and shape
+for the photo that belongs there, so a half-delivered set still looks deliberate.
 
-| Slot | Shot needed | Ratio |
-| --- | --- | --- |
-| Hero | The shop front or a wall of pipe stock | ~4:3 |
-| Why us | The counter, or a delivery going out | ~5:4 |
-| About | Shopfront or the team | ~5:4 |
-| 7 × category | One representative shot per category | ~4:3 |
+Nothing in `build.js` needs editing. Drop the files in and run one command:
 
-Phone photos in daylight are fine. Shot straight-on, in focus, no flash.
+```sh
+mkdir photos-inbox                            # once
+python3 tools/add-photos.py --status          # what is missing, by filename
+# ... put the photographs in photos-inbox/, named as --status lists them
+pip install pillow
+python3 tools/add-photos.py                   # cut, compress, strip EXIF
+node build.js
+```
+
+`--status` prints the exact filenames it wants. Send that list to the client:
+naming the files before sending beats renaming twenty afterwards. Partial
+deliveries are fine — run it as often as photos turn up, and each one appears on
+the site while the rest keep their placeholders.
+
+The script cuts every photo to each shape it is needed at (a category photo is a
+card on two pages and a taller block on a third), writes WebP at two or three
+widths plus a JPEG fallback, and **strips EXIF on the way out** — phone photos
+carry GPS coordinates, and those should not be published as a side effect of
+sending a picture. It also applies the EXIF rotation flag before cropping, which
+is what stops photos shot in portrait from going up sideways.
+
+Alt text lives in `content/photos.json`. Only the three shop photos need an
+entry; a category or trade photo describes itself with its title from
+`copy.json`, in whichever language the page is in. Add a key there to say
+something better, or to move the crop with `"focus": [x, y]`.
+
+Phone photos in daylight are fine. Shot straight-on, in focus, no flash. Photos
+of work already done are better than anything staged.
 
 ## Deploying
 

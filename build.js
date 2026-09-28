@@ -74,9 +74,67 @@ function logoMark(base) {
   return `<span class="logo"><img src="${base}${biz.images.logo}" alt="" width="44" height="44" loading="eager" decoding="async"></span>`;
 }
 
-function photoSlot(label, cls) {
-  // Client photography is pending; these keep the layout honest until it lands.
-  return `<div class="slot${cls ? ' ' + cls : ''}" role="img" aria-label="${attr(label)}"><span>${esc(label)}</span></div>`;
+/* Every shape a photograph is rendered at, and the widths written for it. The
+   same table exists in tools/add-photos.py, which is what actually cuts the
+   files; change one and you must change the other. Nothing here can read that
+   script to confirm it, but a width missing from disk is simply left out of the
+   srcset below, so a disagreement degrades rather than breaking the page. */
+const RENDITIONS = {
+  hero:  { w: 4,  h: 3,  widths: [720, 1440], sizes: '(max-width: 900px) 100vw, 46vw' },
+  wide:  { w: 5,  h: 4,  widths: [640, 1280], sizes: '(max-width: 900px) 100vw, 42vw' },
+  card:  { w: 16, h: 9,  widths: [400, 800],  sizes: '(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 25vw' },
+  sq43:  { w: 4,  h: 3,  widths: [400, 800, 1120], sizes: '(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw' },
+  trade: { w: 16, h: 10, widths: [720, 1440], sizes: '(max-width: 900px) 100vw, 62vw' },
+};
+
+const PHOTO_DIR = path.join(ROOT, 'src', 'assets', 'img', 'photos');
+const photos = fs.existsSync(path.join(ROOT, 'content', 'photos.json'))
+  ? require('./content/photos.json') : {};
+
+/* The alt text for a photograph. Only the three shop photos need their own
+   entry in photos.json; a category or trade photo describes itself with the
+   title already in copy.json, in whichever language the page is being written
+   in, so there is nothing to translate twice and nothing to fall out of step. */
+function photoAlt(key, lang, label) {
+  const alt = (photos[key] || {}).alt;
+  return (alt && alt[lang]) || label;
+}
+
+/* A photograph where one exists, and the labelled placeholder where one does
+   not. The client's photography arrives in instalments, so this has to read
+   well in both states and at every point between: a slot lights up the moment
+   its file is on disk, and the rest keep the layout honest meanwhile.
+
+   The placeholder branch emits exactly what it always did, byte for byte, so
+   this can ship before a single photograph exists without touching the site. */
+function photo(key, rend, lang, base, label, cls) {
+  const spec = RENDITIONS[rend];
+  const stem = `${key}-${rend}-`;
+  const have = spec.widths.filter(w =>
+    fs.existsSync(path.join(PHOTO_DIR, `${stem}${w}.webp`)));
+
+  if (!have.length) {
+    return `<div class="slot${cls ? ' ' + cls : ''}" role="img" aria-label="${attr(label)}"><span>${esc(label)}</span></div>`;
+  }
+
+  const url = (w, ext) => `${base}assets/img/photos/${stem}${w}.${ext}`;
+  const webp = have.map(w => `${url(w, 'webp')} ${w}w`).join(', ');
+  const width = have[0];
+  const height = Math.round(width * spec.h / spec.w);
+
+  /* The hero is the largest image above the fold on the busiest page, so it is
+     the one worth fetching early; everything else waits until it is near the
+     viewport. width and height are on the img so the box is reserved before the
+     bytes arrive and the page does not jump as each one lands. */
+  const eager = cls === 'slot--hero';
+  const loading = eager
+    ? 'loading="eager" fetchpriority="high"'
+    : 'loading="lazy"';
+
+  return `<picture class="photo${cls ? ' photo--' + cls.replace('slot--', '') : ''}">
+        <source type="image/webp" srcset="${attr(webp)}" sizes="${attr(spec.sizes)}">
+        <img src="${attr(url(width, 'jpg'))}" alt="${attr(photoAlt(key, lang, label))}"
+         width="${width}" height="${height}" ${loading} decoding="async"></picture>`;
 }
 
 /* Google review QR. The SVG is generated at build time by tools/gen-review-qr.py
@@ -214,7 +272,7 @@ function homePage(t, lang, base) {
 
   const cards = t.categories.map(c => `
       <a class="cat-card" href="products.html#${attr(c.slug)}">
-        ${photoSlot(c.title, 'slot--card')}
+        ${photo('cat-' + c.slug, 'card', lang, base, c.title, 'slot--card')}
         <div class="cat-card__body">
           <p class="cat-card__size">${esc(c.size)}</p>
           <h3>${esc(c.title)}</h3>
@@ -243,7 +301,7 @@ function homePage(t, lang, base) {
       <ul class="facts">${facts}</ul>
     </div>
     <div class="hero__media">
-      ${photoSlot(t.nav.products + ' — ' + t.supplyTitle, 'slot--hero')}
+      ${photo('stock', 'hero', lang, base, t.nav.products + ' — ' + t.supplyTitle, 'slot--hero')}
     </div>
   </div>
 </section>
@@ -268,7 +326,7 @@ function homePage(t, lang, base) {
       <h2>${esc(t.whyTitle)}</h2>
       <ul class="reasons">${reasons}</ul>
     </div>
-    ${photoSlot(t.whyTitle, 'slot--why')}
+    ${photo('counter', 'wide', lang, base, t.whyTitle, 'slot--why')}
   </div>
 </section>
 
@@ -302,10 +360,10 @@ function homePage(t, lang, base) {
 </section>`;
 }
 
-function productsPage(t) {
+function productsPage(t, lang, base) {
   const blocks = t.categories.map((c, i) => `
     <article class="cat" id="${attr(c.slug)}">
-      ${photoSlot(c.title, 'slot--cat')}
+      ${photo('cat-' + c.slug, 'sq43', lang, base, c.title, 'slot--cat')}
       <div class="cat__body">
         <p class="cat__n"><span>${String(i + 1).padStart(2, '0')}</span> ${esc(c.size)}</p>
         <h2>${esc(c.title)}</h2>
@@ -338,11 +396,11 @@ function productsPage(t) {
 </section>`;
 }
 
-function servicesPage(t) {
+function servicesPage(t, lang, base) {
   // Everything ERA offers, supply first then the trades they carry out.
   const supply = t.categories.map(c => `
       <a class="cat-card" href="products.html#${attr(c.slug)}">
-        ${photoSlot(c.title, 'slot--card')}
+        ${photo('cat-' + c.slug, 'card', lang, base, c.title, 'slot--card')}
         <div class="cat-card__body">
           <p class="cat-card__size">${esc(c.size)}</p>
           <h3>${esc(c.title)}</h3>
@@ -354,7 +412,7 @@ function servicesPage(t) {
   const works = t.services.map((sv, i) => `
       <article class="svc" id="${attr(sv.slug)}">
         <a class="svc__link" href="${TRADE_DIR}/${attr(sv.slug)}/">
-          ${photoSlot(sv.title, 'slot--svc')}
+          ${photo('trade-' + sv.slug, 'sq43', lang, base, sv.title, 'slot--svc')}
           <div class="svc__body">
             <p class="svc__n">${String(i + 1).padStart(2, '0')}</p>
             <h3>${esc(sv.title)}</h3>
@@ -432,7 +490,7 @@ function tradePage(t, lang, base, slug) {
 </section>
 
 <div class="shell trade__grid">
-  ${photoSlot(sv.title, 'slot--trade')}
+  ${photo('trade-' + slug, 'trade', lang, base, sv.title, 'slot--trade')}
   <div class="trade__side">
     <h2>${ICONS.pin}${esc(t.tradeAreasTitle)}</h2>
     <ul class="chips">${areas}</ul>
@@ -482,7 +540,7 @@ function aboutPage(t, lang, base) {
     <p>${esc(t.aboutP2)}</p>
     <p>${esc(t.aboutP3)}</p>
   </div>
-  ${photoSlot(t.aboutTitle, 'slot--about')}
+  ${photo('shopfront', 'wide', lang, base, t.aboutTitle, 'slot--about')}
 </section>
 
 <section class="section">
@@ -754,6 +812,47 @@ ${footer(t, lang, base, page)}
 /* ------------------------------------------------------------------- main */
 const RENDER = { home: homePage, products: productsPage, services: servicesPage, about: aboutPage, contact: contactPage, trade: tradePage };
 
+/* photos.json is keyed by slot, and those keys are built from the slugs in
+   copy.json. Rename a slug there and the entry here is orphaned: the photo goes
+   on shipping, but with the wrong alt text or no longer cropped where it was
+   told to be — silently, and on a page nobody thinks to re-check. The street
+   address drifted exactly this way once and reached the footer. Refuse instead. */
+function checkPhotos() {
+  const known = new Set(['shopfront', 'counter', 'stock']);
+  for (const c of copy.en.categories) known.add('cat-' + c.slug);
+  for (const sv of copy.en.services) known.add('trade-' + sv.slug);
+
+  for (const [key, entry] of Object.entries(photos)) {
+    if (key.startsWith('_')) continue;          // _readme and friends
+    if (!known.has(key)) {
+      throw new Error(`content/photos.json has "${key}", which is not a photo ` +
+        `slot on this site. Expected one of: ${[...known].join(', ')}.`);
+    }
+    const focus = (entry || {}).focus;
+    if (focus !== undefined && !(Array.isArray(focus) && focus.length === 2 &&
+        focus.every(n => typeof n === 'number' && n >= 0 && n <= 1))) {
+      throw new Error(`content/photos.json: "${key}".focus must be two numbers ` +
+        `between 0 and 1, like [0.5, 0.3].`);
+    }
+  }
+
+  /* A file whose name matches no slot is one the site will never load — almost
+     always a slug renamed with the photos left behind. Not fatal: it costs
+     nothing but the disk it sits on, and failing the build over it would block
+     a deploy for a stale file. */
+  if (fs.existsSync(PHOTO_DIR)) {
+    const orphans = fs.readdirSync(PHOTO_DIR).filter(f => {
+      const m = f.match(/^(.+)-([a-z0-9]+)-(\d+)\.(webp|jpg)$/);
+      return !m || !known.has(m[1]) || !RENDITIONS[m[2]];
+    });
+    if (orphans.length) {
+      console.warn(`NOTE: ${orphans.length} file(s) in src/assets/img/photos/ ` +
+        `match no slot and are never loaded: ${orphans.slice(0, 4).join(', ')}` +
+        `${orphans.length > 4 ? ', …' : ''}`);
+    }
+  }
+}
+
 function copyDir(from, to) {
   fs.mkdirSync(to, { recursive: true });
   for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
@@ -774,6 +873,7 @@ function build() {
         `is not in copy.en.${key} — update both, and the Bengali alongside it.`);
     }
   }
+  checkPhotos();
 
   fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });

@@ -1,0 +1,35 @@
+{
+  "_readme": [
+    "Alt text for the photographs, and optionally where to crop them.",
+    "Only the three shop photos need an entry: a category or trade photo",
+    "describes itself with its own title from copy.json, in whichever",
+    "language the page is in. Add a key here to say something better.",
+    "",
+    "  \"cat-ceramic\": {",
+    "    \"alt\": { \"en\": \"...\", \"bn\": \"...\" },",
+    "    \"focus\": [0.5, 0.3]",
+    "  }",
+    "",
+    "focus is where the centre of the crop sits, as a fraction of the",
+    "width and height. The default is [0.5, 0.42], slightly above centre.",
+    "Lower the second number to keep more of the top of the frame."
+  ],
+  "shopfront": {
+    "alt": {
+      "en": "The ERA Sanitary shop on D.I.T Road, Rampura",
+      "bn": "রামপুরা ডি.আই.টি রোডে ইরা স্যানিটারির দোকান"
+    }
+  },
+  "counter": {
+    "alt": {
+      "en": "The counter at ERA Sanitary, Rampura",
+      "bn": "ইরা স্যানিটারির কাউন্টার, রামপুরা"
+    }
+  },
+  "stock": {
+    "alt": {
+      "en": "Pipes and fittings in stock at ERA Sanitary",
+      "bn": "ইরা স্যানিটারিতে মজুত পাইপ ও ফিটিংস"
+    }
+  }
+}
