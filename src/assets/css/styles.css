@@ -447,3 +447,89 @@ table { border-collapse: collapse; width: 100%; }
 @media (max-width: 640px) {
   .svc-grid { grid-template-columns: 1fr; }
 }
+
+/* ==========================================================================
+   Open-now badge, trade pages, Google review block
+   ========================================================================== */
+
+/* The badge is display:flex, and a flex container ignores the [hidden]
+   attribute — the browser's UA rule is display:none, which any display
+   declaration overrides. Without this the badge would flash its empty shell
+   on every load and stay visible with JavaScript off. */
+[hidden] { display: none !important; }
+
+.openbadge {
+  display: inline-flex; align-items: center; gap: 7px; margin: 0 0 0 14px;
+  padding: 2px 10px 2px 8px; border-radius: 999px;
+  background: rgb(21 21 21 / 10%); color: var(--ink);
+  font-family: var(--font-display); font-weight: 700; font-size: 12px;
+  vertical-align: middle;
+}
+.openbadge::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor;
+}
+.openbadge.is-open::before { background: #0a7d32; }
+.openbadge.is-closed::before { background: #b3261e; }
+
+/* ---------- Trade pages ---------- */
+.crumb { margin: 0 0 10px; font-family: var(--font-display); font-size: 13px; font-weight: 600; }
+.crumb a { color: var(--amber); }
+.page-head .hero__actions { margin-top: 26px; }
+
+.trade__grid {
+  display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr);
+  gap: clamp(20px, 3vw, 40px); align-items: start;
+  padding-block: clamp(28px, 3.5vw, 48px);
+}
+.slot--trade { min-height: 0; aspect-ratio: 16 / 10; }
+.trade__side h2 {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 18px; font-weight: 700; margin-bottom: 14px;
+}
+.trade__side h2 .ic { color: var(--amber); }
+
+.trade__others { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.trade__others a {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface); color: var(--text);
+  font-family: var(--font-display); font-weight: 600; font-size: 14.5px;
+  transition: border-color .18s ease, color .18s ease;
+}
+.trade__others a:hover { border-color: var(--amber); color: var(--amber); }
+.trade__others .ic { width: 16px; height: 16px; flex: none; }
+
+/* The whole service card is the link now that each trade has a page. */
+.svc__link { display: flex; flex-direction: column; height: 100%; color: inherit; }
+.svc__link:hover { color: inherit; }
+.svc__link .link-more { margin-top: auto; padding-top: 10px; }
+
+/* ---------- Google review block ---------- */
+.review { display: flex; align-items: center; gap: 18px; }
+.review__qr {
+  flex: none; width: 132px; height: 132px; padding: 8px;
+  background: #fff; border-radius: var(--r-sm);
+}
+.review__title { margin: 0 0 6px; font-size: 17px; font-weight: 700; }
+.review__body p { margin: 0 0 10px; font-size: 14px; color: var(--muted-2); }
+.review--footer { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--line); }
+.review--footer .review__qr { width: 104px; height: 104px; }
+.review-band { background: var(--bg-2); border-block: 1px solid var(--line); }
+.review--page { max-width: 640px; }
+
+/* The honeypot: off-screen rather than display:none, because some bots skip
+   fields they can tell are not rendered. Never shown, never focusable. */
+.hp {
+  position: absolute; left: -9999px; width: 1px; height: 1px;
+  overflow: hidden; margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .trade__grid { grid-template-columns: 1fr; }
+  .trade__others { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .openbadge { margin-left: 10px; font-size: 11px; }
+  .trade__others { grid-template-columns: 1fr; }
+  .review { flex-direction: column; align-items: flex-start; gap: 14px; }
+}
