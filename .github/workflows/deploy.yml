@@ -51,7 +51,10 @@ jobs:
           test -f dist/bn/index.html
           test -f dist/services.html
           test -f dist/bn/services.html
-          test "$(find dist -name '*.html' | wc -l)" -eq 10
+          test -f dist/services/core-cutting/index.html
+          test -f dist/bn/services/core-cutting/index.html
+          # 5 flat pages x 2 languages, plus 11 trade pages x 2 languages.
+          test "$(find dist -name '*.html' | wc -l)" -eq 32
 
       - uses: actions/upload-pages-artifact@v3
         with:
