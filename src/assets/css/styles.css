@@ -19,6 +19,7 @@
 
   --amber:    #f7b500;
   --amber-hi: #ffcb2e;
+  --star:     #f7b500;   /* 10.1:1 on --surface; empty stars use --line-ui at 3.6:1 */
   --blue:     #1b69c4;
   --red:      #d8232a;
   --ink:      #151515;
@@ -154,6 +155,43 @@ table { border-collapse: collapse; width: 100%; }
 .slot--card { min-height: 148px; border-radius: var(--r) var(--r) 0 0; border-bottom: 0; }
 .slot--cat { min-height: 260px; }
 .slot--why, .slot--about { min-height: 300px; }
+
+/* ---------- Google reviews ----------
+   Real reviews, typed into content/reviews.json by hand. The section is left
+   out entirely while that file is empty, so none of this renders until there is
+   something true to put in it. */
+.revs { background: var(--bg-2); border-block: 1px solid var(--line); }
+.revs .section-head h2 { display: flex; align-items: center; gap: 11px; }
+.revs .section-head h2 .ic { color: var(--star); }
+
+.stars { display: inline-flex; gap: 2px; vertical-align: middle; }
+.stars .star { display: block; width: 17px; height: 17px; color: var(--line-ui); }
+.stars .star.is-on { color: var(--star); }
+.stars .ic { display: block; width: 100%; height: 100%; }
+
+.revs__score {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+  margin: 0 0 22px; font-family: var(--font-display);
+}
+.revs__score strong { font-size: 22px; font-weight: 800; }
+.revs__score span { color: var(--muted-2); font-size: 14.5px; font-weight: 600; }
+
+.revs__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 1.8vw, 20px); }
+.rev {
+  display: flex; flex-direction: column; gap: 12px; margin: 0;
+  padding: 22px; border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--surface);
+}
+.rev blockquote {
+  margin: 0; font-size: 15px; line-height: 1.6; color: var(--muted);
+  /* A long review should not stretch one card past the others in its row. */
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 7; overflow: hidden;
+}
+.rev figcaption {
+  margin-top: auto; padding-top: 4px;
+  font-family: var(--font-display); font-weight: 700; font-size: 14.5px; color: var(--text);
+}
+.rev figcaption span { display: block; font-weight: 500; font-size: 13px; color: var(--muted-2); }
 
 /* ---------- Hero ---------- */
 .hero { padding-block: clamp(36px, 5vw, 66px) clamp(30px, 4vw, 48px); }
@@ -337,6 +375,7 @@ table { border-collapse: collapse; width: 100%; }
    Responsive
    ========================================================================== */
 @media (max-width: 1024px) {
+  .revs__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .nav-toggle { display: block; }
   .nav {
     position: fixed; inset: auto 0 0; top: var(--header-bottom, 108px); z-index: 55;
@@ -363,6 +402,9 @@ table { border-collapse: collapse; width: 100%; }
   body { font-size: 16px; }
   .topbar__delivery { display: none; }
   .pillars { grid-template-columns: 1fr; }
+  .revs__grid { grid-template-columns: 1fr; }
+  /* One per row on a phone, so nothing is clamped that does not need to be. */
+  .rev blockquote { -webkit-line-clamp: none; }
   .cat { grid-template-columns: 1fr; }
   .cat:nth-child(even) .slot { order: 0; }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }

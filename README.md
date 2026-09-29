@@ -78,6 +78,34 @@ silently.
 To change the number, edit `phones` in `content/business.json`; the `primary`
 entry is the one the form and the CTAs use.
 
+## Google reviews
+
+`content/reviews.json` holds real Google reviews, **copied in by hand**. Nothing
+is fetched: the Places API needs a Google Cloud project with a card on file, and
+returns at most five reviews anyway, so for a shop this size typing them in is
+the cheaper and more honest option.
+
+To add one: open the Google listing, copy the reviewer's name, their stars, the
+date and their words into `items`, update `rating` and `count` to whatever Google
+now shows, then `node build.js` and push. Copy what they wrote **exactly** —
+don't tidy it and don't translate it. A review written in Bengali stays in
+Bengali on the English page too, because that is what the customer said, and a
+reader can tell the difference between a real review and a rewritten one.
+
+The build refuses to run on a malformed entry — a rating outside 1–5, a date
+that isn't `YYYY-MM-DD`, an empty name or empty text, or a `count` lower than the
+number of reviews listed. A typo stops the site rather than shipping a broken
+card on the one section whose whole job is to look trustworthy.
+
+While `items` is empty the section is left out of every page. There is no
+placeholder and no example review anywhere in the output.
+
+**These are deliberately not in the JSON-LD.** Google's structured data policy
+disallows self-serving review markup — a business marking up reviews of itself,
+on its own site — and `LocalBusiness` is the case it names. Adding
+`aggregateRating` would look like an SEO win and risks a manual action instead.
+The reviews are there for people reading the page.
+
 ## Photography — the one thing still outstanding
 
 Six photo slots render as labelled placeholders. They are **not** broken images;

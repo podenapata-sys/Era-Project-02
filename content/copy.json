@@ -399,7 +399,10 @@
       }
     ],
     "worksTitle": "Work we take on",
-    "worksIntro": "Supplied and fitted by our own team, with the materials from our own shelves."
+    "worksIntro": "Supplied and fitted by our own team, with the materials from our own shelves.",
+    "reviewsTitle": "What customers say",
+    "reviewsCount": "reviews on Google",
+    "reviewsAll": "Read them all on Google"
   },
   "bn": {
     "topbar": "খুচরা ও পাইকারি · সপ্তাহে ৭ দিন খোলা, সকাল ৭টা – রাত ১০টা",
@@ -801,6 +804,9 @@
       }
     ],
     "worksTitle": "যে কাজগুলো আমরা করি",
-    "worksIntro": "নিজস্ব টিম ও নিজের দোকানের মালামাল দিয়ে সরবরাহ ও ফিটিং।"
+    "worksIntro": "নিজস্ব টিম ও নিজের দোকানের মালামাল দিয়ে সরবরাহ ও ফিটিং।",
+    "reviewsTitle": "গ্রাহকেরা যা বলেন",
+    "reviewsCount": "গুগল রিভিউ",
+    "reviewsAll": "গুগলে সব রিভিউ দেখুন"
   }
 }

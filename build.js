@@ -16,6 +16,7 @@ const ROOT = __dirname;
 const OUT = path.join(ROOT, 'dist');
 const biz = require('./content/business.json');
 const copy = require('./content/copy.json');
+const reviews = require('./content/reviews.json');
 
 /* Absolute URLs (canonical, hreflang, Open Graph, sitemap, robots) need the
    real origin. SITE_URL overrides content/business.json so a Pages or preview
@@ -59,6 +60,25 @@ const ICONS = {
   card: icon('<rect x="3" y="5.5" width="18" height="13" rx="2.4" stroke="currentColor" stroke-width="1.7"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.7"/>'),
   tools: icon('<path d="M14.8 4.4a4.7 4.7 0 0 0-5.7 6.1l-5 5a1.9 1.9 0 0 0 0 2.7l1.7 1.7a1.9 1.9 0 0 0 2.7 0l5-5a4.7 4.7 0 0 0 6.1-5.7l-2.9 2.9-2.7-.7-.7-2.7Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>'),
   mail: icon('<rect x="3" y="5.5" width="18" height="13" rx="2.4" stroke="currentColor" stroke-width="1.7"/><path d="m4 7.5 8 5.5 8-5.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>'),
+  star: icon('<path d="m12 3.6 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.8l5.9-.9L12 3.6Z" fill="currentColor"/>'),
+};
+
+/* The rest of the site writes its numbers in Bengali script, so a figure that
+   comes out of reviews.json has to be converted rather than left in ASCII —
+   "4.8" beside "১৪" on the same page reads as a mistake. */
+const BN_DIGITS = '০১২৩৪৫৬৭৮৯';
+const bnNum = s => String(s).replace(/[0-9]/g, d => BN_DIGITS[+d]);
+const toAsciiDigits = s => String(s).replace(/[০-৯]/g, d => BN_DIGITS.indexOf(d));
+const num = (v, lang) => (lang === 'bn' ? bnNum(v) : String(v));
+
+/* Month names live here rather than in copy.json: they are not marketing copy
+   the client would ever want to reword, and putting twenty-four strings in the
+   bilingual file would bury the parts that are. */
+const MONTHS = {
+  en: ['January', 'February', 'March', 'April', 'May', 'June',
+       'July', 'August', 'September', 'October', 'November', 'December'],
+  bn: ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
+       'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'],
 };
 
 /* ------------------------------------------------------------- components */
@@ -69,6 +89,69 @@ function logoMark(base) {
 function photoSlot(label, cls) {
   // Client photography is pending; these keep the layout honest until it lands.
   return `<div class="slot${cls ? ' ' + cls : ''}" role="img" aria-label="${attr(label)}"><span>${esc(label)}</span></div>`;
+}
+
+/* Five stars, filled to the score. The row is one image to a screen reader with
+   the score spoken as words, rather than five separate stars it would announce
+   one after another — and the shape alone never carries the meaning, because
+   the number is printed beside it either way. */
+function starRow(score, lang) {
+  const full = Math.round(score);
+  const stars = [1, 2, 3, 4, 5]
+    .map(n => `<span class="star${n <= full ? ' is-on' : ''}">${ICONS.star}</span>`).join('');
+  /* Spoken in the page's own script, so the Bengali page does not read out
+     "4.8" beside a printed ৪.৮. */
+  const label = `${num(score, lang)} / ${num(5, lang)}`;
+  return `<span class="stars" role="img" aria-label="${attr(label)}">${stars}</span>`;
+}
+
+/* Real Google reviews, kept in content/reviews.json and copied in by hand.
+   Empty until the client pastes some in, and the whole section is omitted
+   rather than rendering an empty shell or, worse, a placeholder review.
+
+   Deliberately NOT added to the JSON-LD. Google's structured data policy
+   disallows self-serving review markup — a business marking up reviews of
+   itself, on its own site — and LocalBusiness is exactly the case it names.
+   Adding aggregateRating here would look like an SEO win and risks a manual
+   action instead. These are for people reading the page, not for the crawler. */
+function reviewsSection(t, lang) {
+  if (!reviews.items.length) return '';
+
+  const cards = reviews.items.map(r => {
+    const [y, m] = r.date.split('-');
+    const when = `${MONTHS[lang][+m - 1]} ${num(y, lang)}`;
+    return `
+      <figure class="rev">
+        ${starRow(r.rating, lang)}
+        <blockquote>${esc(r.text)}</blockquote>
+        <figcaption>${esc(r.author)}<span>${esc(when)}</span></figcaption>
+      </figure>`;
+  }).join('');
+
+  /* The headline score only appears when the client has filled it in, so the
+     site never states a rating that nobody has checked against Google. */
+  const summary = reviews.rating == null ? '' : `
+      <p class="revs__score">
+        ${starRow(reviews.rating, lang)}
+        <strong>${esc(num(reviews.rating, lang))}</strong>
+        ${reviews.count == null ? '' : `<span>${esc(num(reviews.count, lang))} ${esc(t.reviewsCount)}</span>`}
+      </p>`;
+
+  const all = reviews.url ? `
+      <a class="link-more" href="${attr(reviews.url)}" target="_blank" rel="noopener">${esc(t.reviewsAll)} ${ICONS.arrow}</a>` : '';
+
+  return `
+<section class="section revs">
+  <div class="shell">
+    <header class="section-head">
+      <h2>${ICONS.star}${esc(t.reviewsTitle)}</h2>
+      ${all}
+    </header>
+    ${summary}
+    <div class="revs__grid">${cards}</div>
+  </div>
+</section>
+`;
 }
 
 function header(t, lang, page, base) {
@@ -240,7 +323,7 @@ function homePage(t, lang, base) {
     <ul class="chips chips--svc">${t.services.map(sv => `<li>${esc(sv.title)}</li>`).join('')}</ul>
   </div>
 </section>
-
+${reviewsSection(t, lang)}
 <section class="band">
   <div class="shell band__inner">
     <div>
@@ -631,9 +714,6 @@ function copyDir(from, to) {
 
    The count is compared after folding Bengali digits to ASCII, because the
    Bengali page states it as ১৪ and both are the same claim. */
-const BN_DIGITS = '০১২৩৪৫৬৭৮৯';
-const toAsciiDigits = s => String(s).replace(/[০-৯]/g, d => BN_DIGITS.indexOf(d));
-
 function checkAreaCount() {
   for (const lang of ['en', 'bn']) {
     const t = copy[lang];
@@ -649,6 +729,40 @@ function checkAreaCount() {
   }
 }
 
+/* reviews.json is typed by hand, so it is the file most likely to carry a
+   slip — a four-star review entered as 4.5, a date as 20-09-2026, a name left
+   blank after a paste. Each of those renders as a visibly broken card on a page
+   whose whole job is to look trustworthy, so the build stops instead. */
+function checkReviews() {
+  const at = (i, msg) => `content/reviews.json: items[${i}] ${msg}`;
+
+  if (reviews.rating != null &&
+      (typeof reviews.rating !== 'number' || reviews.rating < 0 || reviews.rating > 5)) {
+    throw new Error('content/reviews.json: "rating" must be a number from 0 to 5, ' +
+      'or null until you have one.');
+  }
+  if (reviews.count != null &&
+      (!Number.isInteger(reviews.count) || reviews.count < reviews.items.length)) {
+    throw new Error('content/reviews.json: "count" must be a whole number and at least ' +
+      `${reviews.items.length}, the number of reviews listed below it.`);
+  }
+
+  reviews.items.forEach((r, i) => {
+    if (!r || typeof r.author !== 'string' || !r.author.trim()) {
+      throw new Error(at(i, 'has no "author" — use the name as Google shows it.'));
+    }
+    if (!Number.isInteger(r.rating) || r.rating < 1 || r.rating > 5) {
+      throw new Error(at(i, `has rating ${JSON.stringify(r.rating)} — it must be a whole number from 1 to 5.`));
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(r.date)) || Number.isNaN(Date.parse(r.date))) {
+      throw new Error(at(i, `has date ${JSON.stringify(r.date)} — it must be YYYY-MM-DD, like "2026-09-20".`));
+    }
+    if (typeof r.text !== 'string' || !r.text.trim()) {
+      throw new Error(at(i, 'has no "text" — paste what the customer wrote, unedited.'));
+    }
+  });
+}
+
 function build() {
   // The street appears in business.json (schema) and again in copy.json's
   // display strings, which must also carry it in Bengali. Catch drift here:
@@ -660,6 +774,7 @@ function build() {
     }
   }
   checkAreaCount();
+  checkReviews();
 
   fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
