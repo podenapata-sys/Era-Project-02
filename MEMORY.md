@@ -57,10 +57,13 @@ does not get "helpfully" added later.
 **Reviews are typed in, not fetched.** Places API needs a Google Cloud project
 with a card on file and returns at most 5 reviews. The user chose manual.
 
-**The logo stays as it is.** A navy badge the client supplied was built in and
-reverted on 2026-09-29 — they prefer the original black-on-transparent mark. The
-processed navy version is in git at `b5315b1` if it is ever wanted again. Do not
-re-introduce it without being asked.
+**The logo is the gold-and-black badge, and it took three goes.** A navy badge
+the client supplied was built in and reverted on 2026-09-29 — they prefer the
+gold mark; the processed navy version survives at `b5315b1` if ever wanted. They
+then supplied a high-resolution version of the gold badge, which is what ships
+now: 3D blocks, complete ring, inset to 96% of the canvas so
+`border-radius: 50%` stops shaving the ring the way it did on the older file.
+Do not swap the logo again without being asked.
 
 ## Mistakes made here — do not repeat
 

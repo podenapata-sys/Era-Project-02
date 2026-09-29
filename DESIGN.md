@@ -31,15 +31,21 @@ broke when `--muted-2` was fixed and had to be repointed separately.
 **Rule: measure, do not estimate.** A colour that looks fine on a laptop in a
 dark room is not evidence.
 
-**The logo is black-on-transparent**, drawn for this dark ground, and is used at
-44px in the header and footer with `border-radius: 50%`.
+**The logo is the gold-and-black badge**, drawn for this dark ground: a black
+disc with transparent corners, used at 44px in the header and footer with
+`border-radius: 50%`.
 
-A navy badge version was tried and reverted at the client's request. Worth
-recording why it needed work rather than a straight swap: its navy `#031c48`
-sits at **1.18:1** against `--bg`, so the disc was invisible on the header and
-had to be set in a white ring to read at all. Any future logo on a light
-background will hit the same problem — measure it against `--bg` before
-assuming it can be dropped in.
+Two constraints for any replacement:
+
+**Inset the artwork.** `.logo img` clips a circle out of the square, so a badge
+whose ring runs to the frame edge gets shaved. The current asset sits at **96%
+of the canvas**, and the clip therefore cuts black rather than gold. The version
+before it had this wrong and lost part of its ring at every size.
+
+**Measure it against `--bg` first.** A navy badge was tried and reverted: its
+navy `#031c48` sits at **1.18:1** against `--bg`, invisible on the header, and
+needed a white ring to read at all. Any logo drawn for a light background will
+hit the same wall.
 
 ## Type
 
