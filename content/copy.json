@@ -28,7 +28,7 @@
         "label": "Open 7:00–22:00"
       },
       {
-        "value": "12+",
+        "value": "14",
         "label": "Delivery areas"
       }
     ],
@@ -96,7 +96,7 @@
         "label": "Open every week, 7:00–22:00"
       },
       {
-        "value": "12+",
+        "value": "14",
         "label": "Areas we deliver to"
       }
     ],
@@ -430,7 +430,7 @@
         "label": "খোলা ৭টা – ১০টা"
       },
       {
-        "value": "১২+",
+        "value": "১৪",
         "label": "ডেলিভারি এলাকা"
       }
     ],
@@ -498,7 +498,7 @@
         "label": "সপ্তাহে খোলা, ৭টা – ১০টা"
       },
       {
-        "value": "১২+",
+        "value": "১৪",
         "label": "ডেলিভারি এলাকা"
       }
     ],

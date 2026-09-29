@@ -623,6 +623,32 @@ function copyDir(from, to) {
   }
 }
 
+/* The hero and the About stats both state how many areas ERA delivers to, and
+   the areas themselves are listed by name a few sections further down. Those two
+   drifted apart: the list grew to fourteen while both counts still read "12+",
+   so the site undersold its own coverage on every page. Adding an area is
+   exactly when this is easiest to forget, so the build refuses instead.
+
+   The count is compared after folding Bengali digits to ASCII, because the
+   Bengali page states it as ১৪ and both are the same claim. */
+const BN_DIGITS = '০১২৩৪৫৬৭৮৯';
+const toAsciiDigits = s => String(s).replace(/[০-৯]/g, d => BN_DIGITS.indexOf(d));
+
+function checkAreaCount() {
+  for (const lang of ['en', 'bn']) {
+    const t = copy[lang];
+    const want = String(t.areas.length);
+    for (const key of ['heroFacts', 'stats']) {
+      const values = t[key].map(f => toAsciiDigits(f.value));
+      if (!values.includes(want)) {
+        throw new Error(`content mismatch: copy.${lang}.areas lists ${want} areas, ` +
+          `but no value in copy.${lang}.${key} says ${want} (found ${values.join(', ')}). ` +
+          `Update the count in both languages when the area list changes.`);
+      }
+    }
+  }
+}
+
 function build() {
   // The street appears in business.json (schema) and again in copy.json's
   // display strings, which must also carry it in Bengali. Catch drift here:
@@ -633,6 +659,7 @@ function build() {
         `is not in copy.en.${key} — update both, and the Bengali alongside it.`);
     }
   }
+  checkAreaCount();
 
   fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
