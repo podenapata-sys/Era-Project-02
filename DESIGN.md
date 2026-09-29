@@ -31,9 +31,15 @@ broke when `--muted-2` was fixed and had to be repointed separately.
 **Rule: measure, do not estimate.** A colour that looks fine on a laptop in a
 dark room is not evidence.
 
-The new logo's navy `#031c48` is **not** a UI colour. It sits at 1.18:1 against
-`--bg` — invisible. It appears only inside the logo, which is set in a white
-ring (19.7:1) so it reads on the dark header.
+**The logo is black-on-transparent**, drawn for this dark ground, and is used at
+44px in the header and footer with `border-radius: 50%`.
+
+A navy badge version was tried and reverted at the client's request. Worth
+recording why it needed work rather than a straight swap: its navy `#031c48`
+sits at **1.18:1** against `--bg`, so the disc was invisible on the header and
+had to be set in a white ring to read at all. Any future logo on a light
+background will hit the same problem — measure it against `--bg` before
+assuming it can be dropped in.
 
 ## Type
 

@@ -57,6 +57,11 @@ does not get "helpfully" added later.
 **Reviews are typed in, not fetched.** Places API needs a Google Cloud project
 with a card on file and returns at most 5 reviews. The user chose manual.
 
+**The logo stays as it is.** A navy badge the client supplied was built in and
+reverted on 2026-09-29 — they prefer the original black-on-transparent mark. The
+processed navy version is in git at `b5315b1` if it is ever wanted again. Do not
+re-introduce it without being asked.
+
 ## Mistakes made here — do not repeat
 
 - **Address drift.** `business.json` was updated and `copy.json` was not; the

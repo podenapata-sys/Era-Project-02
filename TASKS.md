@@ -19,7 +19,7 @@ Ordered by what unblocks getting paid, not by what is interesting. Status as of
 - [x] GitHub Pages deploy on push, with a page-count assertion
 - [x] Client revision rounds: sizes, item renames, categories, hours, address
 - [x] 14 delivery areas stated correctly, with a guard against drift
-- [x] New logo, set in a white ring for the dark header, 306 KB → 26 KB
+- [x] Navy badge logo tried, then reverted — the client prefers the original
 - [x] Google reviews section, hand-filled, no self-serving schema markup
 
 ## Phase 1 — Blocked on the user, not on code
