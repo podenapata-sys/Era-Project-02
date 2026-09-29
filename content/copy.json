@@ -214,7 +214,7 @@
       {
         "title": "U-PVC pipes & fittings",
         "blurb": "Soil, waste, drainage and vent lines.",
-        "long": "UPVC drainage systems for waste, soil and vent lines in residential and commercial buildings. Lightweight, corrosion-free and quick to install, with the full range of bends, junctions and traps.",
+        "long": "UPVC drainage systems for waste, soil and vent lines in residential and commercial buildings. Lightweight, corrosion-free and quick to install, with the full range of bends, junctions, traps and tube wells.",
         "items": [
           "Pipes",
           "Bends",
@@ -348,32 +348,32 @@
         "slug": "plumbing"
       },
       {
-        "title": "Tiles, marble & granite",
+        "title": "Tiles, marble & granite work",
         "blurb": "Floor, wall and stair finishing, cut and laid to line.",
         "slug": "tiles-marble-granite"
       },
       {
-        "title": "Core cutting",
+        "title": "Core cutting work",
         "blurb": "Clean circular openings through slab and wall for pipe and duct runs.",
         "slug": "core-cutting"
       },
       {
-        "title": "Deep tube well",
+        "title": "Deep tube well work",
         "blurb": "Boring, casing and pump installation for year-round supply.",
         "slug": "deep-tube-well"
       },
       {
-        "title": "Swimming pool",
+        "title": "Swimming pool work",
         "blurb": "Pool plumbing, filtration and circulation lines.",
         "slug": "swimming-pool"
       },
       {
-        "title": "Damp proofing",
+        "title": "Damp proofing work",
         "blurb": "Treating rising and lateral damp before it reaches the finish.",
         "slug": "damp-proofing"
       },
       {
-        "title": "Water proofing",
+        "title": "Water proofing work",
         "blurb": "Roofs, bathrooms, tanks and basements sealed against leaks.",
         "slug": "water-proofing"
       },
@@ -388,9 +388,9 @@
         "slug": "painting"
       },
       {
-        "title": "High glass work",
+        "title": "Thai Glass work",
         "blurb": "Glass partitions, shower enclosures and façade glazing.",
-        "slug": "high-glass"
+        "slug": "thai-glass"
       },
       {
         "title": "Civil work",
@@ -616,7 +616,7 @@
       {
         "title": "ইউ-পিভিসি পাইপ ও ফিটিংস",
         "blurb": "পয়ঃনিষ্কাশন, বর্জ্য ও ভেন্ট লাইন।",
-        "long": "বাসাবাড়ি ও বাণিজ্যিক ভবনের বর্জ্য, পয়ঃ ও ভেন্ট লাইনের জন্য ইউপিভিসি ড্রেনেজ সিস্টেম। হালকা, মরিচা ধরে না এবং দ্রুত বসানো যায় — সঙ্গে বেন্ড, জাংশন ও ট্র্যাপের পূর্ণ তালিকা।",
+        "long": "বাসাবাড়ি ও বাণিজ্যিক ভবনের বর্জ্য, পয়ঃ ও ভেন্ট লাইনের জন্য ইউপিভিসি ড্রেনেজ সিস্টেম। হালকা, মরিচা ধরে না এবং দ্রুত বসানো যায় — সঙ্গে বেন্ড, জাংশন, ট্র্যাপ ও টিউবওয়েলের পূর্ণ তালিকা।",
         "items": [
           "পাইপ",
           "বেন্ড",
@@ -750,32 +750,32 @@
         "slug": "plumbing"
       },
       {
-        "title": "টাইলস, মার্বেল ও গ্রানাইট",
+        "title": "টাইলস, মার্বেল ও গ্রানাইট কাজ",
         "blurb": "মেঝে, দেয়াল ও সিঁড়ির ফিনিশিং — মাপমতো কেটে বসানো।",
         "slug": "tiles-marble-granite"
       },
       {
-        "title": "কোর কাটিং",
+        "title": "কোর কাটিং কাজ",
         "blurb": "পাইপ ও ডাক্ট চালানোর জন্য স্ল্যাব ও দেয়ালে পরিষ্কার গোল ছিদ্র।",
         "slug": "core-cutting"
       },
       {
-        "title": "ডিপ টিউবওয়েল",
+        "title": "ডিপ টিউবওয়েল কাজ",
         "blurb": "বোরিং, কেসিং ও পাম্প বসানো — সারা বছরের পানি সরবরাহ।",
         "slug": "deep-tube-well"
       },
       {
-        "title": "সুইমিং পুল",
+        "title": "সুইমিং পুল কাজ",
         "blurb": "পুলের প্লাম্বিং, ফিল্টার ও সার্কুলেশন লাইন।",
         "slug": "swimming-pool"
       },
       {
-        "title": "ড্যাম্প প্রুফিং",
+        "title": "ড্যাম্প প্রুফিং কাজ",
         "blurb": "ফিনিশিং নষ্ট হওয়ার আগেই স্যাঁতসেঁতে ভাব বন্ধ করা।",
         "slug": "damp-proofing"
       },
       {
-        "title": "ওয়াটার প্রুফিং",
+        "title": "ওয়াটার প্রুফিং কাজ",
         "blurb": "ছাদ, বাথরুম, ট্যাংক ও বেসমেন্ট — লিক বন্ধ করে সিল করা।",
         "slug": "water-proofing"
       },
@@ -790,9 +790,9 @@
         "slug": "painting"
       },
       {
-        "title": "হাই গ্লাস কাজ",
+        "title": "থাই গ্লাস কাজ",
         "blurb": "গ্লাস পার্টিশন, শাওয়ার এনক্লোজার ও ফ্যাসাড গ্লেজিং।",
-        "slug": "high-glass"
+        "slug": "thai-glass"
       },
       {
         "title": "সিভিল কাজ",
