@@ -30,12 +30,12 @@ service cloud.firestore {
     // config, which is served publicly. A UID identifies the account without
     // being contact details.
     //
-    // Fill this in from Firebase Console → Authentication → Users. While it is
-    // empty NOBODY can read the leads — which is the safe way to be wrong.
+    // Add a UID from Firebase Console → Authentication → Users. An empty list
+    // means NOBODY can read the leads — which is the safe way to be wrong.
     function isOwner() {
       return request.auth != null
         && request.auth.uid in [
-             // 'paste-your-uid-here'
+             '4VNXgYEnJTfRYci0PGqXAGQHReC3'   // shop owner
            ];
     }
 

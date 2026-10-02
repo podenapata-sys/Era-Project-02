@@ -70,7 +70,7 @@
     "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=23.7562877%2C90.4161182"
   },
   "firebase": {
-    "projectId": "",
+    "projectId": "era-sanitary",
     "leadsCollection": "leads"
   },
   "reviewUrl": ""
