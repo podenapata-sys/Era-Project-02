@@ -897,6 +897,8 @@ function adminPage() {
     </div>`;
 
   const app = `
+    <p class="err" id="bootErr" hidden></p>
+
     <form id="signin" class="box" hidden>
       <h2>Sign in</h2>
       <label for="email">Email</label>
@@ -949,11 +951,26 @@ const esc = s => String(s == null ? '' : s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;');
 
-const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js');
-const { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } =
-  await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js');
-const { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } =
-  await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js');
+/* Both panels below ship hidden and are unhidden by onAuthStateChanged, so if
+   these imports never resolve the owner gets a page with a header and nothing
+   else — indistinguishable from the dashboard being broken. On Dhaka mobile
+   data that is a realistic Tuesday, so say which thing failed. Version pinned
+   deliberately: it only moves when there is a reason to move it. */
+let initializeApp;
+let getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged;
+let getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc;
+try {
+  ({ initializeApp } = await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js'));
+  ({ getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } =
+    await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js'));
+  ({ getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } =
+    await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js'));
+} catch (ex) {
+  $('bootErr').textContent =
+    'Could not load Firebase from Google. Check the connection and reload this page.';
+  $('bootErr').hidden = false;
+  throw ex;   // stops the module here; the console keeps the real reason
+}
 
 const auth = getAuth(initializeApp(CFG));
 const db = getFirestore();

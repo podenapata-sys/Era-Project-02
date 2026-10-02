@@ -123,12 +123,23 @@ Pages column beside it already links home.
 This is a shortcut, **not a secret**. `/admin/` is a public URL, and anyone who
 finds it meets a login box they cannot pass.
 
-To switch it on, add a Web app in **Firebase Console → Project settings → Your
-apps** (the `</>` icon, any nickname, no Hosting), then copy `apiKey`,
-`authDomain` and `appId` into `content/business.json` under
-`firebase.webConfig`. Until then the page shows those instructions instead of a
-login box. Those keys are public by design — they name the project, they do not
-grant access to it.
+This is switched on: `firebase.webConfig` in `content/business.json` holds the
+`apiKey`, `authDomain` and `appId` of the Web app registered under **Firebase
+Console → Project settings → Your apps**. Those keys are public by design — they
+name the project, they do not grant access to it. While `webConfig` is empty the
+page shows setup instructions instead of a login box, and the build says so.
+
+**Only those three are copied in.** The console also hands you `storageBucket`,
+`messagingSenderId` and `measurementId`. They configure Cloud Storage, Cloud
+Messaging and Analytics, none of which is used — and Analytics would mean a
+tracking script, which rule 5 forbids. Auth and Firestore need nothing beyond
+those three plus `projectId`.
+
+Both panels on the page ship hidden and are unhidden once Firebase reports the
+auth state, so a failed SDK load left a header above an empty page —
+indistinguishable from the dashboard being broken. The imports are wrapped now
+and say *“Could not load Firebase from Google”* instead. On Dhaka mobile data
+that is a realistic Tuesday.
 
 Who may read the leads is `isOwner()` in `firestore.rules`, mirrored in
 `firebase.ownerUids` for what the page draws. **The rules are the source of
