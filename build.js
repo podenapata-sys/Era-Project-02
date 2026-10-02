@@ -41,6 +41,13 @@ const esc = s => String(s ?? '')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 const attr = esc;
+
+/* JSON destined for a <script type="application/json"> block. A literal
+   "</script>" inside a value would end the element early and spill the rest of
+   the JSON into the page as text, so "<" goes out as < — the same string
+   once parsed, inert in markup. Nothing in content/ contains one today; this is
+   here so that keeps being true without anyone having to remember. */
+const jsonScript = v => JSON.stringify(v).replace(/</g, '\\u003c');
 const primary = biz.phones.find(p => p.primary) || biz.phones[0];
 const addressLine = `${biz.address.street}, ${biz.address.locality}, ${biz.address.region}-${biz.address.postalCode}, ${biz.address.countryName}`;
 // The client's own Google listing. Previously this was a name+address search,
@@ -143,6 +150,14 @@ function starRow(score, lang) {
    Empty projectId renders no attributes at all, so main.js finds nothing to post
    to and the form behaves exactly as it does today. */
 const fb = () => biz.firebase || {};
+
+/* adminPage() decides whether to render the dashboard or the setup notes, and
+   build() decides whether to copy its script; a copy of the condition in each
+   place is how the two come to disagree. */
+const adminConfigured = () => {
+  const cfg = fb(), wc = cfg.webConfig || {};
+  return !!(wc.apiKey && wc.authDomain && cfg.projectId);
+};
 function fbAttrs() {
   const { projectId, leadsCollection } = fb();
   if (!projectId) return '';
@@ -748,7 +763,7 @@ ${email}
       <button class="btn btn--accent btn--block" type="submit">${ICONS.whatsapp}${esc(t.formSend)}</button>
       <p class="muted">${esc(t.formFoot)}</p>
     </form>
-    <script type="application/json" id="quoteStrings">${JSON.stringify({
+    <script type="application/json" id="quoteStrings">${jsonScript({
       hello: t.msgHello, name: t.msgName, phone: t.msgPhone,
       cat: t.msgCat, items: t.msgItems, close: t.msgClose, err: t.formErr
     })}</script>
@@ -875,7 +890,9 @@ function jsonLd(t, lang) {
    the reason RULES.md bans third-party scripts — a stalled CDN blocking the
    site's own JavaScript for a customer on mobile data — does not apply to a
    signed-in owner opening their own back office on purpose. Nothing here reaches
-   any public page: the import lives in this string and nowhere else.
+   any public page: the imports live in src/admin/app.js, which is copied to
+   dist/admin/ and nowhere else, and the deploy workflow fails the build if
+   `firebasejs` turns up outside that directory.
 
    noindex, Disallow and omission from the sitemap keep it out of search results.
    None of those is a security boundary. The boundary is Firebase Auth plus the
@@ -883,7 +900,7 @@ function jsonLd(t, lang) {
 function adminPage() {
   const cfg = fb();
   const wc = cfg.webConfig || {};
-  const configured = !!(wc.apiKey && wc.authDomain && cfg.projectId);
+  const configured = adminConfigured();
 
   const setup = `
     <div class="box">
@@ -919,6 +936,18 @@ function adminPage() {
       <div id="list" class="list" aria-live="polite"></div>
     </div>`;
 
+  /* Everything the dashboard needs to know about THIS shop. Rendered here
+     rather than written into app.js, so that file stays identical for every
+     client the dashboard is stood up for. Parsed from a JSON block rather than
+     inlined as JavaScript, which is the idiom the contact page already uses for
+     its WhatsApp strings — see quoteStrings in contactBody(). */
+  const adminCfg = {
+    firebase: { ...wc, projectId: cfg.projectId },
+    owners: cfg.ownerUids || [],
+    leadsCollection: cfg.leadsCollection || 'leads',
+    whatsapp: (biz.phones.find(p => p.primary) || biz.phones[0]).whatsapp,
+  };
+
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -939,136 +968,8 @@ function adminPage() {
 <main class="wrap">
 ${configured ? app : setup}
 </main>
-${configured ? `<script type="module">
-const CFG = ${JSON.stringify({ ...wc, projectId: cfg.projectId })};
-const OWNERS = ${JSON.stringify(cfg.ownerUids || [])};
-const COLL = ${JSON.stringify(cfg.leadsCollection || 'leads')};
-const WA = ${JSON.stringify((biz.phones.find(p => p.primary) || biz.phones[0]).whatsapp)};
-const STATUSES = ['new', 'called', 'quoted', 'won', 'lost'];
-
-const $ = id => document.getElementById(id);
-const esc = s => String(s == null ? '' : s)
-  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-  .replace(/"/g, '&quot;');
-
-/* Both panels below ship hidden and are unhidden by onAuthStateChanged, so if
-   these imports never resolve the owner gets a page with a header and nothing
-   else — indistinguishable from the dashboard being broken. On Dhaka mobile
-   data that is a realistic Tuesday, so say which thing failed. Version pinned
-   deliberately: it only moves when there is a reason to move it. */
-let initializeApp;
-let getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged;
-let getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc;
-try {
-  ({ initializeApp } = await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js'));
-  ({ getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } =
-    await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js'));
-  ({ getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } =
-    await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js'));
-} catch (ex) {
-  $('bootErr').textContent =
-    'Could not load Firebase from Google. Check the connection and reload this page.';
-  $('bootErr').hidden = false;
-  throw ex;   // stops the module here; the console keeps the real reason
-}
-
-const auth = getAuth(initializeApp(CFG));
-const db = getFirestore();
-let rows = [];
-
-$('signin').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const err = $('signinErr'); err.hidden = true;
-  try {
-    await signInWithEmailAndPassword(auth, $('email').value.trim(), $('pass').value);
-  } catch (ex) {
-    /* Firebase's own messages name the failure precisely enough to act on. */
-    err.textContent = ex.code === 'auth/invalid-credential'
-      ? 'Wrong email or password.' : ex.message;
-    err.hidden = false;
-  }
-});
-
-$('signout').addEventListener('click', () => signOut(auth));
-$('search').addEventListener('input', draw);
-
-onAuthStateChanged(auth, (user) => {
-  /* A UI gate, not a boundary. Firestore refuses a stranger's read whatever this
-     does — this only keeps the page from drawing an empty shell and looking
-     broken when the rules are, correctly, saying no. */
-  const allowed = user && (!OWNERS.length || OWNERS.includes(user.uid));
-  $('signin').hidden = !!allowed;
-  $('app').hidden = !allowed;
-  if (!allowed) {
-    if (user) {
-      $('signinErr').textContent = 'That account is signed in but not allowed to read leads. UID: ' + user.uid;
-      $('signinErr').hidden = false;
-      signOut(auth);
-    }
-    return;
-  }
-  /* Ordered by createdAt, the client-written ISO string — see firestore.rules for
-     why the server's own createTime is not available here. */
-  onSnapshot(query(collection(db, COLL), orderBy('createdAt', 'desc')),
-    (snap) => { rows = snap.docs.map(d => ({ id: d.id, ...d.data() })); draw(); },
-    (ex) => { $('appErr').textContent = 'Could not read leads: ' + ex.message; $('appErr').hidden = false; });
-});
-
-function when(iso) {
-  const d = new Date(iso);
-  if (isNaN(d)) return iso || '';
-  return d.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-}
-
-function draw() {
-  const q = $('search').value.trim().toLowerCase();
-  const shown = q ? rows.filter(r =>
-    (r.name + ' ' + r.phone + ' ' + r.items + ' ' + r.category).toLowerCase().includes(q)) : rows;
-
-  const tally = STATUSES.map(s => s + ' ' + rows.filter(r => r.status === s).length);
-  $('counts').innerHTML = tally.map((t, i) =>
-    '<span class="pill pill--' + STATUSES[i] + '">' + esc(t) + '</span>').join('');
-
-  if (!shown.length) {
-    $('list').innerHTML = '<p class="muted">' + (rows.length ? 'Nothing matches that.' : 'No leads yet.') + '</p>';
-    return;
-  }
-
-  $('list').innerHTML = shown.map(r => {
-    const tel = String(r.phone || '').replace(/[^0-9+]/g, '');
-    const wa = tel.replace(/^\\+/, '');
-    return '<article class="lead lead--' + esc(r.status) + '">' +
-      '<div class="lead__head">' +
-        '<h2>' + (esc(r.name) || '<span class="muted">No name</span>') + '</h2>' +
-        '<time>' + esc(when(r.createdAt)) + '</time>' +
-      '</div>' +
-      (r.category ? '<p class="cat">' + esc(r.category) + '</p>' : '') +
-      (r.items ? '<p class="items">' + esc(r.items) + '</p>' : '<p class="muted items">No item list</p>') +
-      (tel ? '<div class="acts">' +
-        '<a class="btn btn--sm" href="tel:' + esc(tel) + '">Call ' + esc(r.phone) + '</a>' +
-        '<a class="btn btn--sm btn--ghost" href="https://wa.me/' + esc(wa) + '" target="_blank" rel="noopener">WhatsApp</a>' +
-      '</div>' : '<p class="muted">No phone number</p>') +
-      '<div class="status" role="group" aria-label="Status">' +
-        STATUSES.map(s => '<button type="button" class="chip' + (r.status === s ? ' is-on' : '') +
-          '" data-id="' + esc(r.id) + '" data-s="' + s + '">' + s + '</button>').join('') +
-      '</div>' +
-      '<p class="meta muted">' + esc(r.lang === 'bn' ? 'Bengali page' : 'English page') + ' · ' + esc(r.page || '') + '</p>' +
-    '</article>';
-  }).join('');
-}
-
-/* Delegated, because the list is replaced wholesale on every snapshot. */
-$('list').addEventListener('click', async (e) => {
-  const b = e.target.closest('.chip');
-  if (!b) return;
-  try {
-    await updateDoc(doc(db, COLL, b.dataset.id), { status: b.dataset.s });
-  } catch (ex) {
-    $('appErr').textContent = 'Could not change status: ' + ex.message;
-    $('appErr').hidden = false;
-  }
-});
-</script>` : ''}
+${configured ? `<script type="application/json" id="adminCfg">${jsonScript(adminCfg)}</script>
+<script type="module" src="app.js"></script>` : ''}
 </body>
 </html>
 `;
@@ -1335,6 +1236,16 @@ ${['en', 'bn'].map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="$
      the Firestore rules are — it just should not be a search result. */
   fs.mkdirSync(path.join(OUT, 'admin'), { recursive: true });
   fs.writeFileSync(path.join(OUT, 'admin', 'index.html'), adminPage());
+
+  /* The dashboard's script, beside its own page. It lives in src/admin/ and not
+     src/assets/ on purpose: copyDir above publishes all of src/assets/ to
+     dist/assets/, which is a public path, and this file names the Firebase SDK.
+     Copied only when Firebase is configured, so an unconfigured build ships no
+     reference to a third-party script anywhere at all. */
+  if (adminConfigured()) {
+    fs.copyFileSync(path.join(ROOT, 'src', 'admin', 'app.js'),
+                    path.join(OUT, 'admin', 'app.js'));
+  }
   fs.writeFileSync(path.join(OUT, 'robots.txt'),
     `User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: ${SITE}/sitemap.xml\n`);
 
