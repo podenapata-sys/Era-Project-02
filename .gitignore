@@ -16,3 +16,13 @@ dist/
 # the repository does not need them — but keep the folder somewhere backed up,
 # because re-cutting at a new shape needs the full-size file, not the crop.
 photos-inbox/
+
+# The company profile, built by tools/build-profile.py from content/. Not
+# committed, for the same reason dist/ is not: it is generated, and a committed
+# copy starts lying the moment business.json or copy.json changes.
+era-company-profile.pdf
+
+# Fonts the profile embeds, fetched on first run. Barlow and Hind Siliguri are
+# both OFL and redistributable, but committing them means carrying the licence
+# text for something a one-second download replaces.
+tools/.fonts/

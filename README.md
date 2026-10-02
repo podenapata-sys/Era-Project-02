@@ -321,6 +321,57 @@ something better, or to move the crop with `"focus": [x, y]`.
 Phone photos in daylight are fine. Shot straight-on, in focus, no flash. Photos
 of work already done are better than anything staged.
 
+## The company profile
+
+A bilingual A4 PDF for the client to send to contractors, developers and
+procurement people — the document a supplier hands over when someone asks who
+they are.
+
+```sh
+pip install playwright
+python3 tools/build-profile.py        # writes era-company-profile.pdf
+```
+
+Fourteen pages: seven in English, then the same seven in Bengali. Cover, who we
+are, the full supply catalogue, every trade, delivery areas with hours and
+payments, and a contact page. It reads `content/business.json` and
+`content/copy.json`, so it regenerates rather than drifting from the site — and
+it is **gitignored**, because a committed PDF starts lying the moment the
+content changes.
+
+**Nothing in it is invented.** No customer counts, no ratings, no client list,
+no certifications, no prices — rule 1 applies here harder than anywhere, because
+a company profile is exactly the document that invites "20+ years of excellence
+and 1000+ satisfied clients". The one thing deliberately left blank is the
+registration block: **Trade Licence No., TIN and BIN/VAT**. Dhaka procurement
+departments look for those three and they have to come from the client. The
+block is laid out and ruled so it can be filled in by hand, or added to
+`business.json` and rebuilt.
+
+### Why a browser and not a PDF library
+
+Bengali needs real text shaping. Its conjuncts, its reph and its vowel signs
+that draw to the *left* of the consonant they follow are not glyph-after-glyph
+work, and a library that lays out runs by hand gets them subtly wrong — wrong in
+a way an English reader proof-reading the file would never catch. Chromium
+already has HarfBuzz, so it does the shaping and the script only writes HTML.
+
+For the same reason, **do not verify the output with `pdftotext`.** It extracts
+in visual order, so those pre-base vowel signs come back reordered and every
+Bengali string fails to match its source. The script checks the markup instead,
+which is the exact comparison, and measures each page in the browser for
+overflow — a `.page` is a fixed 297mm box, so anything past it is silently not
+printed, and one more category in `content/` is enough to do it. Both guards
+fail the build and name what broke.
+
+### Colours
+
+Sampled from the client's own badge, not guessed: gold `#E4B40C`, blue
+`#0090E4`, red `#F0000C`. The page is white and headings are blue, because the
+gold measures 1.94:1 against white and is unusable as text — it appears only as
+rules and accents. Large headings use the badge blue at 3.44:1 (AA for large
+text); anything smaller uses `#0074B8` at 5.01:1.
+
 ## Deploying
 
 **GitHub Pages** is wired up. `.github/workflows/deploy.yml` builds and deploys
