@@ -134,6 +134,21 @@ function starRow(score, lang) {
   return `<span class="stars" role="img" aria-label="${attr(label)}">${stars}</span>`;
 }
 
+/* Where a quote request is recorded. The form posts one Firestore document over
+   the REST API — no Firebase SDK, no library, nothing third-party loaded on a
+   public page, which is the rule this site is built on. The project ID is not a
+   secret: it is half of a public URL, and what protects the data is the rules in
+   firestore.rules, where read is gated on a UID allowlist.
+
+   Empty projectId renders no attributes at all, so main.js finds nothing to post
+   to and the form behaves exactly as it does today. */
+const fb = () => biz.firebase || {};
+function fbAttrs() {
+  const { projectId, leadsCollection } = fb();
+  if (!projectId) return '';
+  return ` data-fb-project="${attr(projectId)}" data-fb-collection="${attr(leadsCollection || 'leads')}"`;
+}
+
 /* Real Google reviews, kept in content/reviews.json and copied in by hand.
    Empty until the client pastes some in, and the whole section is omitted
    rather than rendering an empty shell or, worse, a placeholder review.
@@ -704,7 +719,7 @@ ${email}
   <div class="card card--form">
     <h2>${esc(t.formTitle)}</h2>
     <p class="muted">${esc(t.formBody)}</p>
-    <form id="quoteForm" data-wa="${attr(primary.whatsapp)}"${biz.quoteEndpoint ? ` data-endpoint="${attr(biz.quoteEndpoint)}"` : ''} novalidate>
+    <form id="quoteForm" data-wa="${attr(primary.whatsapp)}"${fbAttrs()} novalidate>
       <p class="hp" aria-hidden="true"><label for="qCompany">Company</label><input id="qCompany" name="company" type="text" tabindex="-1" autocomplete="off"></p>
       <p class="field">
         <label for="qName">${esc(t.fName)}</label>
@@ -1069,7 +1084,7 @@ ${['en', 'bn'].map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="$
   console.log(`Built ${count} pages (${PAGES.length} × en/bn, plus ${trades} trade pages) + sitemap + robots into dist/`);
   console.log(`Site origin: ${SITE}${process.env.SITE_URL ? ' (from SITE_URL)' : ' (from business.json)'}`);
   if (!biz.email) console.log('NOTE: business.email is null — no email is shown anywhere on the site.');
-  if (!biz.quoteEndpoint) console.log('NOTE: business.quoteEndpoint is empty — the quote form opens WhatsApp only, nothing is recorded. Deploy tools/quote-alert.gs and paste its URL.');
+  if (!fb().projectId) console.log('NOTE: business.firebase.projectId is empty — the quote form opens WhatsApp only, nothing is recorded. Create a Firebase project (free, no card) and paste its ID; see README.');
   if (!biz.reviewUrl) console.log('NOTE: business.reviewUrl is empty — the Google review block and QR are omitted from every page.');
 }
 

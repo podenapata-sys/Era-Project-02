@@ -1,0 +1,103 @@
+rules_version = '2';
+
+// ERA Sanitary — Firestore security rules.
+//
+// This file is a RECORD of what is published in the console, not the source of
+// truth: the site is static and has no Firebase CLI deploy step, so the live
+// rules are whatever was last pasted into Firebase Console → Build → Firestore
+// Database → Rules. Change the console first, then bring this file into line —
+// never the other way round, or the next person to paste this reverts the
+// hardening below without noticing.
+//
+// The intent: anyone on the website can SUBMIT a quote request, but only the
+// signed-in owner can READ one. A lead holds a customer's name and phone number,
+// so it must never be publicly readable.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Which accounts may read the leads, by UID.
+    //
+    // NOT `request.auth != null`. The web API key is public by design — it is in
+    // the page source of every visitor — and with Email/Password sign-in enabled
+    // anyone can create an account in this project for themselves. An auth check
+    // alone therefore means "any stranger who signed up", which is no boundary at
+    // all. The sister project learned this the hard way: its rules once accepted
+    // any signed-in account and handed every patient name and phone number to
+    // anyone who asked, over REST.
+    //
+    // UIDs and not emails, because this list is mirrored in the dashboard's own
+    // config, which is served publicly. A UID identifies the account without
+    // being contact details.
+    //
+    // Fill this in from Firebase Console → Authentication → Users. While it is
+    // empty NOBODY can read the leads — which is the safe way to be wrong.
+    function isOwner() {
+      return request.auth != null
+        && request.auth.uid in [
+             // 'paste-your-uid-here'
+           ];
+    }
+
+    // Guards the one collection the public can write to.
+    //
+    // Without this, anyone who reads the project ID out of the page source could
+    // write 1 MiB documents until the Spark plan's 20,000 daily writes are gone,
+    // at which point real quote requests start failing — silently, because
+    // recordQuote() in main.js swallows its errors so that a recording failure
+    // can never break the WhatsApp hand-off. That same silence means a rule that
+    // is too STRICT also loses leads with nothing shown on screen and nothing in
+    // the console. After editing this function, submit a real quote request and
+    // look in Firestore before trusting it.
+    //
+    // `status` and `source` are pinned rather than accepted: a submission is
+    // always a new website lead, and the dashboard is what moves it along.
+    //
+    // createdAt is a client ISO string, not request.time. The REST API cannot
+    // set a server timestamp without a transform commit, and the site posts over
+    // REST to avoid loading the Firebase SDK on a public page. A wrong phone
+    // clock therefore gives a wrong createdAt — so the dashboard sorts and
+    // displays by Firestore's own createTime, which the server sets and nothing
+    // on the client can influence. This field is kept only as a cross-check.
+    function validLead(d) {
+      return d.keys().hasOnly([
+               'name','phone','category','items','lang','page',
+               'status','source','createdAt'
+             ])
+        && d.name is string     && d.name.size() <= 100
+        && d.phone is string    && d.phone.size() <= 30
+        && d.category is string && d.category.size() <= 120
+        && d.items is string    && d.items.size() <= 2000
+        && d.lang is string     && d.lang.size() <= 8
+        && d.page is string     && d.page.size() <= 200
+        && d.status == 'new'
+        && d.source == 'website'
+        && d.createdAt is string && d.createdAt.size() <= 30;
+    }
+
+    match /leads/{leadId} {
+      // A visitor submitting the quote form on contact.html, in either language.
+      allow create: if validLead(request.resource.data);
+
+      // Leads hold names and phone numbers. Owner only.
+      allow read: if isOwner();
+
+      // The dashboard moves a lead along: new → called → quoted → won / lost.
+      // Only the status may change, and only to one of those values — so a
+      // compromised dashboard session cannot rewrite what the customer asked for.
+      allow update: if isOwner()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['new','called','quoted','won','lost'];
+
+      // Nothing deletes a lead from the web. An enquiry that arrived is a record
+      // of a real customer asking for a price, and losing one to a stray tap is
+      // worse than keeping one too many.
+      allow delete: if false;
+    }
+
+    // Nothing else in the project is reachable from the web client.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

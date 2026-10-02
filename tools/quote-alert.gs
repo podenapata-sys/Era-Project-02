@@ -1,4 +1,17 @@
 /**
+ * SUPERSEDED — do not deploy this.
+ *
+ * Quote requests now go to Firestore instead, which the dashboard reads. See the
+ * README's "Recording the request (Firebase)" section. This file was never
+ * deployed, and the site no longer posts anywhere it could listen: the form
+ * carries data-fb-project, not data-endpoint, so setting this up would record
+ * nothing.
+ *
+ * Kept only as a fallback if Firebase is ever abandoned. Deleting it costs
+ * nothing.
+ *
+ * ---------------------------------------------------------------------------
+ *
  * ERA Sanitary — quote requests by email, and a running list in a Sheet.
  *
  * The website has no server. This small Google Apps Script is the server: the

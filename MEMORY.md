@@ -43,7 +43,7 @@ time and committed rather than drawn by a CDN library — a stalled deferred scr
 blocks every script behind it.
 
 **Every integration is inert until configured**, and says so at build time.
-`quoteEndpoint`, `reviewUrl`, `reviews.items`, `photos/` all no-op cleanly. The
+`firebase.projectId`, `reviewUrl`, `reviews.items`, `photos/` all no-op cleanly. The
 client supplies these over weeks and the site must be correct throughout.
 
 **Guards over vigilance.** Four build-time guards, each added after the failure

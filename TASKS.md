@@ -30,9 +30,12 @@ Ordered by what unblocks getting paid, not by what is interesting. Status as of
       `checkAreaCount();` and `checkPhotos();`.
       Brings: 22 trade pages, quote recording, review QR, open-now badge,
       photo pipeline. The site goes from 10 pages to 32.
-- [ ] **Deploy `tools/quote-alert.gs`** at script.google.com (~5 min), paste the
-      Web app URL into `business.json → quoteEndpoint`.
+- [ ] **Set up Firebase** — free Spark plan, **no credit card**. Create the
+      project, enable Email/Password sign-in, create Firestore, paste
+      `firestore.rules` with your UID in `isOwner()`, then put the project ID in
+      `business.json → firebase.projectId`. Full steps in the README.
       Until then every quote request is a WhatsApp message that scrolls away.
+      This replaces `tools/quote-alert.gs`, which was never deployed.
 - [ ] **Paste real Google reviews** into `content/reviews.json`.
       The section is built and hidden until there is something true in it.
 

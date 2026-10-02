@@ -78,6 +78,39 @@ silently.
 To change the number, edit `phones` in `content/business.json`; the `primary`
 entry is the one the form and the CTAs use.
 
+### Recording the request (Firebase)
+
+A WhatsApp chat scrolls away, so every request is also written to Firestore,
+where the dashboard can read it. Firebase's free Spark plan covers this with **no
+credit card** — Auth and Firestore are free; only Cloud Functions and Cloud
+Storage need a card, and neither is used.
+
+Nothing is loaded onto the page to do it. The form posts one document to the
+Firestore REST API with a plain `fetch`, so there is still no third-party script
+anywhere on the site. The project ID is not a secret — it is half of a public URL
+— and `firestore.rules` is what actually protects the data.
+
+Setup, once:
+
+1. Create a project at console.firebase.google.com
+2. **Authentication → Sign-in method →** enable Email/Password
+3. **Authentication → Users →** add your own account, then copy its **UID**
+4. **Firestore Database → Create**, in production mode
+5. Paste `firestore.rules` into **Build → Firestore → Rules**, with your UID in
+   the `isOwner()` list first — while that list is empty nobody can read the
+   leads, which is the safe way to be wrong
+6. Put the project ID into `content/business.json` → `firebase.projectId`, then
+   rebuild and push
+
+While `projectId` is empty the build says so and the form behaves exactly as it
+did before: WhatsApp opens, nothing is recorded.
+
+**After any change to the rules, submit a real request and go and look in
+Firestore.** `recordQuote()` swallows its errors on purpose, so that a recording
+failure can never cost the customer their WhatsApp conversation — which also
+means a rule that is too strict loses leads with nothing shown on screen and
+nothing in the console.
+
 ## Google reviews
 
 `content/reviews.json` holds real Google reviews, **copied in by hand**. Nothing

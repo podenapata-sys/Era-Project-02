@@ -181,20 +181,52 @@
     if (!win) window.location.href = url; // popup blocked — navigate instead
   });
 
+  /* Write the request to Firestore so it survives the WhatsApp chat scrolling
+     away. Posted straight to the REST API: loading the Firebase SDK would put a
+     third-party script on a public page, and a stalled script on mobile data
+     blocks every script behind it.
+
+     No sendBeacon here, unlike the Apps Script endpoint this replaces. Firestore
+     needs Content-Type: application/json, which makes the browser send a CORS
+     preflight, and a beacon cannot be preflighted. fetch with keepalive survives
+     the navigation that window.open causes, which is the only thing the beacon
+     was buying. Firestore answers the preflight properly — Apps Script did not,
+     which is why that path used text/plain.
+
+     Fails silently, by design: the customer's message has already gone to
+     WhatsApp by the time this runs, and a recording problem must never cost them
+     the conversation. The cost of that silence is that a too-strict Firestore
+     rule also loses leads with nothing shown anywhere, so after changing the
+     rules, submit a real request and go and look in Firestore. */
   function recordQuote(payload) {
-    var endpoint = form.getAttribute('data-endpoint');
-    if (!endpoint) return;   // not configured yet — the form works without it
+    var project = form.getAttribute('data-fb-project');
+    if (!project) return;   // not configured yet — the form works without it
+
+    /* The honeypot. A human never sees the field, so anything in it came from a
+       script filling every input. Dropped here rather than sent: the Firestore
+       rules accept a fixed set of keys, so posting the field at all would be
+       rejected, and this keeps the junk out of the collection entirely. The
+       WhatsApp hand-off still happens — on the slim chance a real person
+       somehow filled it, they keep their conversation. */
+    if (payload.company) return;
+
+    var collection = form.getAttribute('data-fb-collection') || 'leads';
     try {
-      var body = JSON.stringify(payload);
-      /* text/plain avoids a CORS preflight; Apps Script would reject the OPTIONS
-         request and the beacon would never be sent. */
-      if (navigator.sendBeacon) {
-        var blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
-        if (navigator.sendBeacon(endpoint, blob)) return;
-      }
-      fetch(endpoint, {
-        method: 'POST', body: body, keepalive: true, mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
+      /* Firestore wants every value tagged with its type. Everything here is a
+         string; `status` and `source` are pinned to what the rules demand. */
+      var fields = {};
+      var doc = {
+        name: payload.name, phone: payload.phone, category: payload.category,
+        items: payload.items, lang: payload.lang, page: payload.page,
+        status: 'new', source: 'website', createdAt: new Date().toISOString()
+      };
+      for (var k in doc) fields[k] = { stringValue: String(doc[k] == null ? '' : doc[k]) };
+
+      fetch('https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(project) +
+            '/databases/(default)/documents/' + encodeURIComponent(collection), {
+        method: 'POST', keepalive: true,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: fields })
       }).catch(function () {});
     } catch (err) { /* never let recording break the WhatsApp hand-off */ }
   }
