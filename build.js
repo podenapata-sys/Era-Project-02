@@ -957,6 +957,7 @@ function adminPage() {
       <div class="bar">
         <input id="search" type="search" placeholder="Search" aria-label="Search by name, phone, customer ID or address">
         <button class="btn btn--sm" type="button" id="addJob">+ New job</button>
+        <button class="btn btn--ghost btn--sm" type="button" id="exportCsv">Export</button>
         <button class="btn btn--ghost btn--sm" type="button" id="signout">Sign out</button>
       </div>
 
@@ -1062,6 +1063,18 @@ function adminPage() {
 <meta name="theme-color" content="#0b0b0d">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/admin.css">
+<!-- Nothing renders until the page has checked it is not inside someone else's
+     frame. A framed dashboard lets another site cover it with its own buttons
+     and collect the owner's taps. Hiding first and showing after the check is
+     what makes it work: a redirect alone still paints the page for a moment.
+
+     This is the one page allowed to need JavaScript to show anything. Every
+     customer-facing page in this site works with JavaScript off, and must. -->
+<style>html{display:none}</style>
+<script>
+(function(){try{if(self===top){document.documentElement.style.display='block';}
+else{top.location=self.location;}}catch(e){/* cross-origin: stay hidden */}})();
+</script>
 </head>
 <body>
 <header class="top">

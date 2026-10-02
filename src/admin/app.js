@@ -63,14 +63,14 @@ const esc = s => String(s == null ? '' : s)
    deliberately: it only moves when there is a reason to move it. */
 let initializeApp;
 let getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged;
-let getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc,
-    addDoc, setDoc, deleteDoc;
+let initializeFirestore, persistentLocalCache, collection, onSnapshot, query,
+    orderBy, doc, updateDoc, addDoc, setDoc, deleteDoc;
 try {
   ({ initializeApp } = await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js'));
   ({ getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } =
     await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js'));
-  ({ getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc,
-     addDoc, setDoc, deleteDoc } =
+  ({ initializeFirestore, persistentLocalCache, collection, onSnapshot, query,
+     orderBy, doc, updateDoc, addDoc, setDoc, deleteDoc } =
     await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js'));
 } catch (ex) {
   $('bootErr').textContent =
@@ -79,12 +79,20 @@ try {
   throw ex;   // stops the module here; the console keeps the real reason
 }
 
-const auth = getAuth(initializeApp(CFG));
-const db = getFirestore();
+const app = initializeApp(CFG);
+const auth = getAuth(app);
+/* Keeps working on a dead connection, which the shop's is, regularly. Reads come
+   from the device and writes queue until it is back. persistentLocalCache is the
+   modern form; enableIndexedDbPersistence is deprecated.
+
+   It costs something and the README says so: the cache puts the customer list,
+   with addresses and balances, into IndexedDB on that device. Single-tab by
+   default — a second tab falls back to memory and still works. */
+const db = initializeFirestore(app, { localCache: persistentLocalCache() });
 
 let leads = [], jobs = [];
 let view = 'dues', range = 'all', onDate = '', q = '';
-let editing = null, paying = null;
+let editing = null, paying = null, converting = null;
 let unsubLeads = null, unsubJobs = null;
 
 /* ---------- money ----------
@@ -305,10 +313,12 @@ function leadCard(r) {
     '</div>' +
     (r.category ? '<p class="cat">' + esc(r.category) + '</p>' : '') +
     (r.items ? '<p class="items">' + esc(r.items) + '</p>' : '<p class="muted items">No item list</p>') +
-    (tel ? '<div class="acts">' +
-      '<a class="btn btn--sm" href="tel:' + esc(tel) + '">Call ' + esc(r.phone) + '</a>' +
-      '<a class="btn btn--ghost btn--sm" href="https://wa.me/' + esc(wa) + '" target="_blank" rel="noopener">WhatsApp</a>' +
-    '</div>' : '<p class="muted">No phone number</p>') +
+    '<div class="acts">' +
+      (tel ? '<a class="btn btn--sm" href="tel:' + esc(tel) + '">Call ' + esc(r.phone) + '</a>' +
+             '<a class="btn btn--ghost btn--sm" href="https://wa.me/' + esc(wa) + '" target="_blank" rel="noopener">WhatsApp</a>'
+           : '<span class="muted">No phone number</span>') +
+      '<button class="btn btn--ghost btn--sm" type="button" data-lead="' + esc(r.id) + '">Make job</button>' +
+    '</div>' +
     '<div class="status" role="group" aria-label="Status">' +
       STATUSES.map(s => '<button type="button" class="chip' + (r.status === s ? ' is-on' : '') +
         '" data-id="' + esc(r.id) + '" data-s="' + s + '">' + s + '</button>').join('') +
@@ -353,10 +363,21 @@ function draw() {
 }
 
 /* ---------- dialogs ---------- */
-function openJob(j) {
+/* `from` is a lead being turned into a job. Its category is dropped into the
+   notes rather than guessed at in the dropdown: the lead carries the category in
+   whichever language the customer was reading, so matching it to an English
+   option would work for half the enquiries and silently mislabel the other half.
+   The owner picks the type; nothing from the enquiry is lost. */
+function openJob(j, from) {
   const f = $('jobForm');
   editing = j ? j.id : null;
-  $('jobDlgTitle').textContent = j ? 'Edit job' : 'New job';
+  converting = from ? from.id : null;
+  if (from) j = {
+    name: from.name, phone: from.phone, items: from.items,
+    notes: 'From the website' + (from.category ? ' \u2014 ' + from.category : ''),
+    visitDate: today(), leadId: from.id,
+  };
+  $('jobDlgTitle').textContent = from ? 'New job from enquiry' : j ? 'Edit job' : 'New job';
   $('jobErr').hidden = true;
   const el = f.elements;
   el.name.value = str(j && j.name);
@@ -415,7 +436,65 @@ $('signin').addEventListener('submit', async (e) => {
 $('signout').addEventListener('click', () => signOut(auth));
 $('search').addEventListener('input', () => { q = $('search').value.trim().toLowerCase(); draw(); });
 $('onDate').addEventListener('input', () => { onDate = $('onDate').value; draw(); });
-$('addJob').addEventListener('click', () => openJob(null));
+$('addJob').addEventListener('click', () => openJob(null, null));
+$('exportCsv').addEventListener('click', exportCsv);
+
+/* ---------- export ----------
+   Whatever is on screen, as a CSV that opens in Excel. Two things Excel does
+   have to be worked around, and both of them matter here:
+
+   Without a byte-order mark it reads the file as the system's legacy encoding,
+   which turns every Bengali name into mojibake. The \ufeff below is that mark.
+
+   And it strips the leading zero from anything that looks like a number, which
+   ruins every Bangladeshi mobile — 01711954094 becomes 1711954094, and the
+   column is useless for the one thing it exists for. The ="..." form keeps it a
+   string; Google Sheets and LibreOffice understand it too. Applied only to the
+   phone column, because it is ugly and nothing else needs it.
+
+   Amounts go out as bare numbers with no currency symbol, so the columns add up
+   in the spreadsheet. A column of "৳12,000" is text, and text does not sum. */
+function csvCell(v) {
+  return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+}
+function csvTel(v) {
+  return '="' + String(v == null ? '' : v).replace(/"/g, '') + '"';
+}
+
+function exportCsv() {
+  let head, rows, what;
+  if (view === 'leads') {
+    what = 'enquiries';
+    head = ['Received', 'Name', 'Mobile', 'Category', 'Items', 'Status', 'Language', 'Page'];
+    rows = leads.filter(matchLead)
+      .filter(l => inRange(str(l.createdAt).slice(0, 10)))
+      .map(l => [csvCell(l.createdAt), csvCell(l.name), csvTel(l.phone),
+                 csvCell(l.category), csvCell(l.items), csvCell(l.status),
+                 csvCell(l.lang), csvCell(l.page)]);
+  } else {
+    what = view;
+    head = ['Customer ID', 'Name', 'Mobile', 'Address', 'Type', 'Items',
+            'Total', 'Paid', 'Due', 'Date', 'Next', 'Notes'];
+    rows = visibleJobs().map(j => [
+      csvCell(j.customerId), csvCell(j.name), csvTel(j.phone), csvCell(j.address),
+      csvCell(j.jobTypeLabel), csvCell(j.items),
+      csvCell(round2(j.total)), csvCell(paidOf(j)), csvCell(dueOf(j)),
+      csvCell(j.visitDate), csvCell(j.nextDate), csvCell(j.notes),
+    ]);
+  }
+
+  const text = '\ufeff' + [head.map(csvCell).join(',')]
+    .concat(rows.map(r => r.join(','))).join('\r\n') + '\r\n';
+
+  const url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = what + '-' + today() + '.csv';
+  a.click();
+  /* Not revoked immediately: in some browsers that cancels the download before
+     it has read the blob. */
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
 
 document.querySelector('.tabs').addEventListener('click', (e) => {
   const b = e.target.closest('.tab');
@@ -476,8 +555,20 @@ $('jobForm').addEventListener('submit', async (e) => {
       payments: was ? was.payments : [],
       createdAt: was ? was.createdAt : '',
       deletedAt: was ? was.deletedAt : '',
-      leadId: was ? was.leadId : '',
+      leadId: was ? was.leadId : (converting || ''),
     });
+    /* Marking the enquiry won is a second write that can fail on its own. The
+       job is already saved by then, so a failure here must not look like the
+       whole thing failed — it is reported on the page and the job stays. The
+       link is stored on the JOB, so nothing is lost if this never lands. */
+    if (converting) {
+      try {
+        await updateDoc(doc(db, COLL, converting), { status: 'won' });
+      } catch (ex) {
+        fail('Job saved, but the enquiry could not be marked won', ex);
+      }
+      converting = null;
+    }
     clearFail();
     $('jobDlg').close();
   } catch (ex) {
@@ -520,6 +611,13 @@ $('list').addEventListener('click', async (e) => {
       await updateDoc(doc(db, COLL, chip.dataset.id), { status: chip.dataset.s });
       clearFail();
     } catch (ex) { fail('Could not change status', ex); }
+    return;
+  }
+
+  const mk = e.target.closest('[data-lead]');
+  if (mk) {
+    const lead = leads.find(l => l.id === mk.dataset.lead);
+    if (lead) openJob(null, lead);
     return;
   }
 

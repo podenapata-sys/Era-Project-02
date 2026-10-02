@@ -13,7 +13,7 @@ npm run serve     # build, then serve dist/ on localhost
 
 ```
 content/business.json   Facts: name, phones, address, hours, payments
-content/copy.json       All copy, en + bn, in parity (69 keys each)
+content/copy.json       All copy, en + bn, in parity (94 keys each, enforced)
 build.js                Renders dist/ — 4 pages × 2 languages + sitemap + robots
 src/assets/             CSS, JS and images, copied to dist/assets verbatim
 ```
@@ -43,7 +43,8 @@ off. Nothing else changed about how it behaves.
 
 Almost everything is in `content/copy.json`. **Keep `en` and `bn` in step** — the
 build reads the same keys from both, so a key added to one and not the other
-renders empty on that language's pages.
+renders empty on that language's pages. `checkCopyParity()` fails the build and
+names the missing key, which beats finding it on a Bengali page months later.
 
 Adding a product category — append an object to `categories` in *both* `en` and
 `bn`:
@@ -105,12 +106,67 @@ Setup, once:
 While `projectId` is empty the build says so and the form behaves exactly as it
 did before: WhatsApp opens, nothing is recorded.
 
-### The leads dashboard
+### The dashboard
 
-`/admin/` lists what arrives. Sign in with the Firebase account, see every lead
-newest first, tap the number to call or open WhatsApp, and move each one along:
-new → called → quoted → won / lost. It writes nothing but `status`; the rules
-reject anything else.
+`/admin/` has four views.
+
+**Dues** is the landing screen, because "who owes me money" is the question the
+shop actually has. Everyone with an outstanding balance, biggest debt first.
+Each row has a **Remind** button that opens WhatsApp with a message naming the
+shop, the work and the amount owed, in Bengali, with the figure in Bengali
+numerals. That one button is the point of the whole thing: it turns a list of
+debts into money collected without typing anything.
+
+**Jobs** is every job, filtered by Today / This week / This month / All or a
+single date. Add one, edit it, take a payment against it without retyping the
+record, or delete it to the Bin. Search by name, mobile, customer ID or address.
+Stat cards across the top give jobs in view, billed, collected and outstanding.
+
+**Leads** is the website quote requests, as before: newest first, tap to call or
+WhatsApp, and move each along new → called → quoted → won / lost. **Make job**
+turns one into a job in a tap — name, mobile and items carry over, the enquiry
+is marked won, and the job keeps a `leadId` pointing back at it.
+
+**Bin** holds deleted jobs for 30 days with Restore beside each one.
+
+Every view has **Export**, which downloads what is on screen as a CSV.
+
+#### How a job is stored
+
+`paid` and `due` are **never stored**. `paid` is the sum of the `payments` log
+and `due` is `total - paid`, both computed when drawn. A stored figure that
+disagrees with the log it came from is the one bug this makes impossible, and it
+is why there is no "recalculate" button anywhere. Amounts are rounded at every
+boundary, because a run of floating-point additions drifts and a customer's
+balance must never read 6999.999999999999.
+
+The customer ID (`ER-4094`) is the last four digits of the mobile. It is a handle
+for the owner to say out loud, not a key — two customers whose numbers end the
+same get the same one, which is fine because Firestore's document id is the key.
+
+Deleting is a soft delete: it sets `deletedAt` and the row moves to the Bin. The
+owner is doing this one-handed on a phone and a stray tap must not destroy what a
+customer owes. The real delete happens on load, to anything that has sat in the
+Bin past `dashboard.binDays` — there are no Cloud Functions on the free plan, so
+there is nothing else to run it. **A dashboard nobody opens therefore never
+purges**, which is acceptable behaviour for a bin. A row whose `deletedAt` cannot
+be parsed is left alone rather than treated as ancient.
+
+Dates are built from local components, never `toISOString()`. Dhaka is UTC+6, so
+the UTC path stamps a job entered at 01:00 with yesterday's date and then hides
+it from Today. "This week" starts Sunday, because Bangladesh works Sunday to
+Thursday.
+
+#### The CSV
+
+Two things Excel does had to be worked around, and both matter here. Without a
+byte-order mark it reads the file as the system's legacy encoding and every
+Bengali name becomes mojibake, so the file starts with one. And it strips the
+leading zero from anything that looks like a number, which ruins every
+Bangladeshi mobile — so the phone column is written as `="01711954094"`, which
+Google Sheets and LibreOffice understand too. Amounts go out as bare numbers
+with no currency symbol, so the columns add up; a column of "৳12,000" is text,
+and text does not sum.
 
 **Tap the logo at the bottom of any page three times to open it.** The shop owner
 reads leads on their phone, where typing a URL is a nuisance and a bookmark gets
@@ -141,10 +197,30 @@ indistinguishable from the dashboard being broken. The imports are wrapped now
 and say *“Could not load Firebase from Google”* instead. On Dhaka mobile data
 that is a realistic Tuesday.
 
-Who may read the leads is `isOwner()` in `firestore.rules`, mirrored in
+Who may read any of it is `isOwner()` in `firestore.rules`, mirrored in
 `firebase.ownerUids` for what the page draws. **The rules are the source of
 truth**; the build fails if the two lists disagree. The page's own check is a UI
 gate only — Firestore refuses a stranger's read whatever the page does.
+
+`leads` and `jobs` are guarded differently and the difference is deliberate. The
+public may **create** a lead, because the quote form posts from a page with
+nobody signed in; `validLead()` is therefore a real trust boundary and its size
+caps are load-bearing. Nothing unauthenticated may touch `jobs` at all — a lead
+is a stranger asking for a price, a job is a named customer, their address and
+their debt. `validJob()` exists to catch a bug in the dashboard, not an attacker,
+which is why it checks the payments list for being a list of sane length rather
+than field by field.
+
+The dashboard also refuses to be framed: nothing renders until it has checked it
+is not inside someone else's page. GitHub Pages cannot send `X-Frame-Options`
+and `frame-ancestors` is not valid in a `<meta>`, so it hides first in CSS and
+reveals itself from an inline script. **This is the one page in the site that
+needs JavaScript to show anything**, and the only one allowed to.
+
+Firestore's offline cache is on, so the dashboard keeps working on a dead
+connection: reads come from the device and writes queue until it is back. The
+cost is that the customer list, with addresses and balances, sits in IndexedDB
+on that device.
 
 This is the one page that loads a third-party script, and the deploy workflow
 fails if `firebasejs` ever appears outside `dist/admin/`. It carries `noindex`,
@@ -155,7 +231,29 @@ is security, just keeping the back office out of search results.
 Firestore.** `recordQuote()` swallows its errors on purpose, so that a recording
 failure can never cost the customer their WhatsApp conversation — which also
 means a rule that is too strict loses leads with nothing shown on screen and
-nothing in the console.
+nothing in the console. The dashboard is the opposite: it reports a refused write
+on the page, so a rule problem there is loud.
+
+### Standing this up for another shop
+
+Nothing in `src/admin/app.js` is specific to ERA — that is deliberate, and a
+literal phone number or currency in there is a bug. To point it at a different
+business:
+
+1. Change `content/business.json` and `content/copy.json`. The `dashboard` block
+   carries `idPrefix`, `currency`, `numberLocale` and `binDays`; the job-type
+   dropdown is generated at build time from the same `categories` and `services`
+   the public site renders, so there is no second list to maintain.
+2. Create a Firebase project and enable Email/Password, as above.
+3. Paste `firestore.rules` with the new owner's UID in `isOwner()`, and put the
+   same UID in `firebase.ownerUids`.
+4. Copy `apiKey`, `authDomain` and `appId` into `firebase.webConfig`.
+
+The dashboard stays in English whatever the site's languages are. It is one
+owner's back office, not something a customer reads, which is also why its
+wording lives in `build.js` rather than `copy.json` — the one exception to that
+rule. The payment reminder is the exception to the exception: a **customer**
+reads it, so it is `duesReminder` in `copy.json`, in both languages.
 
 ## Google reviews
 

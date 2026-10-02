@@ -21,6 +21,12 @@ Anything the browser holds is readable by anyone who opens the page source. A
 "secret token" there is not a secret. The quote endpoint defends itself with a
 honeypot, length caps and per-phone rate limiting instead.
 
+**3b. Never store a figure you can compute.** `paid` and `due` on a job are
+summed from the payments log every time they are drawn, never written down. A
+stored total that disagrees with the log it came from is the bug this avoids by
+construction, and no amount of care with a "recalculate" button is as good as
+the figure not existing.
+
 **4. Never change the address, phone numbers, map coordinates or opening hours**
 without the client saying so explicitly. These are in `content/business.json`
 and mirrored in `copy.json`; change both, in both languages, or the build guard
@@ -68,7 +74,7 @@ are run by hand, occasionally, and their output is committed. Adding one to the
 - **Escape everything.** `esc()` for text, `attr()` for attribute values. Content
   is client-supplied and contains `&`, quotes and Bengali punctuation.
 - **Both languages, always.** A new copy key goes into `en` and `bn` together.
-  Parity is currently 80 keys each.
+  Parity is currently 94 keys each, and `checkCopyParity()` enforces it.
 - **No hardcoded strings in `build.js`.** Anything a visitor reads lives in
   `copy.json`. Month names are the one exception, and they are commented as such.
 
@@ -83,6 +89,14 @@ are run by hand, occasionally, and their output is committed. Adding one to the
 - Never nest interactive elements — no button inside a link.
 - The page must be usable with JavaScript off. The open-now badge stays hidden
   rather than asserting a state nobody checked.
+
+  `/admin/` is the one exception, and it is deliberate: it hides itself in CSS
+  and reveals itself from script only after confirming it is not inside another
+  site's frame. Without that, a framed dashboard can be covered with someone
+  else's buttons and the owner's taps collected. GitHub Pages cannot send
+  `X-Frame-Options` and `frame-ancestors` is not valid in a `<meta>`, so there is
+  no no-JavaScript version of this. It applies to `/admin/` and nothing else —
+  **never put it on a page a customer reaches.**
 
 ## Git
 
