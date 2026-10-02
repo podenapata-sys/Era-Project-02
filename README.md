@@ -105,6 +105,30 @@ Setup, once:
 While `projectId` is empty the build says so and the form behaves exactly as it
 did before: WhatsApp opens, nothing is recorded.
 
+### The leads dashboard
+
+`/admin/` lists what arrives. Sign in with the Firebase account, see every lead
+newest first, tap the number to call or open WhatsApp, and move each one along:
+new → called → quoted → won / lost. It writes nothing but `status`; the rules
+reject anything else.
+
+To switch it on, add a Web app in **Firebase Console → Project settings → Your
+apps** (the `</>` icon, any nickname, no Hosting), then copy `apiKey`,
+`authDomain` and `appId` into `content/business.json` under
+`firebase.webConfig`. Until then the page shows those instructions instead of a
+login box. Those keys are public by design — they name the project, they do not
+grant access to it.
+
+Who may read the leads is `isOwner()` in `firestore.rules`, mirrored in
+`firebase.ownerUids` for what the page draws. **The rules are the source of
+truth**; the build fails if the two lists disagree. The page's own check is a UI
+gate only — Firestore refuses a stranger's read whatever the page does.
+
+This is the one page that loads a third-party script, and the deploy workflow
+fails if `firebasejs` ever appears outside `dist/admin/`. It carries `noindex`,
+is excluded from the sitemap and is disallowed in `robots.txt` — none of which
+is security, just keeping the back office out of search results.
+
 **After any change to the rules, submit a real request and go and look in
 Firestore.** `recordQuote()` swallows its errors on purpose, so that a recording
 failure can never cost the customer their WhatsApp conversation — which also

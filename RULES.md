@@ -26,10 +26,20 @@ without the client saying so explicitly. These are in `content/business.json`
 and mirrored in `copy.json`; change both, in both languages, or the build guard
 stops you — which is the point.
 
-**5. No third-party script on the site.** Not for analytics, not for chat
-widgets, not for QR codes, not for review embeds. A deferred script that stalls
-blocks every script behind it, and on Dhaka mobile data that is when it happens.
-Generate at build time and commit the output instead.
+**5. No third-party script on any page a customer can reach.** Not for
+analytics, not for chat widgets, not for QR codes, not for review embeds. A
+deferred script that stalls blocks every script behind it, and on Dhaka mobile
+data that is when it happens. Generate at build time and commit the output
+instead.
+
+The one exception is `/admin/`, the leads dashboard, which loads the Firebase
+SDK because Auth cannot be done over REST without minting and refreshing tokens
+by hand. The reason for the rule does not apply there: it is one signed-in owner
+opening their own back office deliberately, not a stranger on a 3G connection
+deciding whether to trust a shop. **This is not a precedent.** The quote form
+posts leads to Firestore over plain REST precisely so the contact page stays
+clean, and the deploy workflow fails the build if `firebasejs` appears anywhere
+outside `dist/admin/`.
 
 **6. No `aggregateRating` or `review` markup in the JSON-LD.** Google's
 structured data policy disallows self-serving review markup — a business marking

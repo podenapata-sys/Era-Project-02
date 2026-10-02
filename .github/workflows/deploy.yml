@@ -53,8 +53,15 @@ jobs:
           test -f dist/bn/services.html
           test -f dist/services/core-cutting/index.html
           test -f dist/bn/services/core-cutting/index.html
-          # 5 flat pages x 2 languages, plus 11 trade pages x 2 languages.
-          test "$(find dist -name '*.html' | wc -l)" -eq 32
+          test -f dist/admin/index.html
+          # 5 flat pages x 2 languages, plus 11 trade pages x 2 languages,
+          # plus the leads dashboard at /admin/.
+          test "$(find dist -name '*.html' | wc -l)" -eq 33
+          # The dashboard is the only page allowed to load the Firebase SDK.
+          # If this ever matches a public page, a third-party script has leaked
+          # onto the site and will block its scripts for a customer on mobile data.
+          ! grep -rl 'firebasejs' dist --include='*.html' --include='*.js' \
+            | grep -v '^dist/admin/' | grep -q .
 
       - uses: actions/upload-pages-artifact@v3
         with:

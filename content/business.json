@@ -71,7 +71,15 @@
   },
   "firebase": {
     "projectId": "era-sanitary",
-    "leadsCollection": "leads"
+    "leadsCollection": "leads",
+    "ownerUids": [
+      "4VNXgYEnJTfRYci0PGqXAGQHReC3"
+    ],
+    "webConfig": {
+      "apiKey": "",
+      "authDomain": "",
+      "appId": ""
+    }
   },
   "reviewUrl": ""
 }

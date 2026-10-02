@@ -1,0 +1,132 @@
+/* ==========================================================================
+   ERA Sanitary — leads dashboard (/admin/).
+   Separate from the site's stylesheet on purpose. This is a tool for one person
+   who already knows what the shop sells; it shares the colour tokens so it does
+   not feel like a different company, and nothing else.
+
+   Built for a phone first. The job is "a lead came in, ring them back", and that
+   happens standing in the shop, not at a desk.
+   ========================================================================== */
+
+:root {
+  --bg: #0b0b0d; --surface: #141519; --surface-2: #16171b;
+  --line: #22242a; --line-ui: #6b6e78;
+  --text: #f3f3f4; --muted: #c9cbd2; --muted-2: #a7a9b2;
+  --amber: #f7b500; --ink: #151515;
+  --new: #f7b500; --called: #4da3ff; --quoted: #b98cff;
+  --won: #35c46a; --lost: #8b8e97;
+  --r: 12px; --r-sm: 8px;
+  --font: "Barlow", "Hind Siliguri", system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: 16px; line-height: 1.5;
+}
+[hidden] { display: none !important; }
+
+.top {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface);
+  position: sticky; top: 0; z-index: 5;
+}
+.top img { border-radius: 50%; }
+.top strong { font-size: 17px; font-weight: 800; }
+.muted { color: var(--muted-2); }
+.top .muted { font-size: 13px; }
+
+.wrap { max-width: 760px; margin: 0 auto; padding: 16px; }
+
+.box {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 20px; margin-bottom: 16px;
+}
+.box h2 { margin: 0 0 12px; font-size: 19px; }
+.box p { margin: 0 0 10px; font-size: 14.5px; color: var(--muted); }
+.box code {
+  background: var(--surface-2); padding: 1px 5px; border-radius: 4px;
+  font-size: 13px; color: var(--text);
+}
+label { display: block; margin: 12px 0 5px; font-size: 14px; font-weight: 600; }
+input {
+  width: 100%; padding: 11px 13px; font: inherit; color: var(--text);
+  background: var(--bg); border: 1px solid var(--line-ui); border-radius: var(--r-sm);
+}
+input:focus-visible { outline: 2px solid var(--amber); outline-offset: 1px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  margin-top: 14px; padding: 11px 18px; border: 0; border-radius: 999px;
+  background: var(--amber); color: var(--ink);
+  font: inherit; font-weight: 700; text-decoration: none; cursor: pointer;
+}
+.btn--ghost { background: transparent; color: var(--text); border: 1px solid var(--line-ui); }
+.btn--sm { margin-top: 0; padding: 8px 14px; font-size: 14px; }
+
+.err {
+  margin: 12px 0 0; padding: 10px 12px; border-radius: var(--r-sm);
+  background: rgb(216 35 42 / 14%); color: #ffb3b6; font-size: 14px;
+}
+
+.bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px;
+}
+.bar input { flex: 1 1 200px; width: auto; }
+.bar .btn { margin-top: 0; }
+
+.counts { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+.pill {
+  padding: 3px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700;
+  background: var(--surface-2); color: var(--muted);
+  border: 1px solid var(--line);
+}
+.pill--new    { color: var(--new); }
+.pill--called { color: var(--called); }
+.pill--quoted { color: var(--quoted); }
+.pill--won    { color: var(--won); }
+.pill--lost   { color: var(--lost); }
+
+.list { display: grid; gap: 12px; }
+.lead {
+  background: var(--surface); border: 1px solid var(--line);
+  border-left: 3px solid var(--line-ui);
+  border-radius: var(--r); padding: 16px;
+}
+/* The left edge carries the status, so a list of twenty is scannable without
+   reading any of them. Colour is never the only signal — the chip below says it
+   in words too. */
+.lead--new    { border-left-color: var(--new); }
+.lead--called { border-left-color: var(--called); }
+.lead--quoted { border-left-color: var(--quoted); }
+.lead--won    { border-left-color: var(--won); }
+.lead--lost   { border-left-color: var(--lost); }
+
+.lead__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.lead h2 { margin: 0; font-size: 17px; font-weight: 700; }
+.lead time { font-size: 13px; color: var(--muted-2); white-space: nowrap; }
+.cat { margin: 4px 0 0; font-size: 13.5px; font-weight: 600; color: var(--amber); }
+.items { margin: 8px 0 0; font-size: 14.5px; color: var(--muted); overflow-wrap: anywhere; }
+.meta { margin: 10px 0 0; font-size: 12.5px; overflow-wrap: anywhere; }
+
+.acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+.status { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.chip {
+  padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  background: transparent; border: 1px solid var(--line-ui); color: var(--muted);
+  font: inherit; font-size: 13px; font-weight: 600; text-transform: capitalize;
+}
+.chip:hover { border-color: var(--text); color: var(--text); }
+.chip.is-on { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+.chip:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+  .wrap { padding: 12px; }
+  .lead__head { flex-direction: column; gap: 2px; }
+  .acts .btn { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

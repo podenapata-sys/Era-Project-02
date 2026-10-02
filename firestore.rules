@@ -55,10 +55,15 @@ service cloud.firestore {
     //
     // createdAt is a client ISO string, not request.time. The REST API cannot
     // set a server timestamp without a transform commit, and the site posts over
-    // REST to avoid loading the Firebase SDK on a public page. A wrong phone
-    // clock therefore gives a wrong createdAt — so the dashboard sorts and
-    // displays by Firestore's own createTime, which the server sets and nothing
-    // on the client can influence. This field is kept only as a cross-check.
+    // REST to avoid loading the Firebase SDK on a public page.
+    //
+    // So this value comes from the visitor's device and a wrong clock gives a
+    // wrong time. The dashboard orders by it anyway — ISO 8601 sorts correctly as
+    // plain text — because the alternative is not available: Firestore sets a
+    // server-side createTime on every document, but the JavaScript SDK does not
+    // expose it on a snapshot, only the REST API returns it. A lead from a device
+    // with a bad clock therefore sorts to the wrong place in the list. That is
+    // the whole cost, and it is worth less than the SDK would cost the site.
     function validLead(d) {
       return d.keys().hasOnly([
                'name','phone','category','items','lang','page',

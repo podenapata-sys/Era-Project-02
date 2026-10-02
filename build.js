@@ -858,6 +858,197 @@ function jsonLd(t, lang) {
   };
 }
 
+/* The leads dashboard. Its own page, its own layout — it shares nothing with the
+   public site except the colour tokens, because it is a tool for one person
+   rather than a page that has to persuade anyone.
+
+   This is the ONE page allowed to load a third-party script. Firebase Auth
+   cannot be done over REST without minting and refreshing tokens by hand, and
+   the reason RULES.md bans third-party scripts — a stalled CDN blocking the
+   site's own JavaScript for a customer on mobile data — does not apply to a
+   signed-in owner opening their own back office on purpose. Nothing here reaches
+   any public page: the import lives in this string and nowhere else.
+
+   noindex, Disallow and omission from the sitemap keep it out of search results.
+   None of those is a security boundary. The boundary is Firebase Auth plus the
+   Firestore rules, which is why this page being publicly reachable is fine. */
+function adminPage() {
+  const cfg = fb();
+  const wc = cfg.webConfig || {};
+  const configured = !!(wc.apiKey && wc.authDomain && cfg.projectId);
+
+  const setup = `
+    <div class="box">
+      <h2>Not connected yet</h2>
+      <p>Open <strong>Firebase Console → Project settings → Your apps</strong> and add a
+         Web app if there is not one. Copy <code>apiKey</code>, <code>authDomain</code>
+         and <code>appId</code> into <code>content/business.json</code> under
+         <code>firebase.webConfig</code>, then rebuild and push.</p>
+      <p class="muted">These keys are public by design. They name the project; they do
+         not grant access to it. The Firestore rules decide that.</p>
+    </div>`;
+
+  const app = `
+    <form id="signin" class="box" hidden>
+      <h2>Sign in</h2>
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="username" required>
+      <label for="pass">Password</label>
+      <input id="pass" type="password" autocomplete="current-password" required>
+      <button class="btn" type="submit">Sign in</button>
+      <p class="err" id="signinErr" hidden></p>
+    </form>
+
+    <div id="app" hidden>
+      <div class="bar">
+        <div class="counts" id="counts"></div>
+        <input id="search" type="search" placeholder="Search name, phone or items" aria-label="Search leads">
+        <button class="btn btn--ghost" id="signout" type="button">Sign out</button>
+      </div>
+      <p class="err" id="appErr" hidden></p>
+      <div id="list" class="list" aria-live="polite"></div>
+    </div>`;
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Leads — ${esc(biz.name)}</title>
+<meta name="theme-color" content="#0b0b0d">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body>
+<header class="top">
+  <img src="../assets/img/era-logo.png" alt="" width="34" height="34">
+  <strong>Leads</strong>
+  <span class="muted">${esc(biz.name)}</span>
+</header>
+<main class="wrap">
+${configured ? app : setup}
+</main>
+${configured ? `<script type="module">
+const CFG = ${JSON.stringify({ ...wc, projectId: cfg.projectId })};
+const OWNERS = ${JSON.stringify(cfg.ownerUids || [])};
+const COLL = ${JSON.stringify(cfg.leadsCollection || 'leads')};
+const WA = ${JSON.stringify((biz.phones.find(p => p.primary) || biz.phones[0]).whatsapp)};
+const STATUSES = ['new', 'called', 'quoted', 'won', 'lost'];
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;');
+
+const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js');
+const { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } =
+  await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js');
+const { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } =
+  await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js');
+
+const auth = getAuth(initializeApp(CFG));
+const db = getFirestore();
+let rows = [];
+
+$('signin').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = $('signinErr'); err.hidden = true;
+  try {
+    await signInWithEmailAndPassword(auth, $('email').value.trim(), $('pass').value);
+  } catch (ex) {
+    /* Firebase's own messages name the failure precisely enough to act on. */
+    err.textContent = ex.code === 'auth/invalid-credential'
+      ? 'Wrong email or password.' : ex.message;
+    err.hidden = false;
+  }
+});
+
+$('signout').addEventListener('click', () => signOut(auth));
+$('search').addEventListener('input', draw);
+
+onAuthStateChanged(auth, (user) => {
+  /* A UI gate, not a boundary. Firestore refuses a stranger's read whatever this
+     does — this only keeps the page from drawing an empty shell and looking
+     broken when the rules are, correctly, saying no. */
+  const allowed = user && (!OWNERS.length || OWNERS.includes(user.uid));
+  $('signin').hidden = !!allowed;
+  $('app').hidden = !allowed;
+  if (!allowed) {
+    if (user) {
+      $('signinErr').textContent = 'That account is signed in but not allowed to read leads. UID: ' + user.uid;
+      $('signinErr').hidden = false;
+      signOut(auth);
+    }
+    return;
+  }
+  /* Ordered by createdAt, the client-written ISO string — see firestore.rules for
+     why the server's own createTime is not available here. */
+  onSnapshot(query(collection(db, COLL), orderBy('createdAt', 'desc')),
+    (snap) => { rows = snap.docs.map(d => ({ id: d.id, ...d.data() })); draw(); },
+    (ex) => { $('appErr').textContent = 'Could not read leads: ' + ex.message; $('appErr').hidden = false; });
+});
+
+function when(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return iso || '';
+  return d.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+
+function draw() {
+  const q = $('search').value.trim().toLowerCase();
+  const shown = q ? rows.filter(r =>
+    (r.name + ' ' + r.phone + ' ' + r.items + ' ' + r.category).toLowerCase().includes(q)) : rows;
+
+  const tally = STATUSES.map(s => s + ' ' + rows.filter(r => r.status === s).length);
+  $('counts').innerHTML = tally.map((t, i) =>
+    '<span class="pill pill--' + STATUSES[i] + '">' + esc(t) + '</span>').join('');
+
+  if (!shown.length) {
+    $('list').innerHTML = '<p class="muted">' + (rows.length ? 'Nothing matches that.' : 'No leads yet.') + '</p>';
+    return;
+  }
+
+  $('list').innerHTML = shown.map(r => {
+    const tel = String(r.phone || '').replace(/[^0-9+]/g, '');
+    const wa = tel.replace(/^\\+/, '');
+    return '<article class="lead lead--' + esc(r.status) + '">' +
+      '<div class="lead__head">' +
+        '<h2>' + (esc(r.name) || '<span class="muted">No name</span>') + '</h2>' +
+        '<time>' + esc(when(r.createdAt)) + '</time>' +
+      '</div>' +
+      (r.category ? '<p class="cat">' + esc(r.category) + '</p>' : '') +
+      (r.items ? '<p class="items">' + esc(r.items) + '</p>' : '<p class="muted items">No item list</p>') +
+      (tel ? '<div class="acts">' +
+        '<a class="btn btn--sm" href="tel:' + esc(tel) + '">Call ' + esc(r.phone) + '</a>' +
+        '<a class="btn btn--sm btn--ghost" href="https://wa.me/' + esc(wa) + '" target="_blank" rel="noopener">WhatsApp</a>' +
+      '</div>' : '<p class="muted">No phone number</p>') +
+      '<div class="status" role="group" aria-label="Status">' +
+        STATUSES.map(s => '<button type="button" class="chip' + (r.status === s ? ' is-on' : '') +
+          '" data-id="' + esc(r.id) + '" data-s="' + s + '">' + s + '</button>').join('') +
+      '</div>' +
+      '<p class="meta muted">' + esc(r.lang === 'bn' ? 'Bengali page' : 'English page') + ' · ' + esc(r.page || '') + '</p>' +
+    '</article>';
+  }).join('');
+}
+
+/* Delegated, because the list is replaced wholesale on every snapshot. */
+$('list').addEventListener('click', async (e) => {
+  const b = e.target.closest('.chip');
+  if (!b) return;
+  try {
+    await updateDoc(doc(db, COLL, b.dataset.id), { status: b.dataset.s });
+  } catch (ex) {
+    $('appErr').textContent = 'Could not change status: ' + ex.message;
+    $('appErr').hidden = false;
+  }
+});
+</script>` : ''}
+</body>
+</html>
+`;
+}
+
 function layout({ lang, page, body, t, slug, base }) {
   const meta = page === 'trade' ? tradeMeta(lang, slug) : META[lang][page];
   const alt = lang === 'en' ? 'bn' : 'en';
@@ -969,6 +1160,39 @@ function copyDir(from, to) {
 
    The count is compared after folding Bengali digits to ASCII, because the
    Bengali page states it as ১৪ and both are the same claim. */
+/* Two lists of the same thing, which is the shape of every content bug this file
+   already guards against. business.firebase.ownerUids decides what the dashboard
+   draws; isOwner() in firestore.rules decides what Firestore actually allows.
+   Let them drift and you get either a dashboard that renders for an account the
+   server will refuse, or — worse — one that hides the leads from the person who
+   is allowed to read them, with no error to explain it.
+
+   firestore.rules is the source of truth here, because it is the one that
+   protects the data. This only checks that the copy agrees. */
+function checkFirebaseUids() {
+  const rulesPath = path.join(ROOT, 'firestore.rules');
+  if (!fs.existsSync(rulesPath)) return;
+
+  const src = fs.readFileSync(rulesPath, 'utf8');
+  const block = src.match(/function isOwner\(\)[\s\S]*?\n {4}\}/);
+  if (!block) {
+    throw new Error('firestore.rules: could not find isOwner() — has the file been ' +
+      'restructured? The dashboard\'s UID list is checked against it.');
+  }
+  /* Quoted strings inside the function body, minus anything commented out. */
+  const inRules = (block[0].split('\n')
+    .filter(l => !l.trim().startsWith('//'))
+    .join('\n').match(/'([^']+)'/g) || []).map(s => s.slice(1, -1));
+
+  const inJson = fb().ownerUids || [];
+  const same = inRules.length === inJson.length && inRules.every(u => inJson.includes(u));
+  if (!same) {
+    throw new Error('content mismatch: business.firebase.ownerUids is ' +
+      `[${inJson.join(', ')}] but firestore.rules isOwner() allows ` +
+      `[${inRules.join(', ')}]. The rules are the source of truth — make the JSON match.`);
+  }
+}
+
 function checkAreaCount() {
   for (const lang of ['en', 'bn']) {
     const t = copy[lang];
@@ -1031,6 +1255,7 @@ function build() {
   checkAreaCount();
   checkReviews();
   checkPhotos();
+  checkFirebaseUids();
 
   fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
@@ -1078,13 +1303,21 @@ ${['en', 'bn'].map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="$
 `;
   fs.writeFileSync(path.join(OUT, 'sitemap.xml'), sitemap);
   fs.writeFileSync(path.join(OUT, '.nojekyll'), '');
+
+  /* The leads dashboard. Written after the sitemap and deliberately absent from
+     it: it is a back office, not a page anyone should find by searching for the
+     shop. Keeping it out of Google is not what protects it — Firebase Auth and
+     the Firestore rules are — it just should not be a search result. */
+  fs.mkdirSync(path.join(OUT, 'admin'), { recursive: true });
+  fs.writeFileSync(path.join(OUT, 'admin', 'index.html'), adminPage());
   fs.writeFileSync(path.join(OUT, 'robots.txt'),
-    `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
+    `User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: ${SITE}/sitemap.xml\n`);
 
   console.log(`Built ${count} pages (${PAGES.length} × en/bn, plus ${trades} trade pages) + sitemap + robots into dist/`);
   console.log(`Site origin: ${SITE}${process.env.SITE_URL ? ' (from SITE_URL)' : ' (from business.json)'}`);
   if (!biz.email) console.log('NOTE: business.email is null — no email is shown anywhere on the site.');
   if (!fb().projectId) console.log('NOTE: business.firebase.projectId is empty — the quote form opens WhatsApp only, nothing is recorded. Create a Firebase project (free, no card) and paste its ID; see README.');
+  else if (!(fb().webConfig || {}).apiKey) console.log('NOTE: business.firebase.webConfig is empty — /admin/ shows setup instructions instead of the leads. Firebase Console -> Project settings -> Your apps -> Web app.');
   if (!biz.reviewUrl) console.log('NOTE: business.reviewUrl is empty — the Google review block and QR are omitted from every page.');
 }
 
