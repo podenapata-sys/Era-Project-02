@@ -391,6 +391,8 @@ function openJob(j, from) {
      again next time the dialog opens. */
   const sel = el.jobType;
   sel.querySelectorAll('option[data-adhoc]').forEach(o => o.remove());
+  /* A job always carries its slug and its label together, because shape()
+     writes them together — so matching on the slug alone is enough here. */
   const wantV = str(j && j.jobType), wantL = str(j && j.jobTypeLabel);
   if ((wantV || wantL) && !Array.from(sel.options).some(o => o.value === wantV)) {
     const o = document.createElement('option');
@@ -548,7 +550,10 @@ $('jobForm').addEventListener('submit', async (e) => {
       ...(was || {}),
       name, phone, address: f.address.value.trim(),
       customerId: custId(phone),
-      jobType: f.jobType.value, jobTypeLabel: opt ? opt.textContent : '',
+      jobType: f.jobType.value,
+      /* The placeholder option carries no label — an unset type records as
+         empty, not as the words "Not set". */
+      jobTypeLabel: opt && opt.value ? opt.textContent : '',
       items: f.items.value.trim(), notes: f.notes.value.trim(),
       total,
       visitDate: f.visitDate.value, nextDate: f.nextDate.value,

@@ -924,7 +924,7 @@ function adminPage() {
      here and not in copy.json, which is the standing exception for /admin/:
      it is one owner's back office, English-only by decision, and nothing a
      customer reads. */
-  const jobTypes = [
+  const jobTypes = '<option value="">Not set</option>' + [
     [t_admin.supplyTitle, t_admin.categories],
     [t_admin.servicesTitle, t_admin.services],
   ].map(([label, list]) => `<optgroup label="${attr(label)}">` +
