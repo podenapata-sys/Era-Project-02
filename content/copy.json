@@ -402,7 +402,20 @@
     "worksIntro": "Supplied and fitted by our own team, with the materials from our own shelves.",
     "reviewsTitle": "What customers say",
     "reviewsCount": "reviews on Google",
-    "reviewsAll": "Read them all on Google"
+    "reviewsAll": "Read them all on Google",
+    "tradeInDhaka": "in Dhaka",
+    "tradeAreasTitle": "Where we work",
+    "tradeQuoteCta": "Request a quote for this work",
+    "tradeBackToAll": "All services",
+    "tradeOtherTitle": "Other work we take on",
+    "reviewTitle": "Happy with the work?",
+    "reviewBody": "Scan the code or tap the link to leave us a Google review. It takes a minute and it helps other customers find us.",
+    "reviewCta": "Leave a Google review",
+    "reviewQrAlt": "QR code linking to our Google review page",
+    "openNow": "Open now",
+    "openUntil": "until",
+    "closedNow": "Closed",
+    "closedOpens": "opens"
   },
   "bn": {
     "topbar": "খুচরা ও পাইকারি · সপ্তাহে ৭ দিন খোলা, সকাল ৭টা – রাত ১০টা",
@@ -807,6 +820,19 @@
     "worksIntro": "নিজস্ব টিম ও নিজের দোকানের মালামাল দিয়ে সরবরাহ ও ফিটিং।",
     "reviewsTitle": "গ্রাহকেরা যা বলেন",
     "reviewsCount": "গুগল রিভিউ",
-    "reviewsAll": "গুগলে সব রিভিউ দেখুন"
+    "reviewsAll": "গুগলে সব রিভিউ দেখুন",
+    "tradeInDhaka": "ঢাকায়",
+    "tradeAreasTitle": "আমরা যেখানে কাজ করি",
+    "tradeQuoteCta": "এই কাজের জন্য দাম জানতে চাই",
+    "tradeBackToAll": "সব সেবা",
+    "tradeOtherTitle": "আমাদের অন্যান্য কাজ",
+    "reviewTitle": "কাজ ভালো লেগেছে?",
+    "reviewBody": "কোডটি স্ক্যান করুন অথবা লিংকে চাপ দিয়ে গুগলে একটি রিভিউ দিন। এক মিনিটের কাজ, আর এতে নতুন গ্রাহকেরা আমাদের খুঁজে পান।",
+    "reviewCta": "গুগলে রিভিউ দিন",
+    "reviewQrAlt": "আমাদের গুগল রিভিউ পেজের কিউআর কোড",
+    "openNow": "এখন খোলা",
+    "openUntil": "পর্যন্ত",
+    "closedNow": "এখন বন্ধ",
+    "closedOpens": "খুলবে"
   }
 }

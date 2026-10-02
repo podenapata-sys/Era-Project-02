@@ -68,5 +68,7 @@
     "lng": "90.4161182",
     "placeUrl": "https://maps.google.com/?cid=4041373625017767210",
     "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=23.7562877%2C90.4161182"
-  }
+  },
+  "quoteEndpoint": "",
+  "reviewUrl": ""
 }

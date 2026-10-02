@@ -26,6 +26,14 @@ const SITE = (process.env.SITE_URL || biz.url).replace(/\/+$/, '');
 const PAGES = ['home', 'products', 'services', 'about', 'contact'];
 const FILE = { home: 'index.html', products: 'products.html', services: 'services.html', about: 'about.html', contact: 'contact.html' };
 
+/* Trade pages live one level deeper, at /services/<slug>/ and /bn/services/<slug>/.
+   Every link in header() and footer() was a bare filename, which only resolves
+   while every page sits in its language root. `up` is the hop back to that root:
+   '' for the five flat pages — so their output is unchanged — and '../../' for a
+   trade page. Asset URLs keep using `base`, which is relative to the site root. */
+const TRADE_DIR = 'services';
+const upFor = page => (page === 'trade' ? '../../' : '');
+
 const ETC = new Set(['etc.', 'ইত্যাদি']);
 
 const esc = s => String(s ?? '')
@@ -86,9 +94,30 @@ function logoMark(base) {
   return `<span class="logo"><img src="${base}${biz.images.logo}" alt="" width="44" height="44" loading="eager" decoding="async"></span>`;
 }
 
-function photoSlot(label, cls) {
-  // Client photography is pending; these keep the layout honest until it lands.
-  return `<div class="slot${cls ? ' ' + cls : ''}" role="img" aria-label="${attr(label)}"><span>${esc(label)}</span></div>`;
+/* Every shape a photograph is rendered at, and the widths written for it. The
+   same table exists in tools/add-photos.py, which is what actually cuts the
+   files; change one and you must change the other. Nothing here can read that
+   script to confirm it, but a width missing from disk is simply left out of the
+   srcset below, so a disagreement degrades rather than breaking the page. */
+const RENDITIONS = {
+  hero:  { w: 4,  h: 3,  widths: [720, 1440], sizes: '(max-width: 900px) 100vw, 46vw' },
+  wide:  { w: 5,  h: 4,  widths: [640, 1280], sizes: '(max-width: 900px) 100vw, 42vw' },
+  card:  { w: 16, h: 9,  widths: [400, 800],  sizes: '(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 25vw' },
+  sq43:  { w: 4,  h: 3,  widths: [400, 800, 1120], sizes: '(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw' },
+  trade: { w: 16, h: 10, widths: [720, 1440], sizes: '(max-width: 900px) 100vw, 62vw' },
+};
+
+const PHOTO_DIR = path.join(ROOT, 'src', 'assets', 'img', 'photos');
+const photos = fs.existsSync(path.join(ROOT, 'content', 'photos.json'))
+  ? require('./content/photos.json') : {};
+
+/* The alt text for a photograph. Only the three shop photos need their own
+   entry in photos.json; a category or trade photo describes itself with the
+   title already in copy.json, in whichever language the page is being written
+   in, so there is nothing to translate twice and nothing to fall out of step. */
+function photoAlt(key, lang, label) {
+  const alt = (photos[key] || {}).alt;
+  return (alt && alt[lang]) || label;
 }
 
 /* Five stars, filled to the score. The row is one image to a screen reader with
@@ -154,23 +183,97 @@ function reviewsSection(t, lang) {
 `;
 }
 
-function header(t, lang, page, base) {
+/* A photograph where one exists, and the labelled placeholder where one does
+   not. The client's photography arrives in instalments, so this has to read
+   well in both states and at every point between: a slot lights up the moment
+   its file is on disk, and the rest keep the layout honest meanwhile.
+
+   The placeholder branch emits exactly what it always did, byte for byte, so
+   this can ship before a single photograph exists without touching the site. */
+function photo(key, rend, lang, base, label, cls) {
+  const spec = RENDITIONS[rend];
+  const stem = `${key}-${rend}-`;
+  const have = spec.widths.filter(w =>
+    fs.existsSync(path.join(PHOTO_DIR, `${stem}${w}.webp`)));
+
+  if (!have.length) {
+    return `<div class="slot${cls ? ' ' + cls : ''}" role="img" aria-label="${attr(label)}"><span>${esc(label)}</span></div>`;
+  }
+
+  const url = (w, ext) => `${base}assets/img/photos/${stem}${w}.${ext}`;
+  const webp = have.map(w => `${url(w, 'webp')} ${w}w`).join(', ');
+  const width = have[0];
+  const height = Math.round(width * spec.h / spec.w);
+
+  /* The hero is the largest image above the fold on the busiest page, so it is
+     the one worth fetching early; everything else waits until it is near the
+     viewport. width and height are on the img so the box is reserved before the
+     bytes arrive and the page does not jump as each one lands. */
+  const eager = cls === 'slot--hero';
+  const loading = eager
+    ? 'loading="eager" fetchpriority="high"'
+    : 'loading="lazy"';
+
+  return `<picture class="photo${cls ? ' photo--' + cls.replace('slot--', '') : ''}">
+        <source type="image/webp" srcset="${attr(webp)}" sizes="${attr(spec.sizes)}">
+        <img src="${attr(url(width, 'jpg'))}" alt="${attr(photoAlt(key, lang, label))}"
+         width="${width}" height="${height}" ${loading} decoding="async"></picture>`;
+}
+
+/* Google review QR. The SVG is generated at build time by tools/gen-review-qr.py
+   and committed, so the page loads no third-party script. Both the link and the
+   file must exist — with no review URL in business.json the block is omitted
+   entirely rather than shipping a dead QR. */
+function reviewBlock(t, base, where) {
+  if (!biz.reviewUrl) return '';
+  const qr = fs.existsSync(path.join(ROOT, 'src', 'assets', 'img', 'review-qr.svg'))
+    ? `<img class="review__qr" src="${base}assets/img/review-qr.svg" width="132" height="132" loading="lazy" alt="${attr(t.reviewQrAlt)}">`
+    : '';
+  return `
+      <div class="review review--${where}">
+        ${qr}
+        <div class="review__body">
+          <h2 class="review__title">${esc(t.reviewTitle)}</h2>
+          <p>${esc(t.reviewBody)}</p>
+          <a class="link-more" href="${attr(biz.reviewUrl)}" target="_blank" rel="noopener">${esc(t.reviewCta)} ${ICONS.arrow}</a>
+        </div>
+      </div>`;
+}
+
+/* Rendered empty and hidden. main.js fills it from the opening hours in
+   business.json; with JavaScript off it stays hidden rather than asserting a
+   state nobody has checked. */
+function openBadge(t) {
+  /* A <span>, not a <p>: this sits inside the topbar's own <span>, and a
+     paragraph is flow content that has no business there. Browsers tolerate the
+     nesting, but it is invalid and a validator flags it. */
+  return `<span class="openbadge" id="openBadge" hidden
+     data-open="${attr(biz.hours.shop.opens)}" data-close="${attr(biz.hours.shop.closes)}"
+     data-l-open="${attr(t.openNow)}" data-l-until="${attr(t.openUntil)}"
+     data-l-closed="${attr(t.closedNow)}" data-l-opens="${attr(t.closedOpens)}"><span></span></span>`;
+}
+
+function header(t, lang, page, base, slug) {
+  const up = upFor(page);
   const nav = PAGES.map(id =>
-    `<li><a href="${base === '../' ? '' : ''}${FILE[id]}"${id === page ? ' aria-current="page"' : ''}>${esc(t.nav[id])}</a></li>`
+    `<li><a href="${up}${FILE[id]}"${id === page ? ' aria-current="page"' : ''}>${esc(t.nav[id])}</a></li>`
   ).join('');
   const other = lang === 'en' ? 'bn' : 'en';
-  const otherHref = lang === 'en' ? `bn/${FILE[page]}` : `../${FILE[page]}`;
+  // The same page in the other language, from wherever this document sits.
+  const otherHref = page === 'trade'
+    ? (lang === 'en' ? `../../bn/${TRADE_DIR}/${slug}/` : `../../../${TRADE_DIR}/${slug}/`)
+    : (lang === 'en' ? `bn/${FILE[page]}` : `../${FILE[page]}`);
   return `
 <div class="topbar">
   <div class="shell topbar__inner">
-    <span>${esc(t.topbar)}</span>
+    <span>${esc(t.topbar)}${openBadge(t)}</span>
     <span class="topbar__delivery">${esc(t.delivery)}</span>
   </div>
 </div>
 
 <header class="site-header" id="siteHeader">
   <div class="shell header__inner">
-    <a class="brand" href="${FILE.home}">
+    <a class="brand" href="${up}${FILE.home}">
       ${logoMark(base)}
       <span class="brand__text">
         <strong>ERA <span>SANITARY</span></strong>
@@ -200,8 +303,9 @@ function header(t, lang, page, base) {
 
 const phoneLabel = (p, lang) => (lang === 'bn' && p.displayBn) ? p.displayBn : p.display;
 
-function footer(t, lang, base) {
-  const navLinks = PAGES.map(id => `<li><a href="${FILE[id]}">${esc(t.nav[id])}</a></li>`).join('');
+function footer(t, lang, base, page) {
+  const up = upFor(page);
+  const navLinks = PAGES.map(id => `<li><a href="${up}${FILE[id]}">${esc(t.nav[id])}</a></li>`).join('');
   const phones = biz.phones.map(p =>
     `<li>${ICONS.phone}<a href="tel:${attr(p.tel)}">${esc(phoneLabel(p, lang))}</a></li>`).join('');
   const email = biz.email
@@ -210,7 +314,7 @@ function footer(t, lang, base) {
 <footer class="site-footer">
   <div class="shell footer__grid">
     <div class="footer__brand">
-      <a class="brand" href="${FILE.home}">
+      <a class="brand" href="${up}${FILE.home}">
         ${logoMark(base)}
         <span class="brand__text"><strong>ERA <span>SANITARY</span></strong><small>${esc(t.tagline)}</small></span>
       </a>
@@ -227,6 +331,7 @@ function footer(t, lang, base) {
         ${phones}
         ${email}
       </ul>
+${reviewBlock(t, base, 'footer')}
     </div>
   </div>
   <div class="shell footer__legal">
@@ -250,7 +355,7 @@ function homePage(t, lang, base) {
 
   const cards = t.categories.map(c => `
       <a class="cat-card" href="products.html#${attr(c.slug)}">
-        ${photoSlot(c.title, 'slot--card')}
+        ${photo('cat-' + c.slug, 'card', lang, base, c.title, 'slot--card')}
         <div class="cat-card__body">
           <p class="cat-card__size">${esc(c.size)}</p>
           <h3>${esc(c.title)}</h3>
@@ -279,7 +384,7 @@ function homePage(t, lang, base) {
       <ul class="facts">${facts}</ul>
     </div>
     <div class="hero__media">
-      ${photoSlot(t.nav.products + ' — ' + t.supplyTitle, 'slot--hero')}
+      ${photo('stock', 'hero', lang, base, t.nav.products + ' — ' + t.supplyTitle, 'slot--hero')}
     </div>
   </div>
 </section>
@@ -304,7 +409,7 @@ function homePage(t, lang, base) {
       <h2>${esc(t.whyTitle)}</h2>
       <ul class="reasons">${reasons}</ul>
     </div>
-    ${photoSlot(t.whyTitle, 'slot--why')}
+    ${photo('counter', 'wide', lang, base, t.whyTitle, 'slot--why')}
   </div>
 </section>
 
@@ -338,10 +443,10 @@ ${reviewsSection(t, lang)}
 </section>`;
 }
 
-function productsPage(t) {
+function productsPage(t, lang, base) {
   const blocks = t.categories.map((c, i) => `
     <article class="cat" id="${attr(c.slug)}">
-      ${photoSlot(c.title, 'slot--cat')}
+      ${photo('cat-' + c.slug, 'sq43', lang, base, c.title, 'slot--cat')}
       <div class="cat__body">
         <p class="cat__n"><span>${String(i + 1).padStart(2, '0')}</span> ${esc(c.size)}</p>
         <h2>${esc(c.title)}</h2>
@@ -374,11 +479,11 @@ function productsPage(t) {
 </section>`;
 }
 
-function servicesPage(t) {
+function servicesPage(t, lang, base) {
   // Everything ERA offers, supply first then the trades they carry out.
   const supply = t.categories.map(c => `
       <a class="cat-card" href="products.html#${attr(c.slug)}">
-        ${photoSlot(c.title, 'slot--card')}
+        ${photo('cat-' + c.slug, 'card', lang, base, c.title, 'slot--card')}
         <div class="cat-card__body">
           <p class="cat-card__size">${esc(c.size)}</p>
           <h3>${esc(c.title)}</h3>
@@ -389,12 +494,15 @@ function servicesPage(t) {
 
   const works = t.services.map((sv, i) => `
       <article class="svc" id="${attr(sv.slug)}">
-        ${photoSlot(sv.title, 'slot--svc')}
-        <div class="svc__body">
-          <p class="svc__n">${String(i + 1).padStart(2, '0')}</p>
-          <h3>${esc(sv.title)}</h3>
-          <p>${esc(sv.blurb)}</p>
-        </div>
+        <a class="svc__link" href="${TRADE_DIR}/${attr(sv.slug)}/">
+          ${photo('trade-' + sv.slug, 'sq43', lang, base, sv.title, 'slot--svc')}
+          <div class="svc__body">
+            <p class="svc__n">${String(i + 1).padStart(2, '0')}</p>
+            <h3>${esc(sv.title)}</h3>
+            <p>${esc(sv.blurb)}</p>
+            <span class="link-more">${esc(t.seeAll)} ${ICONS.arrow}</span>
+          </div>
+        </a>
       </article>`).join('');
 
   return `
@@ -439,7 +547,64 @@ function servicesPage(t) {
 </section>`;
 }
 
-function aboutPage(t) {
+/* One page per trade. Everything on it comes from content already in the repo —
+   the trade's own title and blurb, the delivery areas, the other trades. Nothing
+   about price, experience or guarantees is asserted, because nothing in the
+   repo says any of it. */
+function tradePage(t, lang, base, slug) {
+  const i = t.services.findIndex(sv => sv.slug === slug);
+  const sv = t.services[i];
+  const areas = t.areas.map(a => `<li>${esc(a)}</li>`).join('');
+  const others = t.services
+    .filter(o => o.slug !== slug)
+    .map(o => `<li><a href="../${attr(o.slug)}/">${esc(o.title)} ${ICONS.arrow}</a></li>`).join('');
+
+  return `
+<section class="section page-head">
+  <div class="shell">
+    <p class="crumb"><a href="../../services.html">${esc(t.servicesTitle)}</a></p>
+    <h1>${esc(sv.title)}</h1>
+    <p class="lede">${esc(sv.blurb)}</p>
+    <div class="hero__actions">
+      <a class="btn btn--accent" href="../../contact.html?for=${attr(slug)}">${esc(t.tradeQuoteCta)} ${ICONS.arrow}</a>
+      <a class="btn btn--ghost" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">${ICONS.whatsapp}${esc(t.whatsapp)}</a>
+    </div>
+  </div>
+</section>
+
+<div class="shell trade__grid">
+  ${photo('trade-' + slug, 'trade', lang, base, sv.title, 'slot--trade')}
+  <div class="trade__side">
+    <h2>${ICONS.pin}${esc(t.tradeAreasTitle)}</h2>
+    <ul class="chips">${areas}</ul>
+  </div>
+</div>
+
+<section class="section works">
+  <div class="shell">
+    <header class="section-head">
+      <h2>${ICONS.tools}${esc(t.tradeOtherTitle)}</h2>
+      <a class="link-more" href="../../services.html">${esc(t.tradeBackToAll)} ${ICONS.arrow}</a>
+    </header>
+    <ul class="trade__others">${others}</ul>
+  </div>
+</section>
+
+<section class="band">
+  <div class="shell band__inner">
+    <div>
+      <h2>${esc(t.bandTitle)}</h2>
+      <p>${esc(t.bandBody)}</p>
+    </div>
+    <div class="band__actions">
+      <a class="btn btn--accent" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">${ICONS.whatsapp}${esc(t.bandWa)}</a>
+      <a class="btn btn--ghost" href="../../contact.html?for=${attr(slug)}">${esc(t.ctaQuote)} ${ICONS.arrow}</a>
+    </div>
+  </div>
+</section>`;
+}
+
+function aboutPage(t, lang, base) {
   const stats = t.stats.map(s =>
     `<li><strong>${esc(s.value)}</strong><span>${esc(s.label)}</span></li>`).join('');
   const amenities = t.amenities.map(a => `<li>${ICONS.check}${esc(a)}</li>`).join('');
@@ -458,7 +623,7 @@ function aboutPage(t) {
     <p>${esc(t.aboutP2)}</p>
     <p>${esc(t.aboutP3)}</p>
   </div>
-  ${photoSlot(t.aboutTitle, 'slot--about')}
+  ${photo('shopfront', 'wide', lang, base, t.aboutTitle, 'slot--about')}
 </section>
 
 <section class="section">
@@ -478,7 +643,11 @@ function aboutPage(t) {
       <ul class="chips">${payments}</ul>
     </div>
   </div>
-</section>`;
+</section>
+${biz.reviewUrl ? `
+<section class="section review-band">
+  <div class="shell">${reviewBlock(t, base, 'page')}</div>
+</section>` : ''}`;
 }
 
 function contactPage(t, lang) {
@@ -496,8 +665,16 @@ function contactPage(t, lang) {
     </ul>` : '';
   const hours = t.hours.map(h => `
         <tr><th scope="row">${esc(h.label)}</th><td>${esc(h.value)}</td></tr>`).join('');
-  const options = t.categories.map(c => `<option>${esc(c.title)}</option>`)
-    .concat([`<option>${esc(t.somethingElse)}</option>`]).join('');
+  /* Supply and trades in one control, grouped so the list stays readable. The
+     data-slug lets a trade page preselect its own trade without matching on
+     translated text. Order and default selection are unchanged, so a visitor
+     who touches nothing still composes exactly the message they did before. */
+  const options =
+    `<optgroup label="${attr(t.supplyTitle)}">`
+    + t.categories.map(c => `<option data-slug="${attr(c.slug)}">${esc(c.title)}</option>`).join('')
+    + `</optgroup><optgroup label="${attr(t.worksTitle)}">`
+    + t.services.map(sv => `<option data-slug="${attr(sv.slug)}">${esc(sv.title)}</option>`).join('')
+    + `</optgroup><option>${esc(t.somethingElse)}</option>`;
 
   return `
 <section class="section page-head">
@@ -527,7 +704,8 @@ ${email}
   <div class="card card--form">
     <h2>${esc(t.formTitle)}</h2>
     <p class="muted">${esc(t.formBody)}</p>
-    <form id="quoteForm" data-wa="${attr(primary.whatsapp)}" novalidate>
+    <form id="quoteForm" data-wa="${attr(primary.whatsapp)}"${biz.quoteEndpoint ? ` data-endpoint="${attr(biz.quoteEndpoint)}"` : ''} novalidate>
+      <p class="hp" aria-hidden="true"><label for="qCompany">Company</label><input id="qCompany" name="company" type="text" tabindex="-1" autocomplete="off"></p>
       <p class="field">
         <label for="qName">${esc(t.fName)}</label>
         <input id="qName" name="name" type="text" autocomplete="name" placeholder="${attr(t.phName)}">
@@ -583,9 +761,24 @@ const META = {
   },
 };
 
-function urlFor(lang, page) {
+function urlFor(lang, page, slug) {
   const p = lang === 'en' ? '' : 'bn/';
+  if (page === 'trade') return `${SITE}/${p}${TRADE_DIR}/${slug}/`;
   return SITE + '/' + p + (page === 'home' ? '' : FILE[page]);
+}
+
+/* A trade page's title and description, built from the trade's own words plus
+   the address already in business.json. Nothing here is invented. */
+function tradeMeta(lang, slug) {
+  const t = copy[lang];
+  const sv = t.services.find(x => x.slug === slug);
+  const where = lang === 'bn'
+    ? `${biz.address.locality}, ${biz.address.region}`
+    : `${biz.address.locality}, ${biz.address.region}`;
+  return {
+    title: `${sv.title} ${t.tradeInDhaka} | ${biz.shortName}`,
+    desc: `${sv.blurb} ${sv.title} ${t.tradeInDhaka} — ${where}. ${t.worksIntro}`,
+  };
 }
 
 function jsonLd(t, lang) {
@@ -628,7 +821,14 @@ function jsonLd(t, lang) {
     paymentAccepted: biz.payments.join(', '),
     makesOffer: t.services.map(sv => ({
       '@type': 'Offer',
-      itemOffered: { '@type': 'Service', name: sv.title, description: sv.blurb },
+      itemOffered: {
+        '@type': 'Service',
+        name: sv.title,
+        description: sv.blurb,
+        url: urlFor(lang, 'trade', sv.slug),
+        areaServed: copy.en.areas.map(a => ({ '@type': 'Place', name: a })),
+        provider: { '@id': SITE + '/#store' },
+      },
     })),
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
@@ -643,9 +843,8 @@ function jsonLd(t, lang) {
   };
 }
 
-function layout({ lang, page, body, t }) {
-  const base = lang === 'en' ? '' : '../';
-  const meta = META[lang][page];
+function layout({ lang, page, body, t, slug, base }) {
+  const meta = page === 'trade' ? tradeMeta(lang, slug) : META[lang][page];
   const alt = lang === 'en' ? 'bn' : 'en';
   const fonts = 'https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap';
 
@@ -657,17 +856,17 @@ function layout({ lang, page, body, t }) {
 <title>${esc(meta.title)}</title>
 <meta name="description" content="${attr(meta.desc)}">
 <meta name="theme-color" content="#0b0b0d">
-<link rel="canonical" href="${attr(urlFor(lang, page))}">
-<link rel="alternate" hreflang="${lang}" href="${attr(urlFor(lang, page))}">
-<link rel="alternate" hreflang="${alt}" href="${attr(urlFor(alt, page))}">
-<link rel="alternate" hreflang="x-default" href="${attr(urlFor('en', page))}">
+<link rel="canonical" href="${attr(urlFor(lang, page, slug))}">
+<link rel="alternate" hreflang="${lang}" href="${attr(urlFor(lang, page, slug))}">
+<link rel="alternate" hreflang="${alt}" href="${attr(urlFor(alt, page, slug))}">
+<link rel="alternate" hreflang="x-default" href="${attr(urlFor('en', page, slug))}">
 
 <meta property="og:type" content="website">
 <meta property="og:locale" content="${lang === 'bn' ? 'bn_BD' : 'en_US'}">
 <meta property="og:site_name" content="${attr(biz.name)}">
 <meta property="og:title" content="${attr(meta.title)}">
 <meta property="og:description" content="${attr(meta.desc)}">
-<meta property="og:url" content="${attr(urlFor(lang, page))}">
+<meta property="og:url" content="${attr(urlFor(lang, page, slug))}">
 <meta property="og:image" content="${attr(SITE + '/' + biz.images.banner)}">
 <meta name="twitter:card" content="summary_large_image">
 
@@ -681,11 +880,11 @@ function layout({ lang, page, body, t }) {
 </head>
 <body data-lang="${lang}" data-page="${page}">
 <a class="skip-link" href="#main">${lang === 'bn' ? 'মূল কনটেন্টে যান' : 'Skip to main content'}</a>
-${header(t, lang, page, base)}
+${header(t, lang, page, base, slug)}
 <main id="main">
 ${body}
 </main>
-${footer(t, lang, base)}
+${footer(t, lang, base, page)}
 <script type="application/ld+json">${JSON.stringify(jsonLd(t, lang))}</script>
 <script src="${base}assets/js/main.js" defer></script>
 </body>
@@ -694,7 +893,48 @@ ${footer(t, lang, base)}
 }
 
 /* ------------------------------------------------------------------- main */
-const RENDER = { home: homePage, products: productsPage, services: servicesPage, about: aboutPage, contact: contactPage };
+const RENDER = { home: homePage, products: productsPage, services: servicesPage, about: aboutPage, contact: contactPage, trade: tradePage };
+
+/* photos.json is keyed by slot, and those keys are built from the slugs in
+   copy.json. Rename a slug there and the entry here is orphaned: the photo goes
+   on shipping, but with the wrong alt text or no longer cropped where it was
+   told to be — silently, and on a page nobody thinks to re-check. The street
+   address drifted exactly this way once and reached the footer. Refuse instead. */
+function checkPhotos() {
+  const known = new Set(['shopfront', 'counter', 'stock']);
+  for (const c of copy.en.categories) known.add('cat-' + c.slug);
+  for (const sv of copy.en.services) known.add('trade-' + sv.slug);
+
+  for (const [key, entry] of Object.entries(photos)) {
+    if (key.startsWith('_')) continue;          // _readme and friends
+    if (!known.has(key)) {
+      throw new Error(`content/photos.json has "${key}", which is not a photo ` +
+        `slot on this site. Expected one of: ${[...known].join(', ')}.`);
+    }
+    const focus = (entry || {}).focus;
+    if (focus !== undefined && !(Array.isArray(focus) && focus.length === 2 &&
+        focus.every(n => typeof n === 'number' && n >= 0 && n <= 1))) {
+      throw new Error(`content/photos.json: "${key}".focus must be two numbers ` +
+        `between 0 and 1, like [0.5, 0.3].`);
+    }
+  }
+
+  /* A file whose name matches no slot is one the site will never load — almost
+     always a slug renamed with the photos left behind. Not fatal: it costs
+     nothing but the disk it sits on, and failing the build over it would block
+     a deploy for a stale file. */
+  if (fs.existsSync(PHOTO_DIR)) {
+    const orphans = fs.readdirSync(PHOTO_DIR).filter(f => {
+      const m = f.match(/^(.+)-([a-z0-9]+)-(\d+)\.(webp|jpg)$/);
+      return !m || !known.has(m[1]) || !RENDITIONS[m[2]];
+    });
+    if (orphans.length) {
+      console.warn(`NOTE: ${orphans.length} file(s) in src/assets/img/photos/ ` +
+        `match no slot and are never loaded: ${orphans.slice(0, 4).join(', ')}` +
+        `${orphans.length > 4 ? ', …' : ''}`);
+    }
+  }
+}
 
 function copyDir(from, to) {
   fs.mkdirSync(to, { recursive: true });
@@ -775,12 +1015,13 @@ function build() {
   }
   checkAreaCount();
   checkReviews();
+  checkPhotos();
 
   fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
   copyDir(path.join(ROOT, 'src', 'assets'), path.join(OUT, 'assets'));
 
-  let count = 0;
+  let count = 0, trades = 0;
   for (const lang of ['en', 'bn']) {
     const t = copy[lang];
     const base = lang === 'en' ? '' : '../';
@@ -788,20 +1029,35 @@ function build() {
     fs.mkdirSync(dir, { recursive: true });
     for (const page of PAGES) {
       const body = RENDER[page](t, lang, base);
-      fs.writeFileSync(path.join(dir, FILE[page]), layout({ lang, page, body, t }));
+      fs.writeFileSync(path.join(dir, FILE[page]), layout({ lang, page, body, t, base }));
       count++;
+    }
+
+    /* One directory per trade, so the URL is /services/core-cutting/ rather than
+       a file. Assets are three levels up in Bengali, two in English. */
+    const tradeBase = base + '../../';
+    for (const sv of t.services) {
+      const tdir = path.join(dir, TRADE_DIR, sv.slug);
+      fs.mkdirSync(tdir, { recursive: true });
+      const body = RENDER.trade(t, lang, tradeBase, sv.slug);
+      fs.writeFileSync(path.join(tdir, 'index.html'),
+        layout({ lang, page: 'trade', body, t, slug: sv.slug, base: tradeBase }));
+      count++; trades++;
     }
   }
 
-  const urls = ['en', 'bn'].flatMap(lang => PAGES.map(page => ({ lang, page })));
+  const urls = ['en', 'bn'].flatMap(lang => [
+    ...PAGES.map(page => ({ lang, page })),
+    ...copy[lang].services.map(sv => ({ lang, page: 'trade', slug: sv.slug })),
+  ]);
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${urls.map(({ lang, page }) => `  <url>
-    <loc>${urlFor(lang, page)}</loc>
-${['en', 'bn'].map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${urlFor(l, page)}"/>`).join('\n')}
-    <xhtml:link rel="alternate" hreflang="x-default" href="${urlFor('en', page)}"/>
+${urls.map(({ lang, page, slug }) => `  <url>
+    <loc>${urlFor(lang, page, slug)}</loc>
+${['en', 'bn'].map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${urlFor(l, page, slug)}"/>`).join('\n')}
+    <xhtml:link rel="alternate" hreflang="x-default" href="${urlFor('en', page, slug)}"/>
     <changefreq>monthly</changefreq>
-    <priority>${page === 'home' ? '1.0' : '0.8'}</priority>
+    <priority>${page === 'home' ? '1.0' : page === 'trade' ? '0.7' : '0.8'}</priority>
   </url>`).join('\n')}
 </urlset>
 `;
@@ -810,9 +1066,11 @@ ${['en', 'bn'].map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="$
   fs.writeFileSync(path.join(OUT, 'robots.txt'),
     `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
 
-  console.log(`Built ${count} pages (${PAGES.length} × en/bn) + sitemap + robots into dist/`);
+  console.log(`Built ${count} pages (${PAGES.length} × en/bn, plus ${trades} trade pages) + sitemap + robots into dist/`);
   console.log(`Site origin: ${SITE}${process.env.SITE_URL ? ' (from SITE_URL)' : ' (from business.json)'}`);
   if (!biz.email) console.log('NOTE: business.email is null — no email is shown anywhere on the site.');
+  if (!biz.quoteEndpoint) console.log('NOTE: business.quoteEndpoint is empty — the quote form opens WhatsApp only, nothing is recorded. Deploy tools/quote-alert.gs and paste its URL.');
+  if (!biz.reviewUrl) console.log('NOTE: business.reviewUrl is empty — the Google review block and QR are omitted from every page.');
 }
 
 build();

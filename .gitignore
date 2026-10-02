@@ -10,3 +10,9 @@ node_modules/
 
 # Build output — regenerate with `npm run build`
 dist/
+
+# Raw photographs as the client sent them. tools/add-photos.py reads these and
+# writes src/assets/img/photos/, which IS committed. The originals are large and
+# the repository does not need them — but keep the folder somewhere backed up,
+# because re-cutting at a new shape needs the full-size file, not the crop.
+photos-inbox/
