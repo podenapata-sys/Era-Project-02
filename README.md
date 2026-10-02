@@ -112,6 +112,17 @@ newest first, tap the number to call or open WhatsApp, and move each one along:
 new → called → quoted → won / lost. It writes nothing but `status`; the rules
 reject anything else.
 
+**Tap the logo at the bottom of any page three times to open it.** The shop owner
+reads leads on their phone, where typing a URL is a nuisance and a bookmark gets
+lost; the site is already open, so the shortcut lives there. It is the footer
+mark and not the header brand because the header one is a link to the home page —
+three taps on a link navigates three times and the count never reaches three. The
+footer mark is therefore rendered as a plain `<span>`, which costs nothing: the
+Pages column beside it already links home.
+
+This is a shortcut, **not a secret**. `/admin/` is a public URL, and anyone who
+finds it meets a login box they cannot pass.
+
 To switch it on, add a Web app in **Firebase Console → Project settings → Your
 apps** (the `</>` icon, any nickname, no Hosting), then copy `apiKey`,
 `authDomain` and `appId` into `content/business.json` under

@@ -329,10 +329,18 @@ function footer(t, lang, base, page) {
 <footer class="site-footer">
   <div class="shell footer__grid">
     <div class="footer__brand">
-      <a class="brand" href="${up}${FILE.home}">
+      ${/* Deliberately not a link, unlike the header brand.
+            Three taps here open the leads dashboard (see main.js), and that
+            cannot work inside an <a>: the first tap would navigate and the
+            count would never reach three. preventDefault() is not the answer
+            either — it would break the link for a keyboard user pressing Enter
+            and for anyone who taps the logo once meaning to go home.
+            Nothing is lost: the Pages column two columns over already links
+            home, so this was a second route to the same place. */''}
+      <span class="brand footer__mark" data-admin="${attr(base)}admin/">
         ${logoMark(base)}
         <span class="brand__text"><strong>ERA <span>SANITARY</span></strong><small>${esc(t.tagline)}</small></span>
-      </a>
+      </span>
       <p>${esc(t.footerBlurb)}</p>
     </div>
     <nav class="footer__col" aria-label="${attr(t.footerPages)}">

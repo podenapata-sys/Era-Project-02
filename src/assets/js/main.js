@@ -231,3 +231,39 @@
     } catch (err) { /* never let recording break the WhatsApp hand-off */ }
   }
 })();
+
+/* Three taps on the footer mark open the leads dashboard.
+
+   The shop owner reads leads on their phone, where typing a URL is a nuisance
+   and a bookmark gets lost in a hundred tabs. The site is already open in front
+   of them, so the shortcut lives there.
+
+   The FOOTER mark, not the header brand, for two reasons. The header brand is a
+   link to the home page, so repeated taps would navigate away before the count
+   reached three — build.js therefore renders the footer one as a plain <span>,
+   which is also why no preventDefault is needed here. And the footer sits at the
+   very bottom, where nobody arrives by accident.
+
+   This is a shortcut, NOT a secret. /admin/ is a public URL and anyone who taps
+   the logo three times finds a login box they cannot get past. What protects the
+   leads is Firebase Auth and the Firestore rules, never the obscurity of the
+   path. */
+(function () {
+  var mark = document.querySelector('.footer__mark');
+  if (!mark) return;
+
+  var NEEDED = 3;
+  var WINDOW_MS = 1600;    // taps further apart than this start a fresh count
+  var taps = 0, last = 0;
+
+  mark.addEventListener('click', function () {
+    var now = Date.now();
+    if (now - last > WINDOW_MS) taps = 0;
+    last = now;
+    if (++taps < NEEDED) return;
+    taps = 0;
+    /* data-admin is written by build.js, which is the only thing that knows how
+       far up the site root is — '' on a flat page, '../../' from a trade page. */
+    window.location.href = (mark.getAttribute('data-admin') || 'admin/');
+  });
+})();
