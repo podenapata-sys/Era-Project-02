@@ -898,6 +898,7 @@ function jsonLd(t, lang) {
    None of those is a security boundary. The boundary is Firebase Auth plus the
    Firestore rules, which is why this page being publicly reachable is fine. */
 function adminPage() {
+  const t_admin = copy.en;   // /admin/ is English-only by decision
   const cfg = fb();
   const wc = cfg.webConfig || {};
   const configured = adminConfigured();
@@ -913,6 +914,23 @@ function adminPage() {
          not grant access to it. The Firestore rules decide that.</p>
     </div>`;
 
+  /* The job-type dropdown is populated at build time from the same two lists the
+     public site renders, so there is no second catalogue to drift out of step.
+     The option's text travels onto the job as jobTypeLabel, which is why
+     drawing a job never needs to look a slug back up.
+
+     Group labels reuse copy.en.supplyTitle and copy.en.servicesTitle rather
+     than inventing wording. The rest of the strings on this page are written
+     here and not in copy.json, which is the standing exception for /admin/:
+     it is one owner's back office, English-only by decision, and nothing a
+     customer reads. */
+  const jobTypes = [
+    [t_admin.supplyTitle, t_admin.categories],
+    [t_admin.servicesTitle, t_admin.services],
+  ].map(([label, list]) => `<optgroup label="${attr(label)}">` +
+    list.map(x => `<option value="${attr(x.slug)}">${esc(x.title)}</option>`).join('') +
+    '</optgroup>').join('');
+
   const app = `
     <p class="err" id="bootErr" hidden></p>
 
@@ -927,14 +945,88 @@ function adminPage() {
     </form>
 
     <div id="app" hidden>
+      <nav class="tabs" aria-label="Views">
+        <button class="tab is-on" type="button" data-view="dues" aria-current="page">Dues</button>
+        <button class="tab" type="button" data-view="jobs">Jobs</button>
+        <button class="tab" type="button" data-view="leads">Leads</button>
+        <button class="tab" type="button" data-view="bin">Bin</button>
+      </nav>
+
+      <div class="stats" id="stats"></div>
+
       <div class="bar">
-        <div class="counts" id="counts"></div>
-        <input id="search" type="search" placeholder="Search name, phone or items" aria-label="Search leads">
-        <button class="btn btn--ghost" id="signout" type="button">Sign out</button>
+        <input id="search" type="search" placeholder="Search" aria-label="Search by name, phone, customer ID or address">
+        <button class="btn btn--sm" type="button" id="addJob">+ New job</button>
+        <button class="btn btn--ghost btn--sm" type="button" id="signout">Sign out</button>
       </div>
+
+      <div class="bar" id="rangeBar">
+        <div class="status" role="group" aria-label="Date range">
+          <button class="chip is-on" type="button" data-range="all">All</button>
+          <button class="chip" type="button" data-range="today">Today</button>
+          <button class="chip" type="button" data-range="week">This week</button>
+          <button class="chip" type="button" data-range="month">This month</button>
+        </div>
+        <input id="onDate" type="date" aria-label="Show one date only">
+      </div>
+
       <p class="err" id="appErr" hidden></p>
+      <div class="counts" id="counts"></div>
       <div id="list" class="list" aria-live="polite"></div>
-    </div>`;
+    </div>
+
+    <dialog id="jobDlg" aria-labelledby="jobDlgTitle">
+      <form id="jobForm">
+        <h2 id="jobDlgTitle">New job</h2>
+        <label for="jName">Customer name</label>
+        <input id="jName" name="name" autocomplete="off">
+        <label for="jPhone">Mobile</label>
+        <input id="jPhone" name="phone" type="tel" inputmode="tel" autocomplete="off">
+        <label for="jAddress">Address</label>
+        <input id="jAddress" name="address" autocomplete="off">
+        <label for="jType">Supply or work</label>
+        <select id="jType" name="jobType">${jobTypes}</select>
+        <label for="jItems">Items or scope</label>
+        <textarea id="jItems" name="items" rows="3"></textarea>
+        <div class="row">
+          <div>
+            <label for="jTotal">Total</label>
+            <input id="jTotal" name="total" type="number" inputmode="decimal" min="0" step="1" value="0">
+          </div>
+          <div>
+            <label for="jVisit">Date</label>
+            <input id="jVisit" name="visitDate" type="date">
+          </div>
+        </div>
+        <label for="jNext">Next visit or delivery <span class="muted">(optional)</span></label>
+        <input id="jNext" name="nextDate" type="date">
+        <label for="jNotes">Notes <span class="muted">(optional)</span></label>
+        <textarea id="jNotes" name="notes" rows="2"></textarea>
+        <p class="err" id="jobErr" hidden></p>
+        <div class="acts">
+          <button class="btn btn--sm" type="submit">Save</button>
+          <button class="btn btn--ghost btn--sm" type="button" data-close>Cancel</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="payDlg" aria-labelledby="payDlgTitle">
+      <form id="payForm">
+        <h2 id="payDlgTitle">Take a payment</h2>
+        <p class="muted" id="payFor"></p>
+        <label for="pAmount">Amount</label>
+        <input id="pAmount" name="amount" type="number" inputmode="decimal" min="0" step="1" required>
+        <label for="pDate">Date</label>
+        <input id="pDate" name="date" type="date">
+        <label for="pNote">Note <span class="muted">(optional)</span></label>
+        <input id="pNote" name="note" autocomplete="off">
+        <p class="err" id="payErr" hidden></p>
+        <div class="acts">
+          <button class="btn btn--sm" type="submit">Record</button>
+          <button class="btn btn--ghost btn--sm" type="button" data-close>Cancel</button>
+        </div>
+      </form>
+    </dialog>`;
 
   /* Everything the dashboard needs to know about THIS shop. Rendered here
      rather than written into app.js, so that file stays identical for every
@@ -945,16 +1037,28 @@ function adminPage() {
     firebase: { ...wc, projectId: cfg.projectId },
     owners: cfg.ownerUids || [],
     leadsCollection: cfg.leadsCollection || 'leads',
+    jobsCollection: cfg.jobsCollection || 'jobs',
     whatsapp: (biz.phones.find(p => p.primary) || biz.phones[0]).whatsapp,
+    dashboard: {
+      idPrefix: 'ER', currency: '\u09f3', numberLocale: 'en-IN', binDays: 30,
+      ...(biz.dashboard || {}),
+    },
+    /* The payment reminder the owner sends over WhatsApp. A CUSTOMER reads this
+       one, so it lives in copy.json like every other word a customer sees, and
+       in both languages. Bengali is what the dashboard sends — the shop's
+       customers are Bengali-speaking — and the English is there so the pair
+       stays in parity and the next client can switch with one line. */
+    shop: biz.shortName || biz.name,
+    reminder: { en: t_admin.duesReminder, bn: copy.bn.duesReminder },
   };
 
   return `<!doctype html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Leads — ${esc(biz.name)}</title>
+<title>Dashboard — ${esc(biz.name)}</title>
 <meta name="theme-color" content="#0b0b0d">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/css/admin.css">
@@ -962,7 +1066,7 @@ function adminPage() {
 <body>
 <header class="top">
   <img src="../assets/img/era-logo.png" alt="" width="34" height="34">
-  <strong>Leads</strong>
+  <strong>Dashboard</strong>
   <span class="muted">${esc(biz.name)}</span>
 </header>
 <main class="wrap">
@@ -1095,6 +1199,22 @@ function copyDir(from, to) {
 
    firestore.rules is the source of truth here, because it is the one that
    protects the data. This only checks that the copy agrees. */
+/* The build reads the same keys from both languages, so a key added to one and
+   not the other renders empty on that language's pages — silently, on a page
+   nobody building in English would think to open. README.md has asked for parity
+   since the first commit; this is the same ask with teeth. */
+function checkCopyParity() {
+  const en = Object.keys(copy.en), bn = Object.keys(copy.bn);
+  const missingBn = en.filter(k => !bn.includes(k));
+  const missingEn = bn.filter(k => !en.includes(k));
+  if (missingBn.length || missingEn.length) {
+    throw new Error('content mismatch: copy.json is out of parity. ' +
+      (missingBn.length ? `Missing from bn: ${missingBn.join(', ')}. ` : '') +
+      (missingEn.length ? `Missing from en: ${missingEn.join(', ')}. ` : '') +
+      'A key in one language and not the other renders empty on that language\'s pages.');
+  }
+}
+
 function checkFirebaseUids() {
   const rulesPath = path.join(ROOT, 'firestore.rules');
   if (!fs.existsSync(rulesPath)) return;
@@ -1178,6 +1298,7 @@ function build() {
         `is not in copy.en.${key} — update both, and the Bengali alongside it.`);
     }
   }
+  checkCopyParity();
   checkAreaCount();
   checkReviews();
   checkPhotos();

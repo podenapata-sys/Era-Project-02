@@ -72,6 +72,7 @@
   "firebase": {
     "projectId": "era-sanitary",
     "leadsCollection": "leads",
+    "jobsCollection": "jobs",
     "ownerUids": [
       "4VNXgYEnJTfRYci0PGqXAGQHReC3"
     ],
@@ -80,6 +81,12 @@
       "authDomain": "era-sanitary.firebaseapp.com",
       "appId": "1:666410133873:web:e776f72a219d363e8aeed0"
     }
+  },
+  "dashboard": {
+    "idPrefix": "ER",
+    "currency": "৳",
+    "numberLocale": "en-IN",
+    "binDays": 30
   },
   "reviewUrl": ""
 }

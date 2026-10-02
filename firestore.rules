@@ -100,6 +100,72 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // A job: one piece of work or one sale, with what it came to and what has
+    // been paid against it. This is where the shop's money lives.
+    //
+    // The validation below is a sanity check, NOT a trust boundary, and that is
+    // the whole difference from validLead() above. A lead arrives from an
+    // anonymous stranger, so its shape is the only thing standing between the
+    // collection and a script filling it with megabytes; the caps there are
+    // load-bearing. A job can only be written by a signed-in owner, so these
+    // caps exist to catch a bug in the dashboard, not an attacker. That is why
+    // the payments list is checked for being a list of sane length and not
+    // field-by-field: the cost of being wrong is one malformed row the owner
+    // can fix, not a public write hole.
+    //
+    // Every key is required as well as allowed (hasAll + hasOnly), because the
+    // dashboard always writes the whole document and a half-written job with no
+    // total is worse than a rejected write.
+    //
+    // `paid` and `due` are deliberately absent. paid is the sum of payments and
+    // due is total minus paid, both computed when drawn. Storing either invites
+    // the one bug this model makes impossible: a stored figure that disagrees
+    // with the payment log it came from.
+    function validJob(d) {
+      return d.keys().hasAll([
+               'name','phone','address','customerId','jobType','jobTypeLabel',
+               'items','notes','total','payments','visitDate','nextDate',
+               'createdAt','updatedAt','deletedAt','leadId'
+             ])
+        && d.keys().hasOnly([
+               'name','phone','address','customerId','jobType','jobTypeLabel',
+               'items','notes','total','payments','visitDate','nextDate',
+               'createdAt','updatedAt','deletedAt','leadId'
+             ])
+        && d.name is string          && d.name.size() <= 100
+        && d.phone is string         && d.phone.size() <= 30
+        && d.address is string       && d.address.size() <= 200
+        && d.customerId is string    && d.customerId.size() <= 24
+        && d.jobType is string       && d.jobType.size() <= 60
+        && d.jobTypeLabel is string  && d.jobTypeLabel.size() <= 120
+        && d.items is string         && d.items.size() <= 2000
+        && d.notes is string         && d.notes.size() <= 2000
+        && d.total is number         && d.total >= 0 && d.total <= 100000000
+        && d.payments is list        && d.payments.size() <= 60
+        && d.visitDate is string     && d.visitDate.size() <= 10
+        && d.nextDate is string      && d.nextDate.size() <= 10
+        && d.createdAt is string     && d.createdAt.size() <= 30
+        && d.updatedAt is string     && d.updatedAt.size() <= 30
+        && d.deletedAt is string     && d.deletedAt.size() <= 30
+        && d.leadId is string        && d.leadId.size() <= 40;
+    }
+
+    match /jobs/{jobId} {
+      // Owner only, for reading AND writing. There is no public create path here
+      // and there must never be one. A lead is a stranger asking for a price; a
+      // job is a named customer, their address, and what they owe. The quote
+      // form posts leads from an unauthenticated page, so if `jobs` ever gained
+      // a public create rule the same route would publish the shop's debtors.
+      allow read: if isOwner();
+      allow create, update: if isOwner() && validJob(request.resource.data);
+
+      // Unlike a lead, a job can really be deleted — but the dashboard routes
+      // an owner's delete through the `deletedAt` bin so a stray tap on a phone
+      // is recoverable, and only purges what has sat there past the configured
+      // window. This rule is what lets that purge actually remove the row.
+      allow delete: if isOwner();
+    }
+
     // Nothing else in the project is reachable from the web client.
     match /{document=**} {
       allow read, write: if false;

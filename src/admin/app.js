@@ -42,6 +42,15 @@ const WA = C.whatsapp || '';       // the shop's primary WhatsApp number
    Adding a sixth here alone makes the write fail with a permission error. */
 const STATUSES = ['new', 'called', 'quoted', 'won', 'lost'];
 
+const JOBS = C.jobsCollection || 'jobs';
+const D = C.dashboard || {};
+const CUR = D.currency || '';
+const LOC = D.numberLocale || 'en-IN';
+const PREFIX = D.idPrefix || 'ID';
+const BIN_DAYS = Number(D.binDays) > 0 ? Number(D.binDays) : 30;
+const SHOP = C.shop || '';
+const REMINDER = (C.reminder || {}).bn || (C.reminder || {}).en || '';
+
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -54,12 +63,14 @@ const esc = s => String(s == null ? '' : s)
    deliberately: it only moves when there is a reason to move it. */
 let initializeApp;
 let getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged;
-let getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc;
+let getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc,
+    addDoc, setDoc, deleteDoc;
 try {
   ({ initializeApp } = await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js'));
   ({ getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } =
     await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js'));
-  ({ getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } =
+  ({ getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc,
+     addDoc, setDoc, deleteDoc } =
     await import('https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js'));
 } catch (ex) {
   $('bootErr').textContent =
@@ -70,8 +81,324 @@ try {
 
 const auth = getAuth(initializeApp(CFG));
 const db = getFirestore();
-let rows = [];
 
+let leads = [], jobs = [];
+let view = 'dues', range = 'all', onDate = '', q = '';
+let editing = null, paying = null;
+let unsubLeads = null, unsubJobs = null;
+
+/* ---------- money ----------
+   Rounded at every boundary. Totals are summed from a payment log, and a run of
+   floating-point additions drifts — 0.1 + 0.2 is the famous one. Nothing here
+   should ever show a customer's balance as 6999.999999999999. */
+const round2 = n => Math.round((Number(n) || 0) * 100) / 100;
+const nf = new Intl.NumberFormat(LOC, { maximumFractionDigits: 2 });
+const money = (n) => {
+  const v = round2(n);
+  return (v < 0 ? '-' : '') + CUR + nf.format(Math.abs(v));
+};
+const str = v => String(v == null ? '' : v);
+
+const paidOf = j => round2((j.payments || [])
+  .reduce((a, p) => a + (Number(p.amount) || 0), 0));
+const dueOf = j => round2((Number(j.total) || 0) - paidOf(j));
+
+/* ER-#### from the last four digits of the mobile. A handle for the owner to
+   say out loud, not a key — two customers whose numbers end the same get the
+   same handle, and that is fine because Firestore's document id is the key. */
+function custId(phone) {
+  const d = str(phone).replace(/\D/g, '');
+  return PREFIX + '-' + (d.length >= 4 ? d.slice(-4) : (d || '0').padStart(4, '0'));
+}
+
+/* ---------- dates ----------
+   Local components, never toISOString(). Dhaka is UTC+6, so a job entered at
+   01:00 would be stamped with yesterday's date by the UTC path, and then not
+   show up under Today. */
+function isoDay(d) {
+  const p = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+const today = () => isoDay(new Date());
+
+function when(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return str(iso);
+  return d.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+function dayLabel(ymd) {
+  if (!ymd) return '';
+  const d = new Date(ymd + 'T00:00:00');
+  if (isNaN(d)) return str(ymd);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function inRange(ymd) {
+  if (onDate) return ymd === onDate;
+  if (range === 'all') return true;
+  if (!ymd) return false;
+  const now = new Date();
+  if (range === 'today') return ymd === today();
+  if (range === 'month') return ymd.slice(0, 7) === today().slice(0, 7);
+  if (range === 'week') {
+    /* Week starts Sunday: Bangladesh works Sunday to Thursday, with Friday and
+       Saturday the weekend. A Monday-start week would cut the working week in
+       half and make "this week" useless on a Sunday. */
+    const start = new Date(now);
+    start.setDate(start.getDate() - start.getDay());
+    return ymd >= isoDay(start) && ymd <= today();
+  }
+  return true;
+}
+
+const hay = (...parts) => parts.map(str).join(' ').toLowerCase();
+const matchJob = j => !q || hay(j.name, j.phone, j.customerId, j.address,
+                                j.items, j.jobTypeLabel, j.notes).includes(q);
+const matchLead = l => !q || hay(l.name, l.phone, l.items, l.category).includes(q);
+
+/* ---------- writes ----------
+   Every write sends the WHOLE document, because validJob() in firestore.rules
+   requires all sixteen keys to be present: a half-written job with no total is
+   worse than a rejected write. This is the only place that shape is assembled,
+   so adding a field means one edit here and one in the rules. */
+function shape(j) {
+  const now = new Date().toISOString();
+  return {
+    name: str(j.name), phone: str(j.phone), address: str(j.address),
+    customerId: str(j.customerId) || custId(j.phone),
+    jobType: str(j.jobType), jobTypeLabel: str(j.jobTypeLabel),
+    items: str(j.items), notes: str(j.notes),
+    total: round2(j.total),
+    payments: (j.payments || []).map(p => ({
+      amount: round2(p.amount), date: str(p.date), note: str(p.note),
+    })),
+    visitDate: str(j.visitDate), nextDate: str(j.nextDate),
+    createdAt: str(j.createdAt) || now,
+    updatedAt: now,
+    deletedAt: str(j.deletedAt),
+    leadId: str(j.leadId),
+  };
+}
+
+function fail(msg, ex) {
+  $('appErr').textContent = msg + (ex && ex.message ? ' — ' + ex.message : '');
+  $('appErr').hidden = false;
+}
+const clearFail = () => { $('appErr').hidden = true; };
+
+async function saveJob(id, data) {
+  const body = shape(data);
+  if (id) await setDoc(doc(db, JOBS, id), body);
+  else await addDoc(collection(db, JOBS), body);
+}
+
+/* ---------- the bin ----------
+   Soft delete, because the owner is doing this one-handed on a phone and a
+   stray tap must not destroy what a customer owes. The purge below is a real
+   delete and runs on load: there are no Cloud Functions on the free plan, so
+   there is nothing else to run it. A dashboard nobody opens therefore never
+   purges, which is an acceptable thing for a bin to do. */
+let purging = false;
+async function purgeBin(list) {
+  if (purging) return;      // its own deletes retrigger the snapshot that calls it
+  purging = true;
+  const cutoff = Date.now() - BIN_DAYS * 86400000;
+  for (const j of list) {
+    if (!j.deletedAt) continue;
+    const t = Date.parse(j.deletedAt);
+    /* An unparseable stamp is left alone on purpose. Treating it as ancient
+       would delete a row for being malformed, which is the opposite of what a
+       bin is for. */
+    if (!Number.isFinite(t) || t >= cutoff) continue;
+    try { await deleteDoc(doc(db, JOBS, j.id)); } catch (ex) { /* next load */ }
+  }
+  purging = false;
+}
+
+/* ---------- render ---------- */
+function visibleJobs() {
+  const live = jobs.filter(j => !j.deletedAt);
+  if (view === 'bin') return jobs.filter(j => j.deletedAt).filter(matchJob)
+    .sort((a, b) => str(b.deletedAt).localeCompare(str(a.deletedAt)));
+  if (view === 'dues') return live.filter(j => dueOf(j) > 0).filter(matchJob)
+    .sort((a, b) => dueOf(b) - dueOf(a));            // biggest debt first
+  return live.filter(j => inRange(j.visitDate)).filter(matchJob)
+    .sort((a, b) => str(b.visitDate).localeCompare(str(a.visitDate)));
+}
+
+function drawStats(list) {
+  const billed = round2(list.reduce((a, j) => a + (Number(j.total) || 0), 0));
+  const got = round2(list.reduce((a, j) => a + paidOf(j), 0));
+  const owed = round2(list.reduce((a, j) => a + Math.max(0, dueOf(j)), 0));
+  const cards = [
+    ['Jobs', String(list.length)],
+    ['Billed', money(billed)],
+    ['Collected', money(got)],
+    ['Outstanding', money(owed)],
+  ];
+  $('stats').innerHTML = cards.map(([k, v]) =>
+    '<div class="stat"><span class="stat__k">' + esc(k) + '</span>' +
+    '<strong class="stat__v">' + esc(v) + '</strong></div>').join('');
+}
+
+function jobCard(j) {
+  const due = dueOf(j), paid = paidOf(j);
+  const tel = str(j.phone).replace(/[^0-9+]/g, '');
+  const wa = tel.replace(/^\+/, '');
+  const binned = !!j.deletedAt;
+  /* Four states, not three. An overpayment is not the same as settled — it
+     means somebody paid too much and the shop owes a refund or a credit, which
+     is worth noticing rather than colouring green and forgetting. */
+  const state = binned ? 'binned' : due > 0 ? 'due' : due < 0 ? 'over' : 'clear';
+
+  const msg = REMINDER
+    .replace('{shop}', SHOP)
+    .replace('{job}', str(j.jobTypeLabel) || str(j.items))
+    .replace('{amount}', bnDigits(money(due)));
+
+  return '<article class="job job--' + state + '">' +
+    '<div class="lead__head">' +
+      '<h2>' + (esc(j.name) || '<span class="muted">No name</span>') +
+        ' <span class="cid">' + esc(j.customerId) + '</span></h2>' +
+      '<time>' + esc(dayLabel(j.visitDate)) + '</time>' +
+    '</div>' +
+    (j.jobTypeLabel ? '<p class="cat">' + esc(j.jobTypeLabel) + '</p>' : '') +
+    (j.items ? '<p class="items">' + esc(j.items) + '</p>' : '') +
+    '<div class="mon">' +
+      '<span>Total <b>' + esc(money(j.total)) + '</b></span>' +
+      '<span>Paid <b>' + esc(money(paid)) + '</b></span>' +
+      '<span class="mon__due">' + (due < 0
+        ? 'Overpaid <b>' + esc(money(-due)) + '</b>'
+        : 'Due <b>' + esc(money(due)) + '</b>') + '</span>' +
+    '</div>' +
+    (j.address ? '<p class="meta muted">' + esc(j.address) + '</p>' : '') +
+    (j.nextDate ? '<p class="meta next">Next: ' + esc(dayLabel(j.nextDate)) + '</p>' : '') +
+    '<div class="acts">' +
+      (binned
+        ? '<button class="btn btn--sm" type="button" data-act="restore" data-id="' + esc(j.id) + '">Restore</button>' +
+          '<button class="btn btn--ghost btn--sm" type="button" data-act="purge" data-id="' + esc(j.id) + '">Delete for good</button>'
+        : (tel ? '<a class="btn btn--sm" href="tel:' + esc(tel) + '">Call</a>' : '') +
+          (tel && due > 0 && msg
+            ? '<a class="btn btn--sm" target="_blank" rel="noopener" href="https://wa.me/' + esc(wa) +
+              '?text=' + encodeURIComponent(msg) + '">Remind</a>' : '') +
+          (tel && due <= 0 ? '<a class="btn btn--ghost btn--sm" target="_blank" rel="noopener" href="https://wa.me/' + esc(wa) + '">WhatsApp</a>' : '') +
+          (due > 0 ? '<button class="btn btn--sm" type="button" data-act="pay" data-id="' + esc(j.id) + '">Payment</button>' : '') +
+          '<button class="btn btn--ghost btn--sm" type="button" data-act="edit" data-id="' + esc(j.id) + '">Edit</button>' +
+          '<button class="btn btn--ghost btn--sm" type="button" data-act="bin" data-id="' + esc(j.id) + '">Delete</button>') +
+    '</div>' +
+  '</article>';
+}
+
+/* Bengali numerals for the reminder, because the sentence around them is
+   Bengali and the site already writes its own numbers this way. The tel: link
+   keeps Latin digits — this only touches text a person reads. */
+const BN = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+const bnDigits = s => str(s).replace(/[0-9]/g, d => BN[+d]);
+
+function leadCard(r) {
+  const tel = str(r.phone).replace(/[^0-9+]/g, '');
+  const wa = tel.replace(/^\+/, '');
+  return '<article class="lead lead--' + esc(r.status) + '">' +
+    '<div class="lead__head">' +
+      '<h2>' + (esc(r.name) || '<span class="muted">No name</span>') + '</h2>' +
+      '<time>' + esc(when(r.createdAt)) + '</time>' +
+    '</div>' +
+    (r.category ? '<p class="cat">' + esc(r.category) + '</p>' : '') +
+    (r.items ? '<p class="items">' + esc(r.items) + '</p>' : '<p class="muted items">No item list</p>') +
+    (tel ? '<div class="acts">' +
+      '<a class="btn btn--sm" href="tel:' + esc(tel) + '">Call ' + esc(r.phone) + '</a>' +
+      '<a class="btn btn--ghost btn--sm" href="https://wa.me/' + esc(wa) + '" target="_blank" rel="noopener">WhatsApp</a>' +
+    '</div>' : '<p class="muted">No phone number</p>') +
+    '<div class="status" role="group" aria-label="Status">' +
+      STATUSES.map(s => '<button type="button" class="chip' + (r.status === s ? ' is-on' : '') +
+        '" data-id="' + esc(r.id) + '" data-s="' + s + '">' + s + '</button>').join('') +
+    '</div>' +
+    '<p class="meta muted">' + esc(r.lang === 'bn' ? 'Bengali page' : 'English page') + ' · ' + esc(r.page || '') + '</p>' +
+  '</article>';
+}
+
+const EMPTY = {
+  dues: ['Nothing matches that.', 'Nobody owes anything.'],
+  jobs: ['Nothing matches that.', 'No jobs in this range yet.'],
+  leads: ['Nothing matches that.', 'No leads yet.'],
+  bin: ['Nothing matches that.', 'The bin is empty.'],
+};
+
+function draw() {
+  const isLeads = view === 'leads';
+  $('rangeBar').hidden = !(view === 'jobs' || isLeads);
+  $('stats').hidden = isLeads;
+  $('counts').hidden = !isLeads;
+  $('addJob').hidden = view === 'bin';
+
+  let shown, html;
+  if (isLeads) {
+    shown = leads.filter(matchLead).filter(l => inRange(str(l.createdAt).slice(0, 10)));
+    const tally = STATUSES.map(s => s + ' ' + leads.filter(r => r.status === s).length);
+    $('counts').innerHTML = tally.map((t, i) =>
+      '<span class="pill pill--' + STATUSES[i] + '">' + esc(t) + '</span>').join('');
+    html = shown.map(leadCard).join('');
+  } else {
+    shown = visibleJobs();
+    drawStats(shown);      // the cards describe what is on screen, search included
+    html = shown.map(jobCard).join('');
+  }
+
+  if (!shown.length) {
+    const [onSearch, onNone] = EMPTY[view];
+    $('list').innerHTML = '<p class="muted">' + esc(q ? onSearch : onNone) + '</p>';
+    return;
+  }
+  $('list').innerHTML = html;
+}
+
+/* ---------- dialogs ---------- */
+function openJob(j) {
+  const f = $('jobForm');
+  editing = j ? j.id : null;
+  $('jobDlgTitle').textContent = j ? 'Edit job' : 'New job';
+  $('jobErr').hidden = true;
+  const el = f.elements;
+  el.name.value = str(j && j.name);
+  el.phone.value = str(j && j.phone);
+  el.address.value = str(j && j.address);
+  /* A job can carry a type that is no longer in the dropdown — a category
+     renamed or dropped from content/ since the job was written. Selecting a
+     value the <select> does not have leaves it on the FIRST option, so opening
+     such a job and saving a change to its total would quietly relabel the work.
+     Put the job's own type back in the list instead, marked so it is removed
+     again next time the dialog opens. */
+  const sel = el.jobType;
+  sel.querySelectorAll('option[data-adhoc]').forEach(o => o.remove());
+  const wantV = str(j && j.jobType), wantL = str(j && j.jobTypeLabel);
+  if ((wantV || wantL) && !Array.from(sel.options).some(o => o.value === wantV)) {
+    const o = document.createElement('option');
+    o.value = wantV;
+    o.textContent = wantL || wantV;
+    o.setAttribute('data-adhoc', '');
+    sel.appendChild(o);
+  }
+  sel.value = (wantV || wantL) ? wantV : sel.options[0].value;
+  el.items.value = str(j && j.items);
+  el.total.value = j ? round2(j.total) : 0;
+  el.visitDate.value = str(j && j.visitDate) || today();
+  el.nextDate.value = str(j && j.nextDate);
+  el.notes.value = str(j && j.notes);
+  $('jobDlg').showModal();
+}
+
+function openPay(j) {
+  paying = j.id;
+  $('payErr').hidden = true;
+  $('payFor').textContent = (j.name || j.customerId) + ' · ' + money(dueOf(j)) + ' outstanding';
+  const el = $('payForm').elements;
+  el.amount.value = round2(dueOf(j));   // the common case is settling in full
+  el.date.value = today();
+  el.note.value = '';
+  $('payDlg').showModal();
+}
+
+/* ---------- events ---------- */
 $('signin').addEventListener('submit', async (e) => {
   e.preventDefault();
   const err = $('signinErr'); err.hidden = true;
@@ -86,7 +413,135 @@ $('signin').addEventListener('submit', async (e) => {
 });
 
 $('signout').addEventListener('click', () => signOut(auth));
-$('search').addEventListener('input', draw);
+$('search').addEventListener('input', () => { q = $('search').value.trim().toLowerCase(); draw(); });
+$('onDate').addEventListener('input', () => { onDate = $('onDate').value; draw(); });
+$('addJob').addEventListener('click', () => openJob(null));
+
+document.querySelector('.tabs').addEventListener('click', (e) => {
+  const b = e.target.closest('.tab');
+  if (!b) return;
+  view = b.dataset.view;
+  document.querySelectorAll('.tab').forEach(t => {
+    const on = t === b;
+    t.classList.toggle('is-on', on);
+    if (on) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current');
+  });
+  draw();
+});
+
+$('rangeBar').addEventListener('click', (e) => {
+  const b = e.target.closest('.chip[data-range]');
+  if (!b) return;
+  range = b.dataset.range;
+  onDate = ''; $('onDate').value = '';
+  $('rangeBar').querySelectorAll('.chip').forEach(c => c.classList.toggle('is-on', c === b));
+  draw();
+});
+
+for (const id of ['jobDlg', 'payDlg']) {
+  $(id).addEventListener('click', (e) => {
+    if (e.target.closest('[data-close]')) $(id).close();
+  });
+}
+
+$('jobForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  /* form.elements, never form.X — HTMLFormElement has its own `name` property
+     and it shadows the input called "name", so f.name is the form's name
+     attribute and f.name.value throws. main.js hits the same wall. */
+  const f = e.target.elements;
+  const name = f.name.value.trim(), phone = f.phone.value.trim();
+  if (!name && !phone) {
+    $('jobErr').textContent = 'Give at least a name or a mobile number, or the job cannot be found again.';
+    $('jobErr').hidden = false;
+    return;
+  }
+  const total = Number(f.total.value);
+  if (!Number.isFinite(total) || total < 0) {
+    $('jobErr').textContent = 'The total must be a number, and not negative.';
+    $('jobErr').hidden = false;
+    return;
+  }
+  const was = editing ? jobs.find(j => j.id === editing) : null;
+  const opt = f.jobType.selectedOptions[0];
+  try {
+    await saveJob(editing, {
+      ...(was || {}),
+      name, phone, address: f.address.value.trim(),
+      customerId: custId(phone),
+      jobType: f.jobType.value, jobTypeLabel: opt ? opt.textContent : '',
+      items: f.items.value.trim(), notes: f.notes.value.trim(),
+      total,
+      visitDate: f.visitDate.value, nextDate: f.nextDate.value,
+      payments: was ? was.payments : [],
+      createdAt: was ? was.createdAt : '',
+      deletedAt: was ? was.deletedAt : '',
+      leadId: was ? was.leadId : '',
+    });
+    clearFail();
+    $('jobDlg').close();
+  } catch (ex) {
+    $('jobErr').textContent = 'Could not save: ' + ex.message;
+    $('jobErr').hidden = false;
+  }
+});
+
+$('payForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const j = jobs.find(x => x.id === paying);
+  if (!j) { $('payDlg').close(); return; }
+  const f = e.target.elements;
+  const amount = round2(f.amount.value);
+  if (!(amount > 0)) {
+    $('payErr').textContent = 'Enter an amount greater than zero.';
+    $('payErr').hidden = false;
+    return;
+  }
+  try {
+    await saveJob(j.id, {
+      ...j,
+      payments: (j.payments || []).concat([{
+        amount, date: f.date.value || today(), note: f.note.value.trim(),
+      }]),
+    });
+    clearFail();
+    $('payDlg').close();
+  } catch (ex) {
+    $('payErr').textContent = 'Could not record it: ' + ex.message;
+    $('payErr').hidden = false;
+  }
+});
+
+/* Delegated, because the list is replaced wholesale on every snapshot. */
+$('list').addEventListener('click', async (e) => {
+  const chip = e.target.closest('.chip[data-s]');
+  if (chip) {
+    try {
+      await updateDoc(doc(db, COLL, chip.dataset.id), { status: chip.dataset.s });
+      clearFail();
+    } catch (ex) { fail('Could not change status', ex); }
+    return;
+  }
+
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  const j = jobs.find(x => x.id === b.dataset.id);
+  if (!j) return;
+
+  try {
+    if (b.dataset.act === 'edit') { openJob(j); return; }
+    if (b.dataset.act === 'pay') { openPay(j); return; }
+    if (b.dataset.act === 'bin') {
+      await saveJob(j.id, { ...j, deletedAt: new Date().toISOString() });
+    } else if (b.dataset.act === 'restore') {
+      await saveJob(j.id, { ...j, deletedAt: '' });
+    } else if (b.dataset.act === 'purge') {
+      if (!window.confirm('Delete this permanently? It cannot be undone.')) return;
+      await deleteDoc(doc(db, JOBS, j.id));
+    }
+    clearFail();
+  } catch (ex) { fail('Could not do that', ex); }
+});
 
 onAuthStateChanged(auth, (user) => {
   /* A UI gate, not a boundary. Firestore refuses a stranger's read whatever this
@@ -95,7 +550,11 @@ onAuthStateChanged(auth, (user) => {
   const allowed = user && (!OWNERS.length || OWNERS.includes(user.uid));
   $('signin').hidden = !!allowed;
   $('app').hidden = !allowed;
+
   if (!allowed) {
+    if (unsubLeads) { unsubLeads(); unsubLeads = null; }
+    if (unsubJobs) { unsubJobs(); unsubJobs = null; }
+    leads = []; jobs = [];
     if (user) {
       $('signinErr').textContent = 'That account is signed in but not allowed to read leads. UID: ' + user.uid;
       $('signinErr').hidden = false;
@@ -103,64 +562,18 @@ onAuthStateChanged(auth, (user) => {
     }
     return;
   }
+
   /* Ordered by createdAt, the client-written ISO string — see firestore.rules for
      why the server's own createTime is not available here. */
-  onSnapshot(query(collection(db, COLL), orderBy('createdAt', 'desc')),
-    (snap) => { rows = snap.docs.map(d => ({ id: d.id, ...d.data() })); draw(); },
-    (ex) => { $('appErr').textContent = 'Could not read leads: ' + ex.message; $('appErr').hidden = false; });
-});
+  unsubLeads = onSnapshot(query(collection(db, COLL), orderBy('createdAt', 'desc')),
+    (snap) => { leads = snap.docs.map(d => ({ id: d.id, ...d.data() })); draw(); },
+    (ex) => fail('Could not read leads', ex));
 
-function when(iso) {
-  const d = new Date(iso);
-  if (isNaN(d)) return iso || '';
-  return d.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-}
-
-function draw() {
-  const q = $('search').value.trim().toLowerCase();
-  const shown = q ? rows.filter(r =>
-    (r.name + ' ' + r.phone + ' ' + r.items + ' ' + r.category).toLowerCase().includes(q)) : rows;
-
-  const tally = STATUSES.map(s => s + ' ' + rows.filter(r => r.status === s).length);
-  $('counts').innerHTML = tally.map((t, i) =>
-    '<span class="pill pill--' + STATUSES[i] + '">' + esc(t) + '</span>').join('');
-
-  if (!shown.length) {
-    $('list').innerHTML = '<p class="muted">' + (rows.length ? 'Nothing matches that.' : 'No leads yet.') + '</p>';
-    return;
-  }
-
-  $('list').innerHTML = shown.map(r => {
-    const tel = String(r.phone || '').replace(/[^0-9+]/g, '');
-    const wa = tel.replace(/^\+/, '');
-    return '<article class="lead lead--' + esc(r.status) + '">' +
-      '<div class="lead__head">' +
-        '<h2>' + (esc(r.name) || '<span class="muted">No name</span>') + '</h2>' +
-        '<time>' + esc(when(r.createdAt)) + '</time>' +
-      '</div>' +
-      (r.category ? '<p class="cat">' + esc(r.category) + '</p>' : '') +
-      (r.items ? '<p class="items">' + esc(r.items) + '</p>' : '<p class="muted items">No item list</p>') +
-      (tel ? '<div class="acts">' +
-        '<a class="btn btn--sm" href="tel:' + esc(tel) + '">Call ' + esc(r.phone) + '</a>' +
-        '<a class="btn btn--sm btn--ghost" href="https://wa.me/' + esc(wa) + '" target="_blank" rel="noopener">WhatsApp</a>' +
-      '</div>' : '<p class="muted">No phone number</p>') +
-      '<div class="status" role="group" aria-label="Status">' +
-        STATUSES.map(s => '<button type="button" class="chip' + (r.status === s ? ' is-on' : '') +
-          '" data-id="' + esc(r.id) + '" data-s="' + s + '">' + s + '</button>').join('') +
-      '</div>' +
-      '<p class="meta muted">' + esc(r.lang === 'bn' ? 'Bengali page' : 'English page') + ' · ' + esc(r.page || '') + '</p>' +
-    '</article>';
-  }).join('');
-}
-
-/* Delegated, because the list is replaced wholesale on every snapshot. */
-$('list').addEventListener('click', async (e) => {
-  const b = e.target.closest('.chip');
-  if (!b) return;
-  try {
-    await updateDoc(doc(db, COLL, b.dataset.id), { status: b.dataset.s });
-  } catch (ex) {
-    $('appErr').textContent = 'Could not change status: ' + ex.message;
-    $('appErr').hidden = false;
-  }
+  unsubJobs = onSnapshot(collection(db, JOBS),
+    (snap) => {
+      jobs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      draw();
+      purgeBin(jobs);
+    },
+    (ex) => fail('Could not read jobs', ex));
 });

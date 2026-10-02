@@ -174,6 +174,7 @@
     "msgCat": "Category",
     "msgItems": "Items",
     "msgClose": "Please send me a quote.",
+    "duesReminder": "Hello, this is {shop}. There is {amount} still outstanding on your {job}. We would be grateful if you could settle it when convenient. Thank you.",
     "areas": [
       "Rampura",
       "Malibag",
@@ -592,6 +593,7 @@
     "msgCat": "ক্যাটাগরি",
     "msgItems": "মাল",
     "msgClose": "দয়া করে দাম জানাবেন।",
+    "duesReminder": "আসসালামু আলাইকুম। {shop} থেকে বলছি। {job} বাবদ আপনার {amount} বকেয়া রয়েছে। সুবিধামতো পরিশোধ করলে উপকৃত হব। ধন্যবাদ।",
     "areas": [
       "রামপুরা",
       "মালিবাগ",

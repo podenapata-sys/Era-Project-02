@@ -49,11 +49,14 @@ body {
   font-size: 13px; color: var(--text);
 }
 label { display: block; margin: 12px 0 5px; font-size: 14px; font-weight: 600; }
-input {
+input, select, textarea {
   width: 100%; padding: 11px 13px; font: inherit; color: var(--text);
   background: var(--bg); border: 1px solid var(--line-ui); border-radius: var(--r-sm);
 }
-input:focus-visible { outline: 2px solid var(--amber); outline-offset: 1px; }
+textarea { resize: vertical; min-height: 44px; }
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--amber); outline-offset: 1px;
+}
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;
@@ -125,6 +128,96 @@ input:focus-visible { outline: 2px solid var(--amber); outline-offset: 1px; }
   .wrap { padding: 12px; }
   .lead__head { flex-direction: column; gap: 2px; }
   .acts .btn { flex: 1 1 auto; }
+}
+
+
+/* ==========================================================================
+   Jobs, payments and dues
+   ========================================================================== */
+
+/* Visually hidden but still read out and still focusable. */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+.tabs {
+  display: flex; gap: 4px; margin-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.tab {
+  padding: 10px 14px; border: 0; border-bottom: 2px solid transparent;
+  background: transparent; color: var(--muted-2);
+  font: inherit; font-weight: 700; font-size: 15px; cursor: pointer;
+}
+.tab:hover { color: var(--text); }
+/* The underline is not the only signal — aria-current marks it for a screen
+   reader, and the weight shifts too. */
+.tab.is-on { color: var(--text); border-bottom-color: var(--amber); }
+.tab:focus-visible { outline: 2px solid var(--amber); outline-offset: -2px; }
+
+.stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px;
+}
+.stat {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 10px 12px; min-width: 0;
+}
+.stat__k { display: block; font-size: 11.5px; text-transform: uppercase;
+           letter-spacing: .04em; color: var(--muted-2); }
+.stat__v { display: block; font-size: 17px; font-weight: 800; overflow-wrap: anywhere; }
+
+.job {
+  background: var(--surface); border: 1px solid var(--line);
+  border-left: 3px solid var(--line-ui);
+  border-radius: var(--r); padding: 16px;
+}
+/* Same idea as the leads list: the left edge says the state so twenty rows are
+   scannable, and the figures below say it in words and numbers too. */
+.job--due    { border-left-color: var(--new); }
+.job--clear  { border-left-color: var(--won); }
+.job--over   { border-left-color: var(--quoted); }
+.job--binned { border-left-color: var(--lost); opacity: .82; }
+
+.job h2 { margin: 0; font-size: 17px; font-weight: 700; }
+.cid {
+  font-size: 12px; font-weight: 700; color: var(--muted-2);
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 2px 8px; white-space: nowrap;
+}
+.job time { font-size: 13px; color: var(--muted-2); white-space: nowrap; }
+
+.mon {
+  display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px;
+  font-size: 14px; color: var(--muted);
+}
+.mon b { color: var(--text); font-weight: 700; }
+.mon__due b { color: var(--new); }
+.job--clear .mon__due b { color: var(--won); }
+.job--over .mon__due b  { color: var(--quoted); }
+
+.next { color: var(--called); font-weight: 600; }
+
+/* Two fields on one line where they belong together — a total and its date. */
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row label { margin-top: 12px; }
+
+dialog {
+  width: min(520px, calc(100% - 24px)); padding: 0; border: 1px solid var(--line);
+  border-radius: var(--r); background: var(--surface); color: var(--text);
+}
+dialog::backdrop { background: rgb(0 0 0 / 62%); }
+dialog form { padding: 20px; }
+dialog h2 { margin: 0 0 4px; font-size: 19px; }
+dialog .acts { margin-top: 18px; }
+dialog .muted { font-size: 14px; }
+
+@media (max-width: 560px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .job h2 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .row { grid-template-columns: 1fr; gap: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
