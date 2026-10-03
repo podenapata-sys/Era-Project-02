@@ -97,6 +97,31 @@ const MONTHS = {
 };
 
 /* ------------------------------------------------------------- components */
+
+/* The wordmark, in pieces, because SANITARY is set in amber and the rest is
+   not. Splitting it means the business's actual name exists on the page only as
+   fragments, so checkBrandName() reassembles these three and holds them against
+   business.json — otherwise the sign over the shop and the sign on the site can
+   quietly stop saying the same thing.
+
+   `sub` is the second line. The client's own printed banner stacks
+   ERA / SANITARY & / PLUMBING SOLUTIONS and the shopfront sign puts
+   "& Plumbing Solutions" underneath in smaller type; neither runs the name
+   across one line, and at 19px it would wrap on a phone anyway. */
+const BRAND = { lead: 'ERA', gold: 'SANITARY', sub: '& Plumbing Solutions' };
+
+/* One wordmark, rendered in two places — the header brand and the footer mark.
+   It was written out twice until this was pulled out, which is the same
+   duplication this file already guards against for the address and the owner
+   UIDs: two copies of one string is just a slower way of having two different
+   strings. */
+function brandText(t) {
+  return `<span class="brand__text">
+        <strong>${esc(BRAND.lead)} <span class="brand__gold">${esc(BRAND.gold)}</span><span class="brand__sub">${esc(BRAND.sub)}</span></strong>
+        <small>${esc(t.tagline)}</small>
+      </span>`;
+}
+
 function logoMark(base) {
   return `<span class="logo"><img src="${base}${biz.images.logo}" alt="" width="44" height="44" loading="eager" decoding="async"></span>`;
 }
@@ -305,10 +330,7 @@ function header(t, lang, page, base, slug) {
   <div class="shell header__inner">
     <a class="brand" href="${up}${FILE.home}">
       ${logoMark(base)}
-      <span class="brand__text">
-        <strong>ERA <span>SANITARY</span></strong>
-        <small>${esc(t.tagline)}</small>
-      </span>
+      ${brandText(t)}
     </a>
 
     <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="primaryNav" aria-label="Menu">
@@ -354,7 +376,7 @@ function footer(t, lang, base, page) {
             home, so this was a second route to the same place. */''}
       <span class="brand footer__mark" data-admin="${attr(base)}admin/">
         ${logoMark(base)}
-        <span class="brand__text"><strong>ERA <span>SANITARY</span></strong><small>${esc(t.tagline)}</small></span>
+        ${brandText(t)}
       </span>
       <p>${esc(t.footerBlurb)}</p>
     </div>
@@ -1216,6 +1238,18 @@ function copyDir(from, to) {
    not the other renders empty on that language's pages — silently, on a page
    nobody building in English would think to open. README.md has asked for parity
    since the first commit; this is the same ask with teeth. */
+/* The wordmark is three fragments so one of them can be gold; reassembled it
+   has to be the business's actual name. Case is ignored because the mark sets
+   SANITARY in capitals and business.json does not. */
+function checkBrandName() {
+  const onPage = `${BRAND.lead} ${BRAND.gold} ${BRAND.sub}`;
+  if (onPage.toLowerCase() !== biz.name.toLowerCase()) {
+    throw new Error(`content mismatch: the wordmark reads "${onPage}" but ` +
+      `business.json says the business is "${biz.name}". The name over the shop ` +
+      'and the name on the site have to agree.');
+  }
+}
+
 function checkCopyParity() {
   const en = Object.keys(copy.en), bn = Object.keys(copy.bn);
   const missingBn = en.filter(k => !bn.includes(k));
@@ -1311,6 +1345,7 @@ function build() {
         `is not in copy.en.${key} — update both, and the Bengali alongside it.`);
     }
   }
+  checkBrandName();
   checkCopyParity();
   checkAreaCount();
   checkReviews();
