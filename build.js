@@ -552,17 +552,31 @@ function servicesPage(t, lang, base) {
         </div>
       </a>`).join('');
 
+  /* The whole card used to be one <a>. It cannot stay that way now that each
+     card carries its own quote button: a link inside a link is invalid markup
+     and RULES.md forbids nesting interactive elements outright.
+
+     So the heading carries the link and its ::after is stretched over the card,
+     which keeps the whole tile clickable, and the button sits above it in the
+     stacking order. Two sibling links, each with its own accessible name, and
+     the keyboard reaches both in reading order.
+
+     The button deep-links to the quote form with this trade preselected.
+     main.js already reads ?for=<slug> and matches it against the option's
+     data-slug rather than its visible text, so it works in both languages
+     without a second code path. */
   const works = t.services.map((sv, i) => `
       <article class="svc" id="${attr(sv.slug)}">
-        <a class="svc__link" href="${TRADE_DIR}/${attr(sv.slug)}/">
-          ${photo('trade-' + sv.slug, 'sq43', lang, base, sv.title, 'slot--svc')}
-          <div class="svc__body">
-            <p class="svc__n">${String(i + 1).padStart(2, '0')}</p>
-            <h3>${esc(sv.title)}</h3>
-            <p>${esc(sv.blurb)}</p>
-            <span class="link-more">${esc(t.seeAll)} ${ICONS.arrow}</span>
-          </div>
-        </a>
+        ${photo('trade-' + sv.slug, 'sq43', lang, base, sv.title, 'slot--svc')}
+        <div class="svc__body">
+          <p class="svc__n">${String(i + 1).padStart(2, '0')}</p>
+          <h3><a class="svc__link" href="${TRADE_DIR}/${attr(sv.slug)}/">${esc(sv.title)}</a></h3>
+          <p>${esc(sv.blurb)}</p>
+          <span class="link-more">${esc(t.seeAll)} ${ICONS.arrow}</span>
+          <p class="svc__cta">
+            <a class="btn btn--accent" href="${FILE.contact}?for=${attr(sv.slug)}">${esc(t.ctaQuote)}</a>
+          </p>
+        </div>
       </article>`).join('');
 
   return `

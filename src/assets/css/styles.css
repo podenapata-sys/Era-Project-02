@@ -580,9 +580,24 @@ table { border-collapse: collapse; width: 100%; }
 .trade__others .ic { width: 16px; height: 16px; flex: none; }
 
 /* The whole service card is the link now that each trade has a page. */
-.svc__link { display: flex; flex-direction: column; height: 100%; color: inherit; }
+/* Each card is clickable as a whole AND carries its own quote button. A link
+   inside a link is invalid and RULES.md forbids nesting interactive elements,
+   so the heading's link is stretched over the card with ::after and the button
+   sits above it in the stacking order. Two sibling links, each with its own
+   accessible name, reached by the keyboard in reading order. */
+.svc { position: relative; }
+.svc__link { color: inherit; }
 .svc__link:hover { color: inherit; }
-.svc__link .link-more { margin-top: auto; padding-top: 10px; }
+.svc__link::after { content: ''; position: absolute; inset: 0; }
+/* The stretched link has no box of its own to ring, so the ring goes on the
+   overlay — without this the card gives no focus feedback at all. */
+.svc__link:focus-visible { outline: none; }
+.svc__link:focus-visible::after { outline: 3px solid var(--amber); outline-offset: -3px; border-radius: var(--r); }
+.svc__body .link-more { margin-top: auto; padding-top: 10px; }
+
+/* Above the overlay, or the card's link would swallow the button's clicks. */
+.svc__cta { position: relative; z-index: 1; margin: 16px 0 0; }
+.svc__cta .btn { width: 100%; }
 
 /* ---------- Google review block ---------- */
 .review { display: flex; align-items: center; gap: 18px; }
