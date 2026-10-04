@@ -42,6 +42,18 @@ them. This key is therefore the most powerful credential in the project, so:
 succeeds, the role is too wide; fix that before trusting the script with a live
 key.
 
+## Sign in as the shop before you start
+
+`MailApp` sends **from the Google account that owns the script**, and on a
+consumer account that address cannot be overridden in code. Create the Apps
+Script project while signed in as **`erasanitary2003@gmail.com`**, not a
+personal account — otherwise every alert arrives from the wrong address and the
+daily sending quota is spent on the wrong account. Moving it afterwards means
+making the project again.
+
+The display name is set to the business, so the mail reads as from
+"ERA Sanitary & Plumbing Solutions" rather than a bare address.
+
 ## Setup
 
 1. **Service account.** Google Cloud Console → the `era-sanitary` project →
@@ -63,8 +75,18 @@ key.
    | `SHEET_ID` | the spreadsheet ID from step 2 |
 
    `LAST_LEAD_AT` appears by itself; the script maintains it.
-5. **Run `checkNewLeads()` by hand** from the editor and approve the permission
-   prompts. Then `dailyBrief()`. Then `assertReadOnly()`.
+5. **Run `checkNewLeads()` by hand** from the editor. Google asks for permission
+   the first time, and **the consent screen is where people stop**: it says
+   *"Google hasn't verified this app"*. Click **Advanced**, then
+   **Go to \<project name\> (unsafe)**. Every personal Apps Script project is
+   unverified — verification is for apps distributed to strangers. This is your
+   own script in your own account.
+
+   It then asks for four things, which map to the four scopes in
+   `appsscript.json`: send mail as you, see and edit your spreadsheets, connect
+   to an external service (Firestore), and manage its own triggers.
+
+   Then `assertReadOnly()` — **this one must FAIL with 403.** Then `dailyBrief()`.
 6. **Run `setupTriggers()` once** to attach both schedules. It is safe to re-run:
    it clears existing triggers first, so you cannot end up with two of each
    quietly sending everything twice.

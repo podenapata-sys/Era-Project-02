@@ -276,8 +276,13 @@ function checkNewLeads() {
         '</table>';
     }).join('');
 
+  /* `name` sets the display name only. The sending ADDRESS is the Google
+     account that owns this script and cannot be overridden on a consumer
+     account — which is why the script has to be created while signed in as the
+     shop's own address, not a personal one. */
   MailApp.sendEmail({
     to: need('ALERT_TO'),
+    name: SHOP,
     subject: rows.length === 1
       ? 'New quote request — ' + (rows[0].name || rows[0].phone || 'no name given')
       : rows.length + ' new quote requests',
@@ -355,6 +360,7 @@ function dailyBrief() {
 
   MailApp.sendEmail({
     to: need('ALERT_TO'),
+    name: SHOP,
     subject: 'ERA — ' + (owing.length ? money_(totalDue) + ' outstanding' : 'today’s work') +
       (booked.length ? ', ' + booked.length + ' booked' : ''),
     htmlBody: html,
