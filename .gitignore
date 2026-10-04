@@ -26,3 +26,13 @@ era-company-profile.pdf
 # both OFL and redistributable, but committing them means carrying the licence
 # text for something a one-second download replaces.
 tools/.fonts/
+
+# Service-account keys. tools/apps-script/Code.gs reads Firestore as a service
+# account, and that credential BYPASSES firestore.rules — it is the most
+# powerful thing in this project. It belongs in Apps Script's Script Properties
+# and nowhere else. These patterns exist so a key downloaded to the wrong folder
+# cannot be committed by a stray `git add -A`.
+*service-account*.json
+*-sa-key.json
+tools/apps-script/*.json
+!tools/apps-script/appsscript.json

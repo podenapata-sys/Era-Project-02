@@ -102,7 +102,8 @@ than failing:
 | Key | Empty behaviour |
 | --- | --- |
 | `SITE_URL` env | Falls back to `business.json`'s `url` |
-| `quoteEndpoint` | Form opens WhatsApp as always; nothing is recorded |
+| `firebase.projectId` | Form opens WhatsApp as always; nothing is recorded |
+| `firebase.webConfig` | `/admin/` shows setup instructions instead of a login box |
 | `reviewUrl` | Review block and QR omitted from every page |
 | `reviews.items` | Reviews section omitted entirely |
 | `photos/` missing | Placeholders render, sized for the real photo |

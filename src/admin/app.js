@@ -98,7 +98,12 @@ let unsubLeads = null, unsubJobs = null;
 /* ---------- money ----------
    Rounded at every boundary. Totals are summed from a payment log, and a run of
    floating-point additions drifts — 0.1 + 0.2 is the famous one. Nothing here
-   should ever show a customer's balance as 6999.999999999999. */
+   should ever show a customer's balance as 6999.999999999999.
+
+   MIRRORED in tools/apps-script/Code.gs, which recomputes the same figures to
+   write the daily dues email. Change the rule here and it must change there
+   too, or the email and this screen will quietly disagree about what a customer
+   owes — which is worse than sending no email at all. */
 const round2 = n => Math.round((Number(n) || 0) * 100) / 100;
 const nf = new Intl.NumberFormat(LOC, { maximumFractionDigits: 2 });
 const money = (n) => {
