@@ -1131,7 +1131,24 @@ ${configured ? `<script type="application/json" id="adminCfg">${jsonScript(admin
 function layout({ lang, page, body, t, slug, base }) {
   const meta = page === 'trade' ? tradeMeta(lang, slug) : META[lang][page];
   const alt = lang === 'en' ? 'bn' : 'en';
-  const fonts = 'https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap';
+
+  /* A font referenced only inside styles.css is not discovered until that
+     stylesheet has arrived and been parsed — two round trips before the
+     download even starts, which is where the flash of fallback text comes from
+     on a slow connection. These are preloaded instead.
+     Two per page, and only the faces that paint body text in THIS language:
+     Archivo carries the wordmark and headings on both, then Hind Siliguri 400
+     for Bengali prose or Barlow 400 for English. Preloading more would cost
+     more than it saves — each one competes with the stylesheet itself.
+
+     An English page does still pull one Bengali face, Hind Siliguri 700, for
+     the three characters of the language-switch label. That is 71 KB to draw
+     "বাং", and it is NOT preloaded: it sits in the header, not the body text,
+     and promoting it would delay the faces the page is actually made of. */
+  const preload = [
+    'archivo-latin-var.woff2',
+    lang === 'bn' ? 'hind-siliguri-bengali-400.woff2' : 'barlow-latin-400.woff2',
+  ];
 
   return `<!doctype html>
 <html lang="${lang}"${lang === 'bn' ? ' dir="ltr"' : ''}>
@@ -1158,9 +1175,7 @@ function layout({ lang, page, body, t, slug, base }) {
 <link rel="icon" href="${base}assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="${base}assets/img/era-logo-180.png">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="${attr(fonts)}">
+${preload.map(f => `<link rel="preload" href="${base}assets/fonts/${f}" as="font" type="font/woff2" crossorigin>`).join('\n')}
 <link rel="stylesheet" href="${base}assets/css/styles.css">
 </head>
 <body data-lang="${lang}" data-page="${page}">

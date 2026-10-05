@@ -58,6 +58,19 @@ Hind Siliguri is listed **after** the Latin face in both stacks, so each script
 falls to the right face without any per-language CSS. Bengali text gets Hind
 Siliguri; Latin text gets Archivo or Barlow; a mixed string gets both, correctly.
 
+**The faces are served by this site, not by Google.** Six woff2 files in
+`src/assets/fonts/`, fetched by `tools/fetch-web-fonts.py`, each scoped by
+`unicode-range` so an English page never downloads the Bengali ones. Archivo is
+variable — one file for every weight. Barlow ships at 400 and 700 only, because
+every 500 and 600 in the stylesheet sits under a rule that sets
+`--font-display` and therefore resolves to Archivo.
+
+Two consequences worth remembering. **Adding a weight to the stylesheet is not
+enough** — add it to `WANT` in that script too, or the browser synthesises it
+from a weight it has. And **the language switch on an English page costs 71 KB**:
+its label reads `বাং`, which is the only Bengali on the page and pulls the whole
+Hind Siliguri 700 face to draw three characters.
+
 Headings use display at 700–800 with `-0.015em` tracking and `1.12` line height.
 Body is Barlow at 16px on mobile. Small caps-style labels (section eyebrows, the
 footer column heads) are display, 12px, `.16em` tracking, uppercase.

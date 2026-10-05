@@ -31,7 +31,9 @@ that needs a build toolchain is a shop website nobody can maintain in two years.
 loads no third-party script. The QR code is generated at build time rather than
 drawn by a CDN library, because a deferred script that stalls blocks everything
 behind it — and on a Dhaka mobile connection, that is exactly when it happens.
-The only external request is the Google Fonts stylesheet.
+**The site now makes no third-party request at all.** The fonts were the last
+one and are self-hosted as of this change; `tools/fetch-web-fonts.py` fetches
+them, and `src/assets/fonts/OFL.txt` carries the licence they ship under.
 
 Two Python tools (`tools/`, on the feature branch) use Pillow and segno. They
 are run by hand, never by the site, and never by CI.
@@ -48,6 +50,7 @@ src/assets/
   css/styles.css          the whole stylesheet
   js/main.js              nav, quote form, open-now badge
   img/                    logo, banner, favicon (+ photos/ once they arrive)
+  fonts/                  the six woff2 faces the site serves itself, + OFL.txt
 tools/                    one-off scripts, run by hand (feature branch)
 .github/workflows/        build, assert page count, deploy
 dist/                     generated, gitignored

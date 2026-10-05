@@ -22,9 +22,15 @@ photos-inbox/
 # copy starts lying the moment business.json or copy.json changes.
 era-company-profile.pdf
 
-# Fonts the profile embeds, fetched on first run. Barlow and Hind Siliguri are
-# both OFL and redistributable, but committing them means carrying the licence
-# text for something a one-second download replaces.
+# Fonts the PDF profile embeds, fetched on first run. Barlow and Hind Siliguri
+# are both OFL and redistributable, but committing them means carrying the
+# licence text for something a one-second download replaces.
+#
+# This applies ONLY to the profile's TTFs. The site's own woff2 faces live in
+# src/assets/fonts/ and ARE committed — they ship to every visitor, so they
+# cannot be a download the next person has to remember to run, and that is
+# exactly why src/assets/fonts/OFL.txt exists. Do not generalise this rule into
+# a blanket font ignore.
 tools/.fonts/
 
 # Service-account keys. tools/apps-script/Code.gs reads Firestore as a service
