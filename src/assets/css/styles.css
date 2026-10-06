@@ -162,9 +162,17 @@ table { border-collapse: collapse; width: 100%; }
 }
 .topbar__inner { display: flex; flex-wrap: wrap; gap: 6px 28px; justify-content: space-between; padding-block: 9px; }
 
+/* Opaque by default, translucent-and-blurred only at desktop — see the
+   min-width: 1025px block at the end of this file. The blur CANNOT live here:
+   backdrop-filter makes an element the containing block for its position:fixed
+   descendants, and .nav is fixed inside this header below 1025px. With the
+   blur applied, the mobile menu resolved top/bottom against this 85px header
+   instead of the viewport and rendered 43px tall holding 360px of content —
+   the first link sliced in half and every link below it unreachable. The whole
+   mobile navigation was dead and it shipped that way. */
 .site-header {
   position: sticky; top: 0; z-index: 60;
-  background: rgb(11 11 13 / 92%); backdrop-filter: blur(14px);
+  background: var(--bg);
   border-bottom: 1px solid var(--line);
 }
 .header__inner { display: flex; align-items: center; gap: 22px; padding-block: 13px; }
@@ -602,6 +610,12 @@ table { border-collapse: collapse; width: 100%; }
   .link-more { padding-block: 11px; }
   .langswitch > * { min-height: 44px; display: inline-flex; align-items: center; }
   .btn--sm { min-height: 48px; }
+  /* The per-number WhatsApp pill on the contact page (33px) and the trade
+     pages' breadcrumb (14px). Both found by tools/check-mobile.py on pages the
+     first mobile pass never looked at. */
+  .card__list .chat-link { min-height: 44px; }
+  .crumb a { display: inline-block; padding-block: 15px; }
+  .crumb { margin-bottom: 0; }
 
   /* ---------- Placeholder slots ----------
      Nine of them totalled 1,576px — 24% of a 6,522px page — to say "photo
@@ -618,6 +632,24 @@ table { border-collapse: collapse; width: 100%; }
      chrome preceded any content. */
   .topbar { font-size: 12px; }
   .topbar__inner { padding-block: 7px; }
+}
+
+/* ==========================================================================
+   Desktop only
+   The frosted header, quarantined above the breakpoint where .nav stops being
+   position: fixed. Anything that establishes a containing block —
+   backdrop-filter, filter, transform, perspective, will-change, contain —
+   belongs in here and not in a rule that also applies to the phone, because a
+   fixed child silently re-parents onto it. That is what killed the mobile
+   menu. If a blur is ever wanted on the phone header, the nav has to move out
+   of the header in the markup first.
+   ========================================================================== */
+@media (min-width: 1025px) {
+  .site-header {
+    background: rgb(11 11 13 / 92%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
 }
 
 @media print {

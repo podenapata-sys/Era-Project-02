@@ -136,3 +136,21 @@ Kept because they will otherwise be repeated:
   flagged by a validator.
 - `scroll-behavior: smooth` made automated screenshots come out blank. The site
   was fine; the tooling had to disable it.
+- **`backdrop-filter` on the header killed the entire mobile menu.** The nav is
+  `position: fixed` inside `.site-header`, and `backdrop-filter` makes an
+  element the containing block for its fixed descendants — so the menu resolved
+  `top`/`bottom` against the 85px header instead of the viewport and rendered
+  **43px tall holding 360px of content**. Not one of the five links was
+  reachable on a phone. It shipped, it survived several rounds of screenshots,
+  and the client found it.
+
+  The general rule, because it is not only `backdrop-filter`: **`filter`,
+  `transform`, `perspective`, `will-change` and `contain` on an ancestor all
+  silently re-parent a `position: fixed` child.** Any of them on an element
+  that wraps fixed content belongs behind `@media (min-width: 1025px)`, where
+  the nav is static. There was also no `-webkit-backdrop-filter`, so Safari
+  never applied the blur and never broke — it failed only on Chrome/Android,
+  which is the audience.
+
+  `tools/check-mobile.py` now opens the menu and asserts nothing is clipped.
+  Run it before pushing anything that touches the header or the nav.
