@@ -13,6 +13,21 @@ can run on a timer**. That is the whole reason this exists, and it is why the
 daily brief — not the lead alert — is the part that could not have been built
 another way.
 
+## The two halves go live at different times
+
+**This does not wait for `firestore.rules` to be published.** A service account
+bypasses rules completely, which is the same fact that makes the credential
+dangerous — here it means the script works regardless. So:
+
+- **`checkNewLeads()` works from the moment it is set up.** The public quote
+  form already writes to `leads`, rules or no rules.
+- **`dailyBrief()` sends nothing until jobs exist**, and a job cannot be created
+  until the rules are published and the owner saves one at `/admin/`. It returns
+  early when there is nothing to report, so this is silence, not an error. Do
+  not read an empty morning as a broken script.
+
+Set it up whenever; the brief starts speaking once there is something to say.
+
 ## It does not touch the website
 
 The obvious design is to have the quote form post here as well as to Firestore.
@@ -111,6 +126,17 @@ other in a comment.
 succeeded. If either throws, the cursor stays put and the lead is picked up on
 the next run. Moving it first would lose leads silently, which is the one
 failure this must not have.
+
+**Expect the first run to sweep up everything.** `LAST_LEAD_AT` does not exist
+yet, so it defaults to `1970-01-01` and the first `checkNewLeads()` picks up
+*every* lead in the collection — the whole history goes into the Sheet and
+arrives as one email. That is deliberate and it is what this shop wants: the
+Sheet starts with the full enquiry record rather than from nothing. The email is
+a one-off; delete it.
+
+If a later setup should start from now instead, add `LAST_LEAD_AT` by hand as a
+Script Property with a current ISO timestamp (`2026-10-06T12:00:00.000Z`)
+*before* the first run. Everything older is then ignored for good.
 
 ## Quotas
 
