@@ -54,6 +54,26 @@ function need(key) {
   return v;
 }
 
+/**
+ * Who gets the lead alerts, which is not always who gets the daily brief.
+ *
+ * The two emails carry very different things. A new enquiry is work for
+ * whoever picks it up first, and more eyes on it is better. The brief is the
+ * shop's receivables — every customer who owes money and exactly how much — and
+ * that is the shop's own financial position, not something to widen by
+ * accident. Sharing one should not silently share the other.
+ *
+ * So LEAD_ALERT_TO, when set, replaces ALERT_TO for the lead alert only. Left
+ * unset, both emails go to ALERT_TO, which is what a one-person shop wants and
+ * keeps this change invisible to anyone who does not need it.
+ *
+ * Either property may be a comma-separated list; MailApp takes several
+ * recipients that way. Note the daily quota counts RECIPIENTS, not messages.
+ */
+function leadAlertTo_() {
+  return P.getProperty('LEAD_ALERT_TO') || need('ALERT_TO');
+}
+
 var SHOP = 'ERA Sanitary & Plumbing Solutions';
 var CUR = '৳';                 // ৳
 var LEADS = 'leads';
@@ -281,7 +301,7 @@ function checkNewLeads() {
      account — which is why the script has to be created while signed in as the
      shop's own address, not a personal one. */
   MailApp.sendEmail({
-    to: need('ALERT_TO'),
+    to: leadAlertTo_(),
     name: SHOP,
     subject: rows.length === 1
       ? 'New quote request — ' + (rows[0].name || rows[0].phone || 'no name given')

@@ -115,6 +115,18 @@ redoing.
    | `PROJECT_ID` | `era-sanitary` |
    | `ALERT_TO` | `erasanitary2003@gmail.com` |
    | `SHEET_ID` | the spreadsheet ID from step 2 |
+   | `LEAD_ALERT_TO` | *optional* — who gets lead alerts, if not just `ALERT_TO` |
+
+   **`LEAD_ALERT_TO` exists because the two emails are not equally private.** A
+   new enquiry is work for whoever picks it up first, so more eyes help. The
+   daily brief is the shop's receivables — every customer who owes money and
+   exactly how much — and widening that is a decision, not a convenience. Set
+   `LEAD_ALERT_TO` and lead alerts go there instead; the brief always follows
+   `ALERT_TO` alone. Leave it unset and both emails go to `ALERT_TO`.
+
+   Either may be a comma-separated list with no spaces, e.g.
+   `erasanitary2003@gmail.com,someone@example.com`. Remember the daily quota
+   counts **recipients**, not messages, so two addresses consume two.
 
    `LAST_LEAD_AT` appears by itself; the script maintains it.
 5. **Run `checkNewLeads()` by hand** from the editor. Google asks for permission
