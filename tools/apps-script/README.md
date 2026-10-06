@@ -69,6 +69,33 @@ making the project again.
 The display name is set to the business, so the mail reads as from
 "ERA Sanitary & Plumbing Solutions" rather than a bare address.
 
+### Use an incognito window — this went wrong once already
+
+Reading the paragraph above is not enough, and we know because it was read and
+the project still landed on the wrong account. **The cause is Google's
+multi-account handling, not carelessness.** If the browser is signed into more
+than one Google account, `script.google.com` quietly opens under whichever one
+is "default", and the only tell is a `/u/0/` or `/u/1/` buried in the URL. The
+avatar in the corner is easy to miss and easy to misread.
+
+So do not rely on noticing it:
+
+1. Open an **incognito or private window**.
+2. Sign in there as **`erasanitary2003@gmail.com` and nothing else**. With one
+   account signed in, there is no default to get wrong.
+3. Create the project, then — **before pasting anything** — open
+   **⚙ Project Settings** and check the owner line reads the shop's address.
+   That is the definitive check; the avatar is not.
+
+If it is wrong, delete the project (Project Settings → Delete project) and start
+again in a clean incognito window. There is no transfer that fixes the sending
+address, because `MailApp` follows the owner.
+
+**The service account is not affected by this.** It belongs to the
+`era-sanitary` Google Cloud *project*, not to whoever created it, so a service
+account made from the wrong signed-in account is still fine and does not need
+redoing.
+
 ## Setup
 
 1. **Service account.** Google Cloud Console → the `era-sanitary` project →
