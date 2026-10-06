@@ -355,6 +355,32 @@ function header(t, lang, page, base, slug) {
 
 const phoneLabel = (p, lang) => (lang === 'bn' && p.displayBn) ? p.displayBn : p.display;
 
+/* The phone's contact bar, fixed to the bottom below 760px.
+   Measured reason it exists: at 390px the header's WhatsApp button is inside
+   the collapsed nav, so it is NOT visible — at 1280px it is. The home page is
+   7.7 screens tall on a phone and the only contact action was the hero's, at
+   y=458. Past that the mobile visitor had nothing to tap, while the desktop
+   visitor kept a button the whole way down. This is most of the audience.
+
+   Plain links, no script: the site works with JavaScript off and this is a
+   conversion path, so it is the last thing that may depend on one.
+
+   It does not clash with the open mobile menu. Measured at 390x844: the nav
+   ends at y=238 and the bar starts at y=787, so both stay usable at once and a
+   tap in the bar reaches the bar. Its z-index is still kept below the nav's,
+   so the nav wins if it ever grows tall enough to reach down here. */
+function callBar(t) {
+  return `
+<nav class="callbar" aria-label="${attr(t.quickContact)}">
+  <a class="callbar__btn" href="tel:${attr(primary.tel)}">
+    ${ICONS.phone}<span>${esc(t.callNow)}</span>
+  </a>
+  <a class="callbar__btn callbar__btn--wa" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">
+    ${ICONS.whatsapp}<span>${esc(t.whatsapp)}</span>
+  </a>
+</nav>`;
+}
+
 function footer(t, lang, base, page) {
   const up = upFor(page);
   const navLinks = PAGES.map(id => `<li><a href="${up}${FILE[id]}">${esc(t.nav[id])}</a></li>`).join('');
@@ -1185,6 +1211,7 @@ ${header(t, lang, page, base, slug)}
 ${body}
 </main>
 ${footer(t, lang, base, page)}
+${callBar(t)}
 <script type="application/ld+json">${JSON.stringify(jsonLd(t, lang))}</script>
 <script src="${base}assets/js/main.js" defer></script>
 </body>

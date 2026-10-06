@@ -416,7 +416,9 @@
     "openNow": "Open now",
     "openUntil": "until",
     "closedNow": "Closed",
-    "closedOpens": "opens"
+    "closedOpens": "opens",
+    "callNow": "Call",
+    "quickContact": "Quick contact"
   },
   "bn": {
     "topbar": "খুচরা ও পাইকারি · সপ্তাহে ৭ দিন খোলা, সকাল ৭টা – রাত ১০টা",
@@ -835,6 +837,8 @@
     "openNow": "এখন খোলা",
     "openUntil": "পর্যন্ত",
     "closedNow": "এখন বন্ধ",
-    "closedOpens": "খুলবে"
+    "closedOpens": "খুলবে",
+    "callNow": "কল করুন",
+    "quickContact": "দ্রুত যোগাযোগ"
   }
 }

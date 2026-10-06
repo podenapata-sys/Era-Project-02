@@ -553,8 +553,76 @@ table { border-collapse: collapse; width: 100%; }
   .marquee { -webkit-mask-image: none; mask-image: none; }
 }
 
+/* ==========================================================================
+   Phone-first
+   Most of this audience is on an Android phone on mobile data. These rules
+   come from measuring the built site at 390x844, not from taste. Every number
+   quoted below was read off that measurement.
+   ========================================================================== */
+
+/* ---------- The contact bar ----------
+   Hidden at desktop, where the header already carries a WhatsApp button that
+   is always on screen. Below 760px that button is inside the collapsed nav and
+   therefore NOT visible, which left the phone with one contact action (the
+   hero's, at y=458) on a page 7.7 screens tall. */
+.callbar { display: none; }
+
+@media (max-width: 760px) {
+  .callbar {
+    position: fixed; inset: auto 0 0; z-index: 50;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    background: var(--line-2);
+    border-top: 1px solid var(--line-2);
+    /* Phones with a home indicator put a strip of unusable screen below the
+       viewport bottom. Without this the buttons sit under it. */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .callbar__btn {
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+    min-height: 56px; padding: 10px 12px;
+    background: var(--surface-2); color: var(--text);
+    font-family: var(--font-display); font-weight: 700; font-size: 15.5px;
+  }
+  .callbar__btn--wa { background: var(--amber); color: var(--ink); }
+  .callbar__btn--wa:hover, .callbar__btn--wa:active { color: var(--ink); }
+  /* The bar is fixed, so it would sit on top of the footer and — worse — on
+     the quote form's submit button. Reserve its height at the end of the page
+     instead of letting it overlap. */
+  body { padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)); }
+
+  /* ---------- Tap targets ----------
+     Twelve of 32 measured under 44px, and the worst of them were the two
+     things that convert: the phone numbers at 85x24 and 86x24, and the footer
+     navigation at 18px tall. 48px is Android's target, not the 44px floor.
+     Padding rather than height, so nothing that wraps gets clipped. */
+  .footer__col a { display: block; padding-block: 11px; }
+  .footer__col li + li { margin-top: 0; }
+  .footer__contact a { display: inline-block; padding-block: 12px; }
+  .card__list a { display: inline-block; padding-block: 10px; }
+  .link-more { padding-block: 11px; }
+  .langswitch > * { min-height: 44px; display: inline-flex; align-items: center; }
+  .btn--sm { min-height: 48px; }
+
+  /* ---------- Placeholder slots ----------
+     Nine of them totalled 1,576px — 24% of a 6,522px page — to say "photo
+     pending". Shorter on a phone until the photographs arrive. The real images
+     use aspect-ratio rather than these heights, so nothing moves on swap and
+     this costs nothing once they land. */
+  .slot { min-height: 140px; }
+  .slot--card { min-height: 104px; }
+  .slot--cat { min-height: 170px; }
+  .slot--why, .slot--about { min-height: 190px; }
+
+  /* ---------- Chrome above the fold ----------
+     The topbar wrapped to 60px on a phone against 41px on desktop, so 145px of
+     chrome preceded any content. */
+  .topbar { font-size: 12px; }
+  .topbar__inner { padding-block: 7px; }
+}
+
 @media print {
-  .topbar, .site-header, .nav, .skip-link, .marquee, .slot { display: none !important; }
+  .topbar, .site-header, .nav, .skip-link, .marquee, .slot, .callbar { display: none !important; }
+  body { padding-bottom: 0; }
   body { background: #fff; color: #000; }
   a { color: #000; }
   .card, .stats, .chips li { border-color: #999; background: #fff; }
