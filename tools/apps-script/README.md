@@ -109,13 +109,28 @@ redoing.
    the timezone, which matters (below).
 4. **Script Properties.** Project Settings → Script Properties:
 
-   | Key | Value |
-   | --- | --- |
-   | `SA_KEY` | the entire service-account JSON, pasted as one line |
-   | `PROJECT_ID` | `era-sanitary` |
-   | `ALERT_TO` | `erasanitary2003@gmail.com` |
-   | `SHEET_ID` | the spreadsheet ID from step 2 |
-   | `LEAD_ALERT_TO` | *optional* — who gets lead alerts, if not just `ALERT_TO` |
+   | Key | Value | |
+   | --- | --- | --- |
+   | `PROJECT_ID` | `era-sanitary` | type exactly this |
+   | `ALERT_TO` | `erasanitary2003@gmail.com` | type exactly this |
+   | `SA_KEY` | ⟨the contents of the .json file from step 1⟩ | **not this description** |
+   | `SHEET_ID` | ⟨the id out of the Sheet's URL⟩ | **not this description** |
+   | `LEAD_ALERT_TO` | ⟨optional — see below⟩ | **not this description** |
+
+   **The ⟨angle brackets⟩ mean "put the real thing here".** This has already
+   caught someone out: the words *"the entire service-account JSON"* got pasted
+   into `SA_KEY` verbatim, and the first run failed with
+   `SyntaxError: Unexpected token 'h', "the whole s"... is not valid JSON`,
+   because `JSON.parse` was handed an English sentence. The top two rows are
+   literal; the bottom three are descriptions of something you have to go and
+   fetch.
+
+   `SA_KEY` is the **whole file** you downloaded in step 1, braces included —
+   it begins `{"type": "service_account"` and runs to the closing `}`. Open the
+   .json in a plain text editor, select all, copy, paste. Do not retype it, do
+   not drop the braces, and do not run it through an online JSON formatter —
+   that is a private key, and pasting it into a website hands it to that
+   website.
 
    **`LEAD_ALERT_TO` exists because the two emails are not equally private.** A
    new enquiry is work for whoever picks it up first, so more eyes help. The
