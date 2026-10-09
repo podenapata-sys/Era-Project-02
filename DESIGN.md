@@ -50,26 +50,59 @@ hit the same wall.
 ## Type
 
 ```
---font-display  "Archivo", "Hind Siliguri", system-ui, sans-serif
---font-body     "Barlow", "Hind Siliguri", system-ui, sans-serif
+--font-display  "Archivo", "Noto Sans Bengali", system-ui, sans-serif
+--font-body     "Barlow", "Noto Sans Bengali", system-ui, sans-serif
 ```
 
-Hind Siliguri is listed **after** the Latin face in both stacks, so each script
-falls to the right face without any per-language CSS. Bengali text gets Hind
-Siliguri; Latin text gets Archivo or Barlow; a mixed string gets both, correctly.
+The Bengali face is listed **after** the Latin face in both stacks, so each
+script falls to the right face without any per-language CSS. Bengali text gets
+Noto Sans Bengali; Latin text gets Archivo or Barlow; a mixed string gets both,
+correctly.
 
-**The faces are served by this site, not by Google.** Six woff2 files in
+**The faces are served by this site, not by Google.** Five woff2 files in
 `src/assets/fonts/`, fetched by `tools/fetch-web-fonts.py`, each scoped by
-`unicode-range` so an English page never downloads the Bengali ones. Archivo is
-variable — one file for every weight. Barlow ships at 400 and 700 only, because
-every 500 and 600 in the stylesheet sits under a rule that sets
-`--font-display` and therefore resolves to Archivo.
+`unicode-range` so an English page never downloads the Bengali one. Archivo and
+Noto Sans Bengali are both variable — one file each, every weight. Barlow ships
+at 400 and 700 only, because every 500 and 600 in the stylesheet sits under a
+rule that sets `--font-display` and therefore resolves to Archivo.
 
-Two consequences worth remembering. **Adding a weight to the stylesheet is not
-enough** — add it to `WANT` in that script too, or the browser synthesises it
-from a weight it has. And **the language switch on an English page costs 71 KB**:
-its label reads `বাং`, which is the only Bengali on the page and pulls the whole
-Hind Siliguri 700 face to draw three characters.
+**Adding a weight to the stylesheet is not enough for a static face** — add it
+to `WANT` in that script too, or the browser synthesises it from a weight it
+has. That now applies to Barlow alone.
+
+### Noto Sans Bengali replaced Hind Siliguri
+
+The client chose the face. What it bought, measured by loading each page and
+recording every woff2 the browser actually requested:
+
+| | before | after |
+| --- | --- | --- |
+| English page | 149.3 KB | **79.0 KB** |
+| Bengali page | 291.7 KB | **183.2 KB** |
+
+Two separate wins. Noto is variable, so one 105.2 KB file does what three static
+Hind Siliguri weights did in 213.7 KB. And **the language-switch label stopped
+costing 71 KB.**
+
+That label reads `বাং` and is the only Bengali on an English page; drawing it
+from the full face pulled the whole thing for three characters, nearly half that
+page's font weight. It now has **its own face of 952 bytes**, cut by Google's
+`text=` parameter to exactly ব, া and ং — declared as `"Bengali Switch"` and
+pointed at by `.langswitch [lang="bn"]`.
+
+Three things about that are worth keeping:
+
+- **It needs a separate family name.** Two `@font-face` rules on one family with
+  overlapping `unicode-range` resolve to the last declared, so the full face
+  would win and the saving would vanish.
+- **`system-ui` does not work here.** It was the obvious first idea — let the
+  device draw its own Bengali — but Roboto and Segoe UI contain no Bengali, so
+  the browser exhausts the CSS family list and fetches the webfont anyway.
+- **The subset is pinned to those three characters.** Change the label and the
+  glyphs are simply absent; the text still renders, drawn by whatever the device
+  had, and nobody notices. `checkLangSwitchSubset()` in `build.js` holds
+  `LANG_LABEL.bn` against the `unicode-range` in the stylesheet and refuses the
+  build instead.
 
 Headings use display at 700–800 with `-0.015em` tracking and `1.12` line height.
 Body is Barlow at 16px on mobile. Small caps-style labels (section eyebrows, the
@@ -93,9 +126,22 @@ switch reads বাং and carries its own `lang`. Specificity, not `!important`
 
 **Bengali also takes more leading than Latin at the same size.** The matra joins
 the letter tops into a continuous line and conjuncts hang below the baseline, so
-the 1.6 that suits Barlow is tight in Hind Siliguri, and the 1.12 set for Latin
+the 1.6 that suits Barlow is tight for a Bengali face, and the 1.12 set for Latin
 display type leaves conjuncts touching the line above. Bengali prose is 1.85 and
 Bengali headings 1.35. That costs about 6% page height and is worth it.
+
+Those two numbers were tuned to Hind Siliguri and **were re-measured, not
+assumed, when Noto replaced it — and they did not need to move.** Rendering the
+same string in both at 100px: the ink above the baseline is within 3–5% (ক 62 vs
+64, কা 69 vs 73, ৪ 62 vs 65), so the apparent size barely shifted, and
+`line-height` is an explicit multiple of `font-size` rather than of the font's
+own box, so it was never reading the metric that did change. Noto also hangs
+*less* below the baseline (41 against 50 per 100px), which makes 1.35 on headings
+safer than it was, not riskier.
+
+What did change: Noto sets about **8.5% wider** for the same sentence, so Bengali
+lines wrap a word earlier. Its conjuncts are the exception and are narrower —
+ক্ষ is 85.9 against Hind's 104.2.
 
 ## Numerals
 

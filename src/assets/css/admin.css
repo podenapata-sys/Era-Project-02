@@ -16,7 +16,7 @@
   --new: #f7b500; --called: #4da3ff; --quoted: #b98cff;
   --won: #35c46a; --lost: #8b8e97;
   --r: 12px; --r-sm: 8px;
-  --font: "Barlow", "Hind Siliguri", system-ui, sans-serif;
+  --font: "Barlow", "Noto Sans Bengali", system-ui, sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

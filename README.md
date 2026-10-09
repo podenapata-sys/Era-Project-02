@@ -424,7 +424,7 @@ rings, `aria-expanded` on the menu, `aria-current` on the active nav item, real
 `<label>`s, `role="alert"` on the form error, and a full
 `prefers-reduced-motion` path that stops the delivery-areas marquee.
 
-Bengali sets `lang="bn"` and renders in Hind Siliguri; phone numbers use Bengali
+Bengali sets `lang="bn"` and renders in Noto Sans Bengali; phone numbers use Bengali
 numerals in Bengali copy while `tel:` links stay in Latin digits so dialling works.
 
 ## Open questions for the client

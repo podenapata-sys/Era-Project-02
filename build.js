@@ -110,6 +110,14 @@ const MONTHS = {
    across one line, and at 19px it would wrap on a phone anyway. */
 const BRAND = { lead: 'ERA', gold: 'SANITARY', sub: '& Plumbing Solutions' };
 
+/* What the language switch says in each language — and the only Bengali that
+   appears on an English page. It is a constant rather than two inline ternaries
+   because a font subset is cut to exactly these three characters: see
+   WANT_TEXT in tools/fetch-web-fonts.py, the "Bengali Switch" @font-face in
+   styles.css, and checkLangSwitchSubset() below, which holds the three against
+   each other. A guard that reads a second copy of the string guards nothing. */
+const LANG_LABEL = { en: 'EN', bn: 'বাং' };
+
 /* One wordmark, rendered in two places — the header brand and the footer mark.
    It was written out twice until this was pulled out, which is the same
    duplication this file already guards against for the address and the owner
@@ -344,8 +352,8 @@ function header(t, lang, page, base, slug) {
       <ul class="nav__list">${nav}</ul>
       <div class="nav__aside">
         <p class="langswitch">
-          <span class="langswitch__on" aria-current="true">${lang === 'en' ? 'EN' : 'বাং'}</span>
-          <a href="${otherHref}" hreflang="${other}" lang="${other}" data-lang-link="${other}">${other === 'en' ? 'EN' : 'বাং'}</a>
+          <span class="langswitch__on" aria-current="true">${esc(LANG_LABEL[lang])}</span>
+          <a href="${otherHref}" hreflang="${other}" lang="${other}" data-lang-link="${other}">${esc(LANG_LABEL[other])}</a>
         </p>
         <a class="btn btn--accent btn--sm" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">
           ${ICONS.whatsapp}${esc(t.whatsapp)}
@@ -1204,17 +1212,22 @@ function layout({ lang, page, body, t, slug, base }) {
      download even starts, which is where the flash of fallback text comes from
      on a slow connection. These are preloaded instead.
      Two per page, and only the faces that paint body text in THIS language:
-     Archivo carries the wordmark and headings on both, then Hind Siliguri 400
+     Archivo carries the wordmark and headings on both, then Noto Sans Bengali
      for Bengali prose or Barlow 400 for English. Preloading more would cost
      more than it saves — each one competes with the stylesheet itself.
 
-     An English page does still pull one Bengali face, Hind Siliguri 700, for
-     the three characters of the language-switch label. That is 71 KB to draw
-     "বাং", and it is NOT preloaded: it sits in the header, not the body text,
-     and promoting it would delay the faces the page is actually made of. */
+     Noto is variable, so the Bengali page preloads one file and has every
+     weight. It used to be Hind Siliguri 400, with 600 and 700 fetched after
+     the stylesheet parsed.
+
+     An English page pulls a Bengali face too, for the three characters of the
+     language-switch label — but that is now the 952-byte "Bengali Switch"
+     subset rather than 71 KB of the full face, and it is still NOT preloaded.
+     At under a kilobyte it arrives in the same breath as everything else, and
+     promoting it would delay the faces the page is actually made of. */
   const preload = [
     'archivo-latin-var.woff2',
-    lang === 'bn' ? 'hind-siliguri-bengali-400.woff2' : 'barlow-latin-400.woff2',
+    lang === 'bn' ? 'noto-sans-bengali-var.woff2' : 'barlow-latin-400.woff2',
   ];
 
   return `<!doctype html>
@@ -1359,6 +1372,64 @@ function checkCopyParity() {
   }
 }
 
+/* An English page carries exactly one piece of Bengali — the language-switch
+   label — and styles.css draws it from a font cut to exactly those characters,
+   952 bytes against the 105 KB of the full face. That saving is bought with a
+   pinned assumption: the subset holds ব, া and ং and nothing else.
+
+   Change LANG_LABEL.bn and the new characters are simply not in the file. The
+   browser falls back, the label still renders, and nobody notices that it is
+   now being drawn by whatever the device happened to have. So: take the label,
+   take the unicode-range styles.css actually declares for that face, and refuse
+   the build if the first is not covered by the second.
+
+   Checked against the stylesheet rather than a constant here, because the
+   stylesheet is what the browser reads. */
+function checkLangSwitchSubset() {
+  const cssPath = path.join(ROOT, 'src', 'assets', 'css', 'styles.css');
+  if (!fs.existsSync(cssPath)) return;
+  const css = fs.readFileSync(cssPath, 'utf8');
+
+  const face = css.match(/@font-face\s*\{[^}]*?font-family:\s*"Bengali Switch"[^}]*?\}/);
+  if (!face) {
+    throw new Error('styles.css has no @font-face for "Bengali Switch". The ' +
+      'language switch would pull the whole Bengali face to draw ' +
+      `"${LANG_LABEL.bn}" — 105 KB for ${[...LANG_LABEL.bn].length} characters. ` +
+      'Run tools/fetch-web-fonts.py and paste its output back.');
+  }
+
+  const declared = face[0].match(/unicode-range:\s*([^;]+);/);
+  if (!declared) {
+    throw new Error('The "Bengali Switch" @font-face in styles.css has no ' +
+      'unicode-range. Without one it answers for every character and the full ' +
+      'Bengali face is never reached, including on the Bengali pages.');
+  }
+
+  /* "U+982, U+9ac-9af" -> [[0x982, 0x982], [0x9ac, 0x9af]]. Wildcards (U+9??)
+     are not emitted by the fetch script, so they are not handled: an
+     unparseable entry should fail loudly rather than quietly match nothing. */
+  const ranges = declared[1].split(',').map(part => {
+    const m = part.trim().match(/^U\+([0-9A-Fa-f]+)(?:-([0-9A-Fa-f]+))?$/);
+    if (!m) {
+      throw new Error(`styles.css: cannot read "${part.trim()}" in the ` +
+        '"Bengali Switch" unicode-range. Expected U+XXXX or U+XXXX-YYYY.');
+    }
+    return [parseInt(m[1], 16), parseInt(m[2] || m[1], 16)];
+  });
+
+  for (const ch of LANG_LABEL.bn) {
+    const cp = ch.codePointAt(0);
+    if (!ranges.some(([lo, hi]) => cp >= lo && cp <= hi)) {
+      throw new Error(`The language switch reads "${LANG_LABEL.bn}", but ` +
+        `"${ch}" (U+${cp.toString(16).toUpperCase().padStart(4, '0')}) is not ` +
+        'in the "Bengali Switch" subset in styles.css. That character would be ' +
+        'drawn by whatever font the device happens to have. Put the new label ' +
+        'in WANT_TEXT in tools/fetch-web-fonts.py, re-run it, and paste the ' +
+        '@font-face it prints back into styles.css.');
+    }
+  }
+}
+
 /* The founder block is gated on the owner's name in both languages, and these
    are the three ways that gate goes wrong.
 
@@ -1481,6 +1552,7 @@ function build() {
   checkReviews();
   checkPhotos();
   checkOwner();
+  checkLangSwitchSubset();
   checkFirebaseUids();
 
   fs.rmSync(OUT, { recursive: true, force: true });

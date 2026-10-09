@@ -3,18 +3,25 @@ License, Version 1.1. They are redistributed here because they ship to every
 visitor of this site: self-hosted rather than loaded from Google's CDN, so that
 no customer-facing page makes a third-party request.
 
+Five files, because Archivo and Noto Sans Bengali are variable (one file each,
+every weight) and Barlow ships at 400 and 700. The fifth,
+noto-sans-bengali-switch-700.woff2, is Noto cut to the three characters of the
+language-switch label and is covered by the Noto notice below.
+
 Fetch or re-fetch them with tools/fetch-web-fonts.py.
 
 COPYRIGHT NOTICES
 -----------------
 
-Archivo        Copyright 2020 The Archivo Project Authors (https://github.com/Omnibus-Type/Archivo)
-Barlow         Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)
-Hind Siliguri  Copyright (c) 2015 Indian Type Foundry (info@indiantypefoundry.com)
+Archivo            Copyright 2020 The Archivo Project Authors (https://github.com/Omnibus-Type/Archivo)
+Barlow             Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)
+Noto Sans Bengali  Copyright 2022 The Noto Project Authors (https://github.com/notofonts/bengali)
 
 The licence text below is byte-identical in all three families' own OFL.txt as
 published in github.com/google/fonts (verified, not assumed), so it is included
-once rather than three times.
+once rather than three times. Re-verified when Hind Siliguri was replaced by
+Noto Sans Bengali: the Noto package's own OFL.txt matches this body exactly once
+its CRLF line endings are normalised.
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

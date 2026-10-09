@@ -48,7 +48,7 @@ OUT = os.path.join(ROOT, 'era-company-profile.pdf')
 # The two faces the website uses, so the profile reads as the same business.
 FACES = [
     ('Barlow', 'Barlow:wght@400;600;800', ['400', '600', '800']),
-    ('Hind Siliguri', 'Hind+Siliguri:wght@400;600', ['400', '600']),
+    ('Noto Sans Bengali', 'Noto+Sans+Bengali:wght@400;600', ['400', '600']),
 ]
 
 
@@ -370,7 +370,7 @@ html,body{margin:0;padding:0}
   --wash:#F4F7FA;
 }
 body{font-family:'Barlow',sans-serif;color:var(--ink);font-size:10.4pt;line-height:1.55}
-[lang="bn"]{font-family:'Hind Siliguri','Barlow',sans-serif;line-height:1.75}
+[lang="bn"]{font-family:'Noto Sans Bengali','Barlow',sans-serif;line-height:1.75}
 
 @page{size:A4;margin:0}
 .page{

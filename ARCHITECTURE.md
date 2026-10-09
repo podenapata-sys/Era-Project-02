@@ -50,7 +50,7 @@ src/assets/
   css/styles.css          the whole stylesheet
   js/main.js              nav, quote form, open-now badge
   img/                    logo, banner, favicon (+ photos/ once they arrive)
-  fonts/                  the six woff2 faces the site serves itself, + OFL.txt
+  fonts/                  the five woff2 faces the site serves itself, + OFL.txt
 tools/                    one-off scripts, run by hand (feature branch)
 .github/workflows/        build, assert page count, deploy
 dist/                     generated, gitignored
