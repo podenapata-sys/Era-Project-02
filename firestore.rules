@@ -16,10 +16,10 @@ rules_version = '2';
 // are 8, 4 and 3 of them, and they match. (Not this file's own line count —
 // that moves every time someone writes a comment, as it just did.)
 //
-// It was shortened at the console end because pasting 174 lines into that
-// editor failed twice. The Firebase rules editor is embedded in the page, so
-// Ctrl+A selects the whole PAGE unless the cursor is already inside the code —
-// the delete then silently does nothing and the paste lands beside the old
+// It was shortened at the console end because pasting the whole commented file
+// into that editor failed twice. The Firebase rules editor is embedded in the
+// page, so Ctrl+A selects the whole PAGE unless the cursor is already inside
+// the code — the delete then silently does nothing and the paste lands beside
 // rules instead of replacing them. It compiles as one long broken file and
 // reports an error on a line number past the end of what you pasted, which is
 // the tell. Less text is less to mishandle.
