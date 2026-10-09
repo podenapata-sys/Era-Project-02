@@ -104,6 +104,40 @@ Three things about that are worth keeping:
   `LANG_LABEL.bn` against the `unicode-range` in the stylesheet and refuses the
   build instead.
 
+#### Do not paste in Google's usage snippet
+
+The Noto Sans Bengali page on fonts.google.com hands out this:
+
+```css
+font-optical-sizing: auto;
+font-variation-settings: "wdth" 100;
+```
+
+**Both lines are dead for the file this site ships**, and that was measured, not
+reasoned about. Rendering the same Bengali string at 40px:
+
+| | width |
+| --- | --- |
+| our file, as the site uses it | 288.89 px |
+| our file + `"wdth" 100` | 288.89 px |
+| our file + `"wdth" 62.5` | 288.89 px |
+| the package's static Regular (width 100) | 288.89 px |
+| the package's static **Condensed** Regular | 240.38 px |
+| our file + `font-optical-sizing: none` | 288.89 px |
+
+Asking for condensed changes nothing, so **the face has no `wdth` axis** — the
+Condensed static proves the measurement would have caught it. `opsz` likewise.
+That is deliberate: `tools/fetch-web-fonts.py` requests `wght@100..900` and not
+`wdth,wght`, because the two-axis file is **190 KB against 105 KB** for a width
+this site never uses. The third row also confirms our file sits at width 100
+already, which is the only thing that snippet line was ever protecting against.
+
+Google emits those lines for every variable font regardless of its axes. Adding
+them here would be CSS that looks load-bearing and does nothing. `font-weight`
+*does* drive the `wght` axis correctly — 700 measures 299.83 px either through
+the high-level property or through `font-variation-settings`, so there is no
+reason to reach for the low-level one.
+
 Headings use display at 700–800 with `-0.015em` tracking and `1.12` line height.
 Body is Barlow at 16px on mobile. Small caps-style labels (section eyebrows, the
 footer column heads) are display, 12px, `.16em` tracking, uppercase.
