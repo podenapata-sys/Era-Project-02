@@ -285,8 +285,9 @@ The reviews are there for people reading the page.
 
 ## Photography — the one thing still outstanding
 
-Twenty-one photographs cover the site: three of the shop, one per product
-category, one per trade. Until each one arrives its slot renders as a labelled
+Twenty-two photographs cover the site: three of the shop, one of the owner, one
+per product category, one per trade. The owner's portrait has arrived; the other
+twenty-one have not. Until each one arrives its slot renders as a labelled
 placeholder. Those are **not** broken images — they are the right size and shape
 for the photo that belongs there, so a half-delivered set still looks deliberate.
 

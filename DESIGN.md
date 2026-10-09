@@ -129,7 +129,24 @@ and review cards share the geometry so a page of mixed cards reads as one grid.
 labelled, at the exact aspect ratio of the real image. It looks deliberate, does
 not shift when the photo lands, and makes a half-delivered set look intentional.
 Ratios: hero 4:3, why/about 5:4, category card 16:9, category block and trade
-card 4:3, trade hero 16:10.
+card 4:3, trade hero 16:10, owner portrait 1:1.
+
+**The owner's portrait is a 120px circle, and the size is the argument.** It is
+a formal studio headshot on a plain white background, and that white sits at
+roughly **20:1 against `--bg`** — not a contrast failure but a weight problem.
+Drawn at card size it is the brightest object on the About page and outweighs
+both the shopfront photo beside it and the copy it belongs to. At 120px and
+round, the white reads as a deliberate light disc and the eye sees a face, which
+is the same move the gold badge already makes at 44px.
+
+Cutting the background out was considered and rejected. Hair against white is
+exactly where automatic matting fails, and a halo around the owner's head is
+worse than a white circle. The ring is `--line-ui`, already measured at 3.75:1.
+
+The source frame is tight — 44px above the hair, 3% of its height — so
+`photos.json` gives this one `focus: [0.5, 0.0]`, taking the square from the top
+of the frame. The default `[0.5, 0.42]` would cut 118px off the top and shave
+the crown.
 
 **Stars.** Filled `--star` at 10:1, empty `--line-ui` at 3.6:1. The row is one
 labelled image to a screen reader, and the number is always printed beside it.

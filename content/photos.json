@@ -12,8 +12,15 @@
     "",
     "focus is where the centre of the crop sits, as a fraction of the",
     "width and height. The default is [0.5, 0.42], slightly above centre.",
-    "Lower the second number to keep more of the top of the frame."
+    "Lower the second number to keep more of the top of the frame.",
+    "",
+    "owner has no alt here on purpose. The About page passes the owner's name",
+    "and title as the label, so the alt text is whatever copy.json says in the",
+    "page's own language and cannot fall out of step with the caption beside it."
   ],
+  "owner": {
+    "focus": [0.5, 0.0]
+  },
   "shopfront": {
     "alt": {
       "en": "The ERA Sanitary shop on D.I.T Road, Rampura",

@@ -50,6 +50,10 @@ PAGES = [
     ('bn', 'bn/index.html'),
     ('en', 'contact.html'),
     ('bn', 'bn/services/core-cutting/index.html'),
+    # The About page carries the owner's portrait, the only component on the
+    # site with a fixed-width box inside the text column — the one shape that
+    # can push a narrow phone sideways. In Bengali, which sets wider.
+    ('bn', 'bn/about.html'),
 ]
 
 fails = []

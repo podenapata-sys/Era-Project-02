@@ -1,8 +1,13 @@
 # Photographs: what to shoot, what to generate, and the prompts
 
-Twenty-one images cover the whole site. Every one of them is a dashed
-placeholder today — nine on the home page alone, a quarter of the page on a
-phone. This file gets them filled.
+Twenty-two images cover the whole site, and **twenty-one of them are below**.
+The twenty-second is `owner.jpg`, the portrait of the shop's owner on the About
+page. It is a real photograph of a real person, supplied by the client, and it
+must never be generated or replaced with a stock face — so it has no prompt here
+and no entry below.
+
+The twenty-one in this file are all still dashed placeholders — nine on the home
+page alone, a quarter of the page on a phone. This file gets them filled.
 
 ## How to use it
 

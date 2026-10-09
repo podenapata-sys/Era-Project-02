@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Turn the client's raw phone photos into the site's images, in one command.
 
-Twenty-one photographs cover the whole site, because several of them are shown
+Twenty-two photographs cover the whole site, because several of them are shown
 in more than one place and each place wants a different shape. A category photo
 appears as a wide card on the home page and as a tall block on the products
 page; a trade photo appears in the services grid and again across the top of its
 own page. Cropping those by hand, twice each, is where an afternoon goes.
+
+Twenty-one of them are of things. The twenty-second, owner.jpg, is of a person,
+and is the only photograph here that cannot be re-shot or stood in for.
 
     pip install pillow && python3 tools/add-photos.py
 
@@ -65,6 +68,8 @@ RENDITIONS = {
     "card":  ((16, 9),  (400, 800)),
     "sq43":  ((4, 3),   (400, 800, 1120)),
     "trade": ((16, 10), (720, 1440)),
+    # The owner's portrait, drawn as a 120px circle: 1x and 2x of that, square.
+    "face":  ((1, 1),   (240, 480)),
 }
 
 # Which shapes each kind of photo has to be cut to. These mirror the call sites
@@ -73,6 +78,13 @@ RENDITIONS = {
 SHOP_RENDITIONS = ("hero", "wide")
 CATEGORY_RENDITIONS = ("card", "sq43")
 TRADE_RENDITIONS = ("sq43", "trade")
+
+# The owner, on his own, because he is cut to a shape nothing else uses. Kept
+# out of SHOP_KEYS deliberately: those are all shot wide and get hero + wide,
+# and a 4:3 hero crop of a headshot is a chin.
+OWNER_KEY = "owner"
+OWNER_RENDITIONS = ("face",)
+OWNER_DESC = "The owner, head and shoulders, plain background"
 
 # The three that are not a category or a trade, and what to shoot for each.
 SHOP_KEYS = {
@@ -100,10 +112,12 @@ def slugs():
 
 def expected():
     """Every photo the site can use, in the order it is worth shooting them:
-    the shop itself, then what it sells, then what it does. The description is
-    what gets sent to the client, so it names the thing rather than its slug."""
+    the shop itself, then the man who runs it, then what it sells, then what it
+    does. The description is what gets sent to the client, so it names the thing
+    rather than its slug."""
     cats, trades = slugs()
     plan = [(k, SHOP_RENDITIONS, SHOP_KEYS[k]) for k in SHOP_KEYS]
+    plan += [(OWNER_KEY, OWNER_RENDITIONS, OWNER_DESC)]
     plan += [("cat-" + s, CATEGORY_RENDITIONS, t) for s, t in cats]
     plan += [("trade-" + s, TRADE_RENDITIONS, t) for s, t in trades]
     return plan
@@ -319,7 +333,7 @@ if __name__ == "__main__":
         sys.exit(main())
     except BrokenPipeError:
         # `--status | head` closes the pipe early. That is a normal way to read a
-        # twenty-one line list, not an error worth a stack trace.
+        # twenty-two line list, not an error worth a stack trace.
         try:
             sys.stdout.close()
         finally:

@@ -81,8 +81,9 @@ shop, not by a dashboard:
 
 ## Still blocked on other people
 
-- **21 photographs** from the client. Every image on the site is a placeholder
-  until these arrive; the pipeline to process them is built and waiting.
+- **21 of 22 photographs** from the client. The owner's portrait has arrived and
+  is on the About page; every other image is still a placeholder. The pipeline to
+  process them is built and waiting.
 - **Apps Script deployment** — five minutes, then the URL goes in
   `business.json` and quote capture starts working.
 - **Domain decision** — the site is on a `github.io` sub-path today.

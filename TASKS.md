@@ -41,9 +41,9 @@ Ordered by what unblocks getting paid, not by what is interesting. Status as of
 
 ## Phase 2 — Blocked on the client
 
-- [ ] **21 photographs.** `python3 tools/add-photos.py --status` prints the exact
-      filenames to ask for. 3 shop + 7 categories + 11 trades.
-      Chase by phone, not text.
+- [ ] **21 photographs**, of 22. `python3 tools/add-photos.py --status` prints the
+      exact filenames to ask for. 3 shop + 7 categories + 11 trades; the owner's
+      portrait is already in. Chase by phone, not text.
 - [ ] **Google review link** for `reviewUrl` — the `g.page/r/…` short link from
       Google Business Profile → "Get more reviews". A derived write-review URL
       exists (`ChIJ-YGUGHy4VTcRKhXRW-bXFTg`) but has never been tested live.

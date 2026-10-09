@@ -315,6 +315,7 @@ table { border-collapse: collapse; width: 100%; }
 .photo--why, .photo--about { aspect-ratio: 5 / 4; }
 .photo--cat { aspect-ratio: 4 / 3; }
 .photo--trade { aspect-ratio: 16 / 10; }
+.photo--face { aspect-ratio: 1 / 1; }
 .photo--card {
   aspect-ratio: 16 / 9; border-radius: var(--r) var(--r) 0 0;
 }
@@ -433,6 +434,46 @@ table { border-collapse: collapse; width: 100%; }
 /* ---------- About ---------- */
 .about__grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: clamp(26px, 3.5vw, 48px); align-items: start; padding-block: clamp(32px, 4vw, 52px); }
 .about__copy p { color: var(--muted); }
+
+/* The owner, under the About story.
+
+   A 120px circle, and the size is the whole argument. The photograph is a
+   formal studio headshot on a plain white background, which sits at roughly
+   20:1 against --bg: not a contrast failure, a weight problem. Drawn at card
+   size it is the brightest object on the page and outweighs both the shopfront
+   photo beside it and the copy it belongs to. At 120px and round, the white
+   reads as a deliberate light disc and the eye sees a face — which is the same
+   move .logo img already makes with the gold badge at 44px.
+
+   The ring is --line-ui at a measured 3.75:1 on --bg, so the circle has a
+   boundary that meets 1.4.11 without introducing a colour. */
+.owner {
+  display: flex; align-items: center; gap: 16px;
+  /* figure defaults to margin: 1em 40px, and that 40px would indent the block
+     out of line with the paragraphs above it. */
+  margin: clamp(22px, 3vw, 30px) 0 0;
+  padding-top: clamp(22px, 3vw, 30px);
+  border-top: 1px solid var(--line);
+}
+/* The placeholder is cut to the same circle as the photograph, so the box does
+   not change shape on the day the file lands. .slot is built for a big dashed
+   panel — its 180px floor and 24px padding both have to go. */
+.owner .photo, .owner .slot {
+  flex: 0 0 120px; width: 120px; min-height: 0;
+  aspect-ratio: 1 / 1; padding: 0;
+  border-radius: 50%; overflow: hidden;
+  border: 1px solid var(--line-ui);
+}
+/* Size and padding only. A letter-spacing here would be (0,2,1) and beat the
+   (0,1,2) Bengali reset at the end of this file, putting tracking back on
+   Bengali conjuncts in the one place nobody would look. */
+.owner .slot span { font-size: 11px; padding: 0 10px; }
+.owner figcaption strong {
+  display: block;
+  font-family: var(--font-display); font-weight: 700; font-size: 18px;
+  color: var(--text);
+}
+.owner figcaption span { font-size: 14px; color: var(--muted-2); }
 .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; padding: clamp(22px, 2.6vw, 32px); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); }
 .stats strong { display: block; font-family: var(--font-display); font-size: clamp(24px, 3vw, 34px); font-weight: 800; color: var(--amber); line-height: 1.05; }
 .stats span { font-size: 14px; color: var(--muted-2); }
@@ -549,6 +590,8 @@ table { border-collapse: collapse; width: 100%; }
   .footer__grid { grid-template-columns: 1fr; }
   .hero__actions .btn, .band__actions .btn { flex: 1 1 100%; }
   .slot--hero { min-height: 240px; }
+  .owner { gap: 14px; }
+  .owner .photo, .owner .slot { flex-basis: 96px; width: 96px; }
 }
 
 /* ==========================================================================

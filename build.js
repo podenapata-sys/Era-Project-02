@@ -137,6 +137,9 @@ const RENDITIONS = {
   card:  { w: 16, h: 9,  widths: [400, 800],  sizes: '(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 25vw' },
   sq43:  { w: 4,  h: 3,  widths: [400, 800, 1120], sizes: '(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw' },
   trade: { w: 16, h: 10, widths: [720, 1440], sizes: '(max-width: 900px) 100vw, 62vw' },
+  /* The owner's portrait, and the only square: it is drawn as a 120px circle,
+     so sizes is a constant rather than a share of the viewport. */
+  face:  { w: 1,  h: 1,  widths: [240, 480],  sizes: '120px' },
 };
 
 const PHOTO_DIR = path.join(ROOT, 'src', 'assets', 'img', 'photos');
@@ -704,6 +707,39 @@ function tradePage(t, lang, base, slug) {
 </section>`;
 }
 
+/* Whether the owner is named, which is the whole gate on the block below.
+   Written once and called from both places that need it, because build.js has
+   already learned what a duplicated condition costs: the comment above
+   adminConfigured() says the same thing about the dashboard.
+
+   Both languages, deliberately. The site either names him on /about/ and
+   /bn/about/ or on neither — a founder who exists in English and not in
+   Bengali is a bug the client would be the last to see. */
+const ownerNamed = () => !!(copy.en.ownerName && copy.bn.ownerName);
+
+/* The man who runs the shop, at the end of the About story.
+
+   It renders nothing until copy.json carries his name, exactly as the review
+   section renders nothing until business.json carries a review URL. RULES.md
+   rule 1 is why: a name is a fact about the business and cannot be guessed, and
+   a photograph of an unnamed man is worth less to a contractor deciding whether
+   to trust this shop than no photograph at all.
+
+   The alt text is the label — his name and title, in the page's own language —
+   so photos.json holds no alt for this one and the two cannot drift apart. */
+function ownerBlock(t, lang, base) {
+  if (!ownerNamed()) return '';
+  const label = `${t.ownerName}, ${t.ownerTitle}`;
+  return `
+    <figure class="owner">
+      ${photo('owner', 'face', lang, base, label, 'slot--face')}
+      <figcaption>
+        <strong>${esc(t.ownerName)}</strong>
+        <span>${esc(t.ownerTitle)}</span>
+      </figcaption>
+    </figure>`;
+}
+
 function aboutPage(t, lang, base) {
   const stats = t.stats.map(s =>
     `<li><strong>${esc(s.value)}</strong><span>${esc(s.label)}</span></li>`).join('');
@@ -722,6 +758,7 @@ function aboutPage(t, lang, base) {
     <p class="lede">${esc(t.aboutP1)}</p>
     <p>${esc(t.aboutP2)}</p>
     <p>${esc(t.aboutP3)}</p>
+    ${ownerBlock(t, lang, base)}
   </div>
   ${photo('shopfront', 'wide', lang, base, t.aboutTitle, 'slot--about')}
 </section>
@@ -893,6 +930,10 @@ function jsonLd(t, lang) {
     slogan: t.tagline,
     url: SITE + '/',
     foundingDate: biz.sinceISO,
+    /* Only when he is named, from the same gate the About block uses. A person
+       is a real entity for a crawler to tie this shop to; an empty one is noise.
+       Not a review and not a rating, so RULES.md rule 6 is untouched. */
+    ...(ownerNamed() ? { founder: { '@type': 'Person', name: t.ownerName } } : {}),
     logo: SITE + '/' + biz.images.logo,
     image: SITE + '/' + biz.images.banner,
     telephone: primary.tel,
@@ -1228,7 +1269,7 @@ const RENDER = { home: homePage, products: productsPage, services: servicesPage,
    told to be — silently, and on a page nobody thinks to re-check. The street
    address drifted exactly this way once and reached the footer. Refuse instead. */
 function checkPhotos() {
-  const known = new Set(['shopfront', 'counter', 'stock']);
+  const known = new Set(['shopfront', 'counter', 'stock', 'owner']);
   for (const c of copy.en.categories) known.add('cat-' + c.slug);
   for (const sv of copy.en.services) known.add('trade-' + sv.slug);
 
@@ -1315,6 +1356,39 @@ function checkCopyParity() {
       (missingBn.length ? `Missing from bn: ${missingBn.join(', ')}. ` : '') +
       (missingEn.length ? `Missing from en: ${missingEn.join(', ')}. ` : '') +
       'A key in one language and not the other renders empty on that language\'s pages.');
+  }
+}
+
+/* The founder block is gated on the owner's name in both languages, and these
+   are the three ways that gate goes wrong.
+
+   checkCopyParity() above proves only that the KEYS exist in both languages. A
+   name typed into en and left empty in bn passes it and then ships the block on
+   the English pages alone — silently, on the Bengali page nobody building in
+   English thinks to open. That is the same class of fault as the address drift
+   a few lines up, and it gets the same treatment. */
+function checkOwner() {
+  const { en, bn } = copy;
+  if (!!en.ownerName !== !!bn.ownerName) {
+    throw new Error('content mismatch: copy.json has ownerName in ' +
+      `${en.ownerName ? 'en but not bn' : 'bn but not en'}. The owner is named ` +
+      'on the About page in both languages or in neither.');
+  }
+  if (en.ownerName && !(en.ownerTitle && bn.ownerTitle)) {
+    throw new Error('content mismatch: copy.json has ownerName but ownerTitle ' +
+      `is empty in ${en.ownerTitle ? 'bn' : 'en'}. The caption under the ` +
+      'portrait is a name and a title; half of it is not a caption.');
+  }
+
+  /* The photograph cut, committed, and never drawn, because nobody filled the
+     name in. The build is correct and the content is not, so this says so
+     rather than failing a deploy over it. */
+  const cut = fs.existsSync(PHOTO_DIR) &&
+    fs.readdirSync(PHOTO_DIR).some(f => f.startsWith('owner-face-'));
+  if (cut && !en.ownerName) {
+    console.warn('NOTE: the owner\'s portrait is in src/assets/img/photos/ but ' +
+      'copy.json has no ownerName, so the About page renders no founder block. ' +
+      'Fill ownerName in both languages to put him on the site.');
   }
 }
 
@@ -1406,6 +1480,7 @@ function build() {
   checkAreaCount();
   checkReviews();
   checkPhotos();
+  checkOwner();
   checkFirebaseUids();
 
   fs.rmSync(OUT, { recursive: true, force: true });
