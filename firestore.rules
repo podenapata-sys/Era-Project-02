@@ -9,6 +9,25 @@ rules_version = '2';
 // never the other way round, or the next person to paste this reverts the
 // hardening below without noticing.
 //
+// WHAT IS LIVE IS THIS FILE WITH THE COMMENTS STRIPPED — 70 lines of rules;
+// this file is longer only because of the explanations. Every rule is
+// identical. So do not diff the console against this file and conclude it has
+// drifted. Compare the `allow`, `match` and `function` lines instead: there
+// are 8, 4 and 3 of them, and they match. (Not this file's own line count —
+// that moves every time someone writes a comment, as it just did.)
+//
+// It was shortened at the console end because pasting 174 lines into that
+// editor failed twice. The Firebase rules editor is embedded in the page, so
+// Ctrl+A selects the whole PAGE unless the cursor is already inside the code —
+// the delete then silently does nothing and the paste lands beside the old
+// rules instead of replacing them. It compiles as one long broken file and
+// reports an error on a line number past the end of what you pasted, which is
+// the tell. Less text is less to mishandle.
+//
+// The comments stay here because they are the reasoning, and the reasoning is
+// the part worth keeping — above all why isOwner() checks a UID allowlist
+// rather than `request.auth != null`.
+//
 // The intent: anyone on the website can SUBMIT a quote request, but only the
 // signed-in owner can READ one. A lead holds a customer's name and phone number,
 // so it must never be publicly readable.
