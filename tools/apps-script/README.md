@@ -114,7 +114,7 @@ redoing.
    | `PROJECT_ID` | `era-sanitary` | type exactly this |
    | `ALERT_TO` | `erasanitary2003@gmail.com` | type exactly this |
    | `SA_KEY` | ⟨the contents of the .json file from step 1⟩ | **not this description** |
-   | `SHEET_ID` | ⟨the id out of the Sheet's URL⟩ | **not this description** |
+   | `SHEET_ID` | ⟨your Sheet's URL, or just its id⟩ | **not this description** |
    | `LEAD_ALERT_TO` | ⟨optional — see below⟩ | **not this description** |
 
    **The ⟨angle brackets⟩ mean "put the real thing here".** This has already
@@ -124,6 +124,11 @@ redoing.
    because `JSON.parse` was handed an English sentence. The top two rows are
    literal; the bottom three are descriptions of something you have to go and
    fetch.
+
+   `SHEET_ID` takes **either the whole Sheet URL or the bare id** — paste
+   whichever you have and the script pulls the id out, including from the
+   `/spreadsheets/u/1/d/...` form you get when signed into several Google
+   accounts. It has to be *your* Sheet: open it, copy from the address bar.
 
    `SA_KEY` is the **whole file** you downloaded in step 1, braces included —
    it begins `{"type": "service_account"` and runs to the closing `}`. Open the

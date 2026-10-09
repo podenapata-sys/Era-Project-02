@@ -74,6 +74,31 @@ function leadAlertTo_() {
   return P.getProperty('LEAD_ALERT_TO') || need('ALERT_TO');
 }
 
+/**
+ * The spreadsheet id, accepting either the bare id or the whole Sheet URL.
+ *
+ * Pasting the URL is the obvious thing to do — it is what is in the address
+ * bar — and openById rejects it with "Illegal spreadsheet id or key", which
+ * names the problem without hinting at the fix. That cost a real setup session
+ * here, twice. Pulling the id out of a URL is three lines; making someone
+ * extract a 44-character substring by hand, correctly, under a confusing error
+ * message, is not a reasonable thing to ask.
+ *
+ * Also trims, because a trailing space pasted from a URL bar fails the same
+ * way and is invisible in the Script Properties field.
+ *
+ * Matches on `/d/<id>` rather than `/spreadsheets/d/<id>` deliberately: anyone
+ * signed into more than one Google account gets URLs of the form
+ * /spreadsheets/u/1/d/<id>/edit, and that account number is exactly what the
+ * person setting this up is most likely to have. The length floor keeps it
+ * from matching some other short /d/ segment.
+ */
+function sheetId_() {
+  var v = String(need('SHEET_ID')).trim();
+  var m = v.match(/\/d\/([a-zA-Z0-9_-]{20,})/);
+  return m ? m[1] : v;
+}
+
 var SHOP = 'ERA Sanitary & Plumbing Solutions';
 var CUR = '৳';                 // ৳
 var LEADS = 'leads';
@@ -263,7 +288,7 @@ function checkNewLeads() {
 
   if (!fresh.length) return;
 
-  var sheet = SpreadsheetApp.openById(need('SHEET_ID')).getSheets()[0];
+  var sheet = SpreadsheetApp.openById(sheetId_()).getSheets()[0];
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(['Received', 'Name', 'Mobile', 'Category', 'Items',
                      'Language', 'Page', 'Status']);
