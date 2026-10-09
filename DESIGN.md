@@ -79,6 +79,24 @@ Bengali does not use uppercase or letter-spacing — it has no case, and trackin
 breaks conjuncts. Where a label is uppercase in English it stays sentence case in
 Bengali.
 
+**That rule is now enforced in CSS, not just written here.** It sat in this file
+unimplemented for most of the project: the stylesheet had no Bengali selector at
+all, so all eleven letter-spacing rules and all four uppercase rules applied to
+Bengali too. Measured on the Bengali home page, **45 elements carried tracking
+they should not have** — every heading with *negative* tracking (-0.51px on the
+h1, squeezing the conjuncts) and the category labels with +1.4px, pulling them
+apart. The `Bengali` block near the end of `styles.css` resets both.
+
+It is scoped two ways: `html[lang="bn"]` for the `/bn/` pages, and a bare
+`[lang="bn"]` for the one Bengali string on an English page — the language
+switch reads বাং and carries its own `lang`. Specificity, not `!important`.
+
+**Bengali also takes more leading than Latin at the same size.** The matra joins
+the letter tops into a continuous line and conjuncts hang below the baseline, so
+the 1.6 that suits Barlow is tight in Hind Siliguri, and the 1.12 set for Latin
+display type leaves conjuncts touching the line above. Bengali prose is 1.85 and
+Bengali headings 1.35. That costs about 6% page height and is worth it.
+
 ## Numerals
 
 The Bengali pages use Bengali digits: ২০০৩, ১৪, ৪.৮. Any number rendered from

@@ -635,6 +635,49 @@ table { border-collapse: collapse; width: 100%; }
 }
 
 /* ==========================================================================
+   Bengali
+   DESIGN.md has said from the start that "Bengali does not use uppercase or
+   letter-spacing — it has no case, and tracking breaks conjuncts." The rule was
+   written down and never implemented: the stylesheet had no Bengali selector at
+   all, so all eleven letter-spacing rules and all four uppercase rules landed
+   on Bengali text as well as Latin.
+
+   Measured on the Bengali home page before this block: 45 elements carrying
+   tracking they should not have. Every heading got NEGATIVE tracking
+   (-0.51px on the h1), which squeezes conjuncts — the densest part of the
+   script — and the category labels got +1.4px, which pulls them apart. The
+   uppercase is merely a no-op, since Bengali has no case; the tracking is the
+   damage.
+
+   Scoped two ways on purpose. html[lang="bn"] covers the /bn/ pages, and the
+   bare [lang="bn"] catches the one Bengali string on an English page: the
+   language switch reads বাং and carries its own lang attribute.
+
+   Specificity rather than !important: html[lang="bn"] body * is (0,1,2), which
+   beats the single-class rules it has to override without taking a hammer to
+   anything that might legitimately need to win later.
+   ========================================================================== */
+html[lang="bn"] body, html[lang="bn"] body *,
+[lang="bn"], [lang="bn"] * {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* Bengali needs more leading than Latin at the same size: the matra joins the
+   tops of the letters into a continuous line, and conjuncts hang below the
+   baseline, so lines that are comfortable in Barlow collide in Hind Siliguri.
+   1.6 is right for the Latin body copy and tight for the same text in Bengali.
+   The heading figure matters more than the body one — 1.12 was set for Latin
+   display type and leaves conjuncts touching the line above. */
+html[lang="bn"] p, html[lang="bn"] li, html[lang="bn"] .lede,
+html[lang="bn"] .cat__long, html[lang="bn"] blockquote {
+  line-height: 1.85;
+}
+html[lang="bn"] h1, html[lang="bn"] h2, html[lang="bn"] h3 {
+  line-height: 1.35;
+}
+
+/* ==========================================================================
    Desktop only
    The frosted header, quarantined above the breakpoint where .nav stops being
    position: fixed. Anything that establishes a containing block —
