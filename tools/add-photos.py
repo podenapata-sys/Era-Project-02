@@ -97,7 +97,18 @@ SHOP_KEYS = {
 # in the top third, and a true centre crop is what cuts the name off.
 DEFAULT_FOCUS = (0.5, 0.42)
 
-WEBP_QUALITY = 82
+# 74, not the usual 82. Measured on trade-plumbing at 800px: 72.4 KB at 82
+# against 50.0 KB at 74, a 31% saving, and the two are indistinguishable at 1:1
+# on the most detail-heavy region in the set — wrench teeth, pipe highlight,
+# render texture. On the page they are downscaled further still: an 800px file
+# draws into a 348px card. The saving is not academic. The services listing
+# carries eleven trade photographs and was 1.2 MB fully scrolled, which is a
+# real cost on the Dhaka mobile data this site is built for.
+#
+# The JPEG stays at 82. It is the fallback for browsers with no WebP, which is
+# almost nobody, so it barely moves the real-world total — and JPEG shows its
+# artefacts earlier than WebP does at the same number.
+WEBP_QUALITY = 74
 JPEG_QUALITY = 82
 
 
