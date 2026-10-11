@@ -19,13 +19,33 @@ Neither is a problem; a plausible-looking lie is.
 **3. Never put a secret in client-side JavaScript.**
 Anything the browser holds is readable by anyone who opens the page source. A
 "secret token" there is not a secret. The quote endpoint defends itself with a
-honeypot, length caps and per-phone rate limiting instead.
+honeypot (`recordQuote()` in `src/assets/js/main.js`) and per-field length caps
+(`validLead()` in `firestore.rules`) instead.
 
 **3b. Never store a figure you can compute.** `paid` and `due` on a job are
 summed from the payments log every time they are drawn, never written down. A
 stored total that disagrees with the log it came from is the bug this avoids by
 construction, and no amount of care with a "recalculate" button is as good as
 the figure not existing.
+
+**3c. The write hole in `leads` is accepted, not solved.** Say so plainly,
+because this rule used to claim "per-phone rate limiting" that was never built,
+and a defence named but not implemented is worse than one honestly absent.
+
+Anyone can POST to the `leads` collection — the project ID is half a public URL
+and the rules allow an unauthenticated `create`, which is what lets the quote
+form work at all. The Spark plan permits 20,000 writes a day. Exhaust them and
+real quote requests start failing **silently**, because `recordQuote()` swallows
+its errors so a recording fault can never cost a customer their WhatsApp
+hand-off. `firestore.rules` describes the same scenario above `validLead()`;
+the two are a pair.
+
+Client-side rate limiting would not fix it — an attacker posts straight to
+`firestore.googleapis.com` and never loads the page, so a throttle in `main.js`
+stops double-taps and nothing else. **Firebase App Check is the real fix**, free
+on Spark, and it was declined: it loads reCAPTCHA on every public page, which
+breaks rule 5. Revisit that trade if the shop ever sees a flood; do not add
+theatre in the meantime.
 
 **4. Never change the address, phone numbers, map coordinates or opening hours**
 without the client saying so explicitly. These are in `content/business.json`

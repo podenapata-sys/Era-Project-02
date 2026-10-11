@@ -69,6 +69,12 @@ service cloud.firestore {
     // the console. After editing this function, submit a real quote request and
     // look in Firestore before trusting it.
     //
+    // The caps below are therefore one of only two defences on this collection,
+    // the other being the honeypot in recordQuote(). There is no rate limiting
+    // and there is no App Check: RULES.md rule 3c states that exposure plainly
+    // and records why App Check was declined. These two passages are a pair —
+    // change one and change the other.
+    //
     // `status` and `source` are pinned rather than accepted: a submission is
     // always a new website lead, and the dashboard is what moves it along.
     //

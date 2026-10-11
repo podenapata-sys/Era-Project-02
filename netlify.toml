@@ -13,3 +13,30 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Frame-Options = "SAMEORIGIN"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# The Content-Security-Policy is NOT here. It is a <meta> on each page, emitted
+# by build.js, because the public pages and /admin/ need different policies and
+# headers cannot give them that cleanly: this `/*` block and an `/admin/*` block
+# would BOTH match /admin/, and a browser handed two CSP headers enforces their
+# intersection — the strict public policy would silently break the dashboard.
+#
+# frame-ancestors is the one directive a meta CSP cannot carry, so it lives
+# here, and only for /admin/.
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    # Stronger than the SAMEORIGIN above, which still permits same-origin
+    # framing. This enforces in the browser what the inline frame-buster in
+    # the page does in JavaScript, and it holds with scripting disabled. The
+    # script stays as defence in depth.
+    Content-Security-Policy = "frame-ancestors 'none'"
+
+    # X-Frame-Options is deliberately NOT repeated here. The /* block above
+    # already sends SAMEORIGIN, and whether Netlify overrides it or emits a
+    # second value is not something this repo can test — two conflicting
+    # X-Frame-Options values are handled inconsistently across browsers, and
+    # some read an invalid one as no protection at all. frame-ancestors takes
+    # precedence over X-Frame-Options wherever both are understood, so adding
+    # a duplicate would buy nothing and could cost the protection.

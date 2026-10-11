@@ -11,6 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');   // only use: the admin page's CSP hashes
 
 const ROOT = __dirname;
 const OUT = path.join(ROOT, 'dist');
@@ -117,6 +118,89 @@ const BRAND = { lead: 'ERA', gold: 'SANITARY', sub: '& Plumbing Solutions' };
    styles.css, and checkLangSwitchSubset() below, which holds the three against
    each other. A guard that reads a second copy of the string guards nothing. */
 const LANG_LABEL = { en: 'EN', bn: 'বাং' };
+
+/* ---------------------------------------------- Content-Security-Policy ---
+   Emitted as a <meta> on each page rather than set as a header in
+   netlify.toml, because the public pages and /admin/ need DIFFERENT policies
+   and a header cannot give them that cleanly: a `/*` block and an `/admin/*`
+   block both match /admin/, and a browser handed two CSP headers enforces
+   their INTERSECTION. The strict public policy would then silently break the
+   dashboard — the one page on this site that loads anything external.
+
+   Per page also keeps the policy in the same file as the markup it describes,
+   which is what lets the admin hashes below be computed from the very string
+   being hashed rather than copied by hand.
+
+   The one thing a meta CSP cannot do is `frame-ancestors`, which browsers
+   ignore outside a real header. That stays in netlify.toml as X-Frame-Options
+   plus a frame-ancestors header scoped to /admin/. */
+
+/* The public pages make NO third-party request and carry no inline script, no
+   <style> block and no style= attribute — checked against the built output, not
+   assumed — so this needs no 'unsafe-inline' anywhere.
+
+   connect-src carries firestore.googleapis.com and nothing else: that is the
+   quote form posting a lead over REST. Get this directive wrong and the lead
+   pipeline breaks SILENTLY, because recordQuote() swallows its errors. */
+const CSP_PUBLIC = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "connect-src 'self' https://firestore.googleapis.com",
+  "form-action 'none'",
+  "base-uri 'none'",
+  "object-src 'none'",
+].join('; ');
+
+/* The frame-buster, as data rather than as markup, so the hash below is taken
+   from the exact bytes that ship. Hiding the document first and revealing it
+   after the check is the whole mechanism — a redirect alone still paints — so
+   this cannot move into the deferred module, which runs after first paint. */
+const FRAME_BUST_CSS = 'html{display:none}';
+const FRAME_BUST_JS =
+  "(function(){try{if(self===top){document.documentElement.style.display='block';}" +
+  "else{top.location=self.location;}}catch(e){/* cross-origin: stay hidden */}})();";
+
+const sha256 = src => "'sha256-" + crypto.createHash('sha256').update(src, 'utf8').digest('base64') + "'";
+
+/* /admin/ is the only page allowed to load code from anywhere else: three
+   Firebase modules from gstatic, because Auth cannot be done over REST without
+   minting and refreshing tokens by hand (RULES.md rule 5 names this exception).
+
+   The two hashes are computed from FRAME_BUST_JS and FRAME_BUST_CSS above, so
+   the policy and the code it permits cannot drift apart. That matters more here
+   than it looks: a wrong script hash blocks the frame-buster, html{display:none}
+   is never undone, and the owner gets a BLANK PAGE with nothing on screen
+   saying why. */
+const CSP_ADMIN = [
+  "default-src 'self'",
+  `script-src 'self' https://www.gstatic.com ${sha256(FRAME_BUST_JS)}`,
+  `style-src 'self' ${sha256(FRAME_BUST_CSS)}`,
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "connect-src 'self' https://*.googleapis.com",
+  "form-action 'none'",
+  "base-uri 'none'",
+  "object-src 'none'",
+].join('; ');
+
+/* Why connect-src is a wildcard here and an exact host on the public pages.
+   Firebase Auth talks to identitytoolkit.googleapis.com to sign in and
+   securetoken.googleapis.com to refresh, and Firestore to its own host — but
+   that list is the SDK's business, not ours, and it moves when the SDK moves.
+   Naming hosts we have not watched the browser request would be a guess, and
+   the cost of guessing wrong is the owner locked out of their own dashboard
+   with a console error they will never open.
+
+   A vendor-scoped wildcard, on the ONE page that already loads Google's SDK
+   and speaks to nothing else, is a real boundary that cannot break that way.
+   The public pages keep the exact host, because there the list is one entry
+   long and we put it there ourselves. */
+
+const cspMeta = policy =>
+  `<meta http-equiv="Content-Security-Policy" content="${attr(policy)}">`;
 
 /* One wordmark, rendered in two places — the header brand and the footer mark.
    It was written out twice until this was pulled out, which is the same
@@ -1169,6 +1253,7 @@ function adminPage() {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+${cspMeta(CSP_ADMIN)}
 <meta name="robots" content="noindex, nofollow">
 <title>Dashboard — ${esc(biz.name)}</title>
 <meta name="theme-color" content="#0b0b0d">
@@ -1181,11 +1266,8 @@ function adminPage() {
 
      This is the one page allowed to need JavaScript to show anything. Every
      customer-facing page in this site works with JavaScript off, and must. -->
-<style>html{display:none}</style>
-<script>
-(function(){try{if(self===top){document.documentElement.style.display='block';}
-else{top.location=self.location;}}catch(e){/* cross-origin: stay hidden */}})();
-</script>
+<style>${FRAME_BUST_CSS}</style>
+<script>${FRAME_BUST_JS}</script>
 </head>
 <body>
 <header class="top">
@@ -1235,6 +1317,7 @@ function layout({ lang, page, body, t, slug, base }) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+${cspMeta(CSP_PUBLIC)}
 <title>${esc(meta.title)}</title>
 <meta name="description" content="${attr(meta.desc)}">
 <meta name="theme-color" content="#0b0b0d">

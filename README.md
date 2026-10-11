@@ -255,6 +255,40 @@ wording lives in `build.js` rather than `copy.json` — the one exception to tha
 rule. The payment reminder is the exception to the exception: a **customer**
 reads it, so it is `duesReminder` in `copy.json`, in both languages.
 
+## What customer data this site holds
+
+Written down because it was a decision, not an accident, and because nothing in
+the repo said so until someone asked.
+
+**What is collected.** Nine fields, and only on the quote form: `name`, `phone`,
+`category`, `items`, `lang`, `page`, plus `status`, `source` and `createdAt`
+which the site sets itself. `validLead()` in `firestore.rules` is the list — it
+rejects anything else, so the collection cannot quietly grow a field.
+
+**Where it goes.** One POST to Firestore over REST, from the visitor's browser,
+and nowhere else. No analytics, no third party, no cookie, no `localStorage`.
+The same enquiry is also appended to a Google Sheet and emailed by the Apps
+Script in `tools/apps-script/`, which reads Firestore on a ten-minute timer.
+
+**Who can read it.** The UID allowlist in `isOwner()`, and the service account
+the Apps Script uses. Not "anyone signed in" — see the comment above
+`isOwner()` for why that distinction is the whole point.
+
+**How long it is kept.** Indefinitely. `allow delete: if false` on `leads` is
+deliberate: an enquiry that arrived is the record of a real customer asking for
+a price, and losing one to a stray tap in the dashboard is worse than keeping
+one too many. The cost of that choice is that a name and a phone number stay in
+Firestore for good.
+
+**Removing one.** By hand, in the Firebase console → Firestore → `leads` →
+delete the document, and in the Google Sheet. There is deliberately no delete
+button and no public deletion route; a shop this size gets such a request about
+never, and a button that can erase a customer record from a phone is a worse
+risk than the manual step. If the shop ever wants a different answer — a
+retention window, or a purge of anything older than N months — that is a
+content decision for the client, not an engineering one, and the Apps Script
+is where it would live.
+
 ## Google reviews
 
 `content/reviews.json` holds real Google reviews, **copied in by hand**. Nothing
