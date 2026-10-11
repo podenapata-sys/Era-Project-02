@@ -23,6 +23,33 @@ whatever is in the inbox gets processed and the rest keep their placeholders.
 
 `python3 tools/add-photos.py --status` prints what is still missing.
 
+## Launch order — generate 18, shoot 3
+
+For a launch on a deadline, the split is not even. **Three photographs cannot be
+generated and must be shot; the other eighteen are better generated than shot.**
+
+| | how | why |
+| --- | --- | --- |
+| `shopfront`, `counter`, `stock` | **shoot, 20 minutes** | they are pictures of *this* shop; a generated one is rule 2 |
+| 7 × `cat-*` | **generate** | a clean studio group beats a phone photo of a dim shelf |
+| 11 × `trade-*` | **generate** | nobody has a photo library of finished jobs yet |
+
+Generate in this order, so that if you run out of time the pages that carry the
+most traffic are the ones that got filled:
+
+1. **`cat-cpvc`, `cat-upvc`, `cat-pressure`** — the three pipe categories.
+   They are the top of the home page grid and they are what the shop is known
+   for.
+2. **`cat-bathroom-fittings`, `cat-ceramic`, `cat-kitchen`, `cat-accessories`**
+   — the rest of the home and products grids. After these, the two
+   highest-traffic pages have no placeholders left.
+3. **`trade-plumbing`, `trade-core-cutting`** — the two trades customers ask
+   for most, and the two trade pages most likely to be linked directly.
+4. **The remaining nine trades.** Each one only fills its own page plus a card
+   in the services grid, so these are the cheapest to be late with.
+
+Eighteen prompts at roughly a minute each is an evening's work, not a week's.
+
 ## The rules that apply to all of them
 
 **Always ask ChatGPT for a landscape image.** This is the single most important
