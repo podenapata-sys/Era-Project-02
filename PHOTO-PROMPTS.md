@@ -66,6 +66,20 @@ by the tool, and only landscape is large enough to survive both:
 *and* a near-square. Anything close to an edge gets cut off. Every prompt below
 already says this; do not delete that sentence when you edit one.
 
+**Ask for a cluster, not a line — this is the one that actually bit.** The
+margin sentence above is not enough on its own. Three of the first seven
+category prompts said the items were "evenly spaced with clear space between
+them", and ChatGPT read that as a **single wide row**. A row of five or more
+objects fills the frame edge to edge whatever the prompt says about margin, and
+the 4:3 crop then sliced the end items off: `cat-ceramic` lost half a commode,
+`cat-bathroom-fittings` lost the shower set, `cat-accessories` lost the towel
+rail. They had to be rescued by padding the source.
+
+So word the arrangement as a **compact, roughly square group — two or three
+staggered rows, tallest pieces at the back, smallest in front**. That is what
+lets a dozen items fit without the group growing wider than a 4:3 box. More
+items in a line is strictly worse; more items in a cluster is free.
+
 **No text, no logos, no brand names, no packaging labels.** Two reasons. AI
 renders lettering as nonsense, and a legible fake brand would be a claim that
 ERA stocks something it may not. The prompts handle this by asking for plain,
@@ -149,7 +163,7 @@ block on the products page.
 
 > Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
 >
-> A catalogue photograph of polished chrome bathroom taps and mixers on a plain mid-grey seamless studio background: a basin mixer, a bath mixer, a long-body tap, a bib cock, a round rain shower head, a flexible shower set and a small angle valve, standing upright and evenly spaced with clear space between them. Every surface is plain polished chrome, smooth and unmarked. Soft diffused studio light from above and both sides so the chrome reads as bright metal rather than a mirror, gentle contact shadows. Camera straight on at product height. The whole group sits in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Sharp focus throughout, clean and simple, nothing else in the scene.
+> A catalogue photograph of polished chrome bathroom taps, mixers and fittings on a plain mid-grey seamless studio background: a basin mixer, a bath mixer, a shower mixer, a pillar cock, a bib cock, a long-body tap, a concealed stop cock, a small angle valve, a round rain shower head, a push shower, a hand-shower set on its slide rail with a flexible hose, a health faucet, a bottle trap and a basin waste, arranged as a compact, roughly square group in two staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. Every surface is plain polished chrome, smooth and unmarked. Soft diffused studio light from above and both sides so the chrome reads as bright metal rather than a mirror, gentle contact shadows. Camera straight on at product height. The whole group sits in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Sharp focus throughout, clean and simple, nothing else in the scene.
 
 ### `cat-accessories.jpg` — Plumbing accessories & hardware
 
@@ -161,13 +175,19 @@ block on the products page.
 
 > Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
 >
-> A catalogue photograph of white ceramic sanitaryware arranged on a plain mid-grey seamless studio background: one wall-hung commode, one floor-mounted commode, a wall-mounted urinal and two wash basins of different shapes, evenly spaced with clear space between them. Every surface is plain, smooth, unmarked white ceramic. Soft even overhead light, gentle contact shadows, slightly warm tone. Camera straight on at product height. The whole group sits in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Sharp focus throughout, clean and simple, nothing else in the scene.
+> A catalogue photograph of white ceramic sanitaryware on a plain mid-grey seamless studio background: a wall-hung commode, a floor-mounted commode, a low commode, a wall-mounted urinal, a taller floor-standing urinal, a full-size wash basin, a counter-top basin and a small compact cloakroom basin, arranged as a compact, roughly square group in two staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. Every surface is plain, smooth, unmarked white ceramic. Soft even overhead light, gentle contact shadows, slightly warm tone. Camera straight on at product height. The whole group sits in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Sharp focus throughout, clean and simple, nothing else in the scene.
 
 ### `cat-kitchen.jpg` — Kitchen items
 
+> **Two items from the copy are deliberately not in this prompt.** "Smart sinks"
+> is a trade term for a workstation sink rather than a shape a generator can
+> draw distinctly, and "Kitchen accessories" is a catch-all — both lists end in
+> "etc." for the same reason. An image showing a subset of the list is fine; an
+> image showing something the shop does not stock is not.
+
 > Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
 >
-> A catalogue photograph of kitchen fittings on a plain mid-grey seamless studio background: a double-bowl stainless steel sink, a single-bowl sink, a tall chrome sink mixer with a curved spout, a basket strainer waste and a stainless steel gas stove with two burners, arranged with clear space between them. Every surface is plain brushed or polished stainless steel, smooth and unmarked, with plain black burner caps. Soft diffused light from above and both sides, gentle contact shadows. Camera straight on at counter height. The whole group sits in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Sharp focus throughout, clean and simple, nothing else in the scene.
+> A catalogue photograph of kitchen fittings on a plain mid-grey seamless studio background: a double-bowl stainless steel sink, a single-bowl stainless steel sink, a dark grey moulded fibre sink, a white ceramic sink, a tall chrome sink mixer with a curved spout, a basket strainer waste, a stainless steel gas stove with two burners and a stainless steel chimney-style kitchen hood, arranged as a compact, roughly square group in two staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. Surfaces are plain brushed or polished stainless steel, plain dark grey composite and plain white ceramic, all smooth and unmarked, with plain black burner caps. Soft diffused light from above and both sides, gentle contact shadows. Camera straight on at counter height. The whole group sits in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Sharp focus throughout, clean and simple, nothing else in the scene.
 
 ---
 
