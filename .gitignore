@@ -17,10 +17,12 @@ dist/
 # because re-cutting at a new shape needs the full-size file, not the crop.
 photos-inbox/
 
-# The company profile, built by tools/build-profile.py from content/. Not
-# committed, for the same reason dist/ is not: it is generated, and a committed
-# copy starts lying the moment business.json or copy.json changes.
+# The company profile and the standalone supply sheet, both built by
+# tools/build-profile.py from content/ (the sheet with --supply). Not committed,
+# for the same reason dist/ is not: they are generated, and a committed copy
+# starts lying the moment business.json or copy.json changes.
 era-company-profile.pdf
+era-supply-list.pdf
 
 # Fonts the PDF profile embeds, fetched on first run. Barlow and Hind Siliguri
 # are both OFL and redistributable, but committing them means carrying the

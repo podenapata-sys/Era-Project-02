@@ -364,8 +364,21 @@ they are.
 
 ```sh
 pip install playwright
-python3 tools/build-profile.py        # writes era-company-profile.pdf
+python3 tools/build-profile.py            # era-company-profile.pdf, 14 pages
+python3 tools/build-profile.py --supply   # era-supply-list.pdf, 2 pages
 ```
+
+**`--supply` is the one to send on WhatsApp.** The profile answers "who are
+you" and opens on a cover and an about page; a contractor asking "what do you
+stock?" wants the answer on the first screen. The sheet is the catalogue alone,
+English, two pages, with the name, both phone numbers and the address banded
+across the top — **a product list nobody can act on is wastepaper**, and a
+forwarded two-page sheet does not carry the rest of the brochure with it.
+
+It calls the same `supply()` the profile does, with the same 4/3 split across
+pages, so the two documents cannot disagree about what is stocked. Watch
+`check_nothing_clipped()` if the catalogue grows: `.page` is a fixed 297mm box
+and anything past it is silently not printed.
 
 Fourteen pages: seven in English, then the same seven in Bengali. Cover, who we
 are, the full supply catalogue, every trade, delivery areas with hours and

@@ -44,6 +44,12 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONTS = os.path.join(ROOT, 'tools', '.fonts')
 OUT = os.path.join(ROOT, 'era-company-profile.pdf')
+OUT_SUPPLY = os.path.join(ROOT, 'era-supply-list.pdf')
+
+# Which UI string render_pages() prints in the top-right of every page. The
+# profile says "Company profile"; the supply sheet must not, and hardcoding a
+# second string inside the renderer would put copy somewhere nobody looks.
+DOC = 'profile'
 
 # The two faces the website uses, so the profile reads as the same business.
 FACES = [
@@ -136,6 +142,7 @@ def phone_display(p, lang):
 UI = {
     'en': {
         'profile': 'Company profile',
+        'productList': 'Product list',
         'since': 'Supplying Dhaka since',
         'contact': 'Contact',
         'phone': 'Phone / WhatsApp',
@@ -156,6 +163,7 @@ UI = {
     },
     'bn': {
         'profile': 'কোম্পানি প্রোফাইল',
+        'productList': 'পণ্যের তালিকা',
         'since': 'ঢাকায় সরবরাহ করছি',
         'contact': 'যোগাযোগ',
         'phone': 'ফোন / হোয়াটসঅ্যাপ',
@@ -196,7 +204,7 @@ def render_pages():
                 % (esc(biz['name']), esc(u['page']),
                    esc(digits(i, lang)), esc(digits(total, lang))))
         head = ('<div class="runhead"><span>%s</span><span>%s</span></div>'
-                % (esc(kicker), esc(u['profile']))) if kicker else '<div class="runhead"></div>'
+                % (esc(kicker), esc(u[DOC]))) if kicker else '<div class="runhead"></div>'
         out.append('<section class="page" lang="%s">%s<div class="body">%s</div>%s</section>'
                    % (lang, head, body, foot))
     return '\n'.join(out)
@@ -257,6 +265,36 @@ def about(lang):
         aboutTitle=esc(t['aboutTitle']), p1=esc(t['aboutP1']), p2=esc(t['aboutP2']),
         p3=esc(t['aboutP3']), stats=stats, pillars=pillars,
         whyTitle=esc(t['whyTitle']), reasons=reasons)
+
+
+def supply_header(lang):
+    """The band at the top of page 1 of the standalone supply sheet.
+
+    A product list with no phone number on it is wastepaper. The company
+    profile can afford to put contact details on their own page because the
+    reader has the whole brochure; a two-page sheet forwarded on WhatsApp
+    cannot, so the name, both numbers and the address travel with the list.
+
+    A band and not a cover() page: this document is two pages and the products
+    are the content, not the branding. Logo, name, tagline, phones and address
+    all come from the same helpers the cover uses.
+    """
+    t = copy[lang]
+    u = UI[lang]
+    phones = ' &nbsp;·&nbsp; '.join(esc(phone_display(p, lang)) for p in biz['phones'])
+    return """
+      <div class="sheet-head">
+        <img class="sheet-head__badge" src="file://{logo}" alt="">
+        <div class="sheet-head__text">
+          <h1 class="sheet-head__name">{name}</h1>
+          <p class="sheet-head__tag">{tagline}</p>
+          <p class="sheet-head__meta">{address}</p>
+          <p class="sheet-head__meta">{phones} &nbsp;·&nbsp; {email}</p>
+        </div>
+      </div>""".format(
+        logo=os.path.join(ROOT, 'src', 'assets', 'img', 'era-logo.png'),
+        name=esc(biz['name']), tagline=esc(t['tagline']),
+        address=esc(t['address']), phones=phones, email=esc(biz['email']))
 
 
 def supply(lang, slice_):
@@ -404,6 +442,11 @@ body{font-family:'Barlow',sans-serif;color:var(--ink);font-size:10.4pt;line-heig
 .cover__foot{padding-top:10mm;border-top:.75pt solid var(--line);width:100%}
 .cover__addr{font-size:11pt;font-weight:600;margin:0 0 2mm;color:var(--ink)}
 .cover__contact{font-size:10.4pt;color:var(--muted);margin:0 0 1mm}
+.sheet-head{display:flex;gap:6mm;align-items:center;padding-bottom:4mm;margin-bottom:6mm;border-bottom:1.5pt solid var(--gold)}
+.sheet-head__badge{width:20mm;height:20mm;object-fit:contain;flex:0 0 20mm}
+.sheet-head__name{font-size:17pt;font-weight:800;color:var(--blue-deep);margin:0;line-height:1.15}
+.sheet-head__tag{font-size:10pt;font-weight:600;font-style:italic;color:var(--blue);margin:1mm 0 2mm}
+.sheet-head__meta{font-size:9.4pt;color:var(--muted);margin:0 0 .8mm}
 
 /* ---- type ---- */
 .h2{font-size:16pt;font-weight:800;color:var(--blue-deep);margin:0 0 3mm;line-height:1.2}
@@ -463,7 +506,28 @@ h3{margin:0 0 1.8mm;font-size:11.2pt;font-weight:700;color:var(--ink)}
 """
 
 
-def build_html():
+SHELL = """<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>%s</title>
+<style>%s
+%s</style></head>
+<body>%s</body></html>"""
+
+
+def build_html(supply_only=False):
+    """The profile, or — with --supply — just the product list in English.
+
+    The supply sheet reuses supply() and the same 4/3 split the profile already
+    uses, so the two documents cannot disagree about what is stocked. Only the
+    wrapper differs: an identity band instead of a cover, and no about,
+    services, reach or contact pages.
+    """
+    if supply_only:
+        page('en', supply_header('en') + supply('en', slice(0, 4)),
+             copy['en']['supplyTitle'])
+        page('en', supply('en', slice(4, 7)), copy['en']['supplyTitle'])
+        return SHELL % (esc(biz['name']), font_face_css(), CSS, render_pages())
+
     for lang in ('en', 'bn'):
         t = copy[lang]
         page(lang, cover(lang))
@@ -474,15 +538,10 @@ def build_html():
         page(lang, reach(lang), t['areasTitle'])
         page(lang, contact(lang), t['contactTitle'])
 
-    return """<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><title>%s</title>
-<style>%s
-%s</style></head>
-<body>%s</body></html>""" % (esc(biz['name']), font_face_css(), CSS, render_pages())
+    return SHELL % (esc(biz['name']), font_face_css(), CSS, render_pages())
 
 
-def check_everything_rendered(html):
+def check_everything_rendered(html, supply_only=False):
     """Every catalogue item, trade and area from content/ is in the markup.
 
     Checked against the HTML and not the finished PDF, because pdftotext is not
@@ -493,17 +552,26 @@ def check_everything_rendered(html):
     generated from content/ directly, so this is the exact comparison.
     """
     missing = []
-    for lang in ('en', 'bn'):
+    # The supply sheet is English, and carries the catalogue and nothing else —
+    # so the services, areas, payments and amenities are legitimately absent and
+    # checking for them would fail a correct document. Scoped, not skipped: a
+    # category quietly dropping off a sheet nobody proofreads is exactly what
+    # this function exists to catch.
+    langs = ('en',) if supply_only else ('en', 'bn')
+    for lang in langs:
         t = copy[lang]
         wanted = (
             [c['title'] for c in t['categories']]
             + [i for c in t['categories'] for i in c['items']]
-            + [s['title'] for s in t['services']]
-            + list(t['areas']) + list(t['payments']) + list(t['amenities'])
         )
+        if not supply_only:
+            wanted += ([s['title'] for s in t['services']]
+                       + list(t['areas']) + list(t['payments']) + list(t['amenities']))
         missing += ['%s: %s' % (lang, w) for w in wanted if esc(w) not in html]
     if missing:
-        sys.exit('content missing from the profile:\n  ' + '\n  '.join(missing))
+        sys.exit('content missing from the %s:\n  '
+                 % ('supply sheet' if supply_only else 'profile')
+                 + '\n  '.join(missing))
 
 
 def check_nothing_clipped(pg):
@@ -525,9 +593,15 @@ def check_nothing_clipped(pg):
 
 
 def main():
+    global DOC
+    supply_only = '--supply' in sys.argv[1:]
+    if supply_only:
+        DOC = 'productList'          # the running head, top-right of every page
+    out = OUT_SUPPLY if supply_only else OUT
+
     fetch_fonts()
-    html = build_html()
-    check_everything_rendered(html)
+    html = build_html(supply_only)
+    check_everything_rendered(html, supply_only)
     tmp = os.path.join(ROOT, 'tools', '.profile.html')
     io.open(tmp, 'w', encoding='utf-8').write(html)
 
@@ -546,14 +620,14 @@ def main():
         pg.evaluate('document.fonts.ready')
         pg.wait_for_timeout(600)
         check_nothing_clipped(pg)
-        pg.pdf(path=OUT, format='A4', print_background=True,
+        pg.pdf(path=out, format='A4', print_background=True,
                prefer_css_page_size=True,
                margin={'top': '0', 'right': '0', 'bottom': '0', 'left': '0'})
         b.close()
     os.remove(tmp)
 
     print('Wrote %s (%.0f KB, %d pages)'
-          % (os.path.relpath(OUT, ROOT), os.path.getsize(OUT) / 1024, len(PAGES)))
+          % (os.path.relpath(out, ROOT), os.path.getsize(out) / 1024, len(PAGES)))
 
 
 if __name__ == '__main__':
