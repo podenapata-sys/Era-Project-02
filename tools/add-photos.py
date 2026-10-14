@@ -232,6 +232,43 @@ def init():
     return 0
 
 
+def crop_size(src, ratio):
+    """The pixels ImageOps.fit actually keeps when it cuts src to ratio."""
+    (sw, sh), (rw, rh) = src, ratio
+    if sw * rh > sh * rw:            # source wider than the shape wanted
+        return (round(sh * rw / rh), sh)
+    return (sw, round(sw * rh / rw))
+
+
+def too_small(src, rendition_names):
+    """Every rendition this source cannot fill without being enlarged.
+
+    ImageOps.fit will scale 600px up to 1120px without complaint, and the
+    result is a photograph that looks fine as a thumbnail and soft on the page.
+    Nothing warned about that before, which is how a batch of product shots
+    saved off someone else's website — not one of them over 1080px wide — got
+    as far as being processed.
+
+    The test is done on the crop, not the file. A 1792x1024 frame passes for a
+    category; the same pixel count as 1024x1792 does not, because the 4:3 cut
+    throws the height away. Measuring the file alone would pass the second one.
+
+    It also settles the shop photographs mechanically rather than by assertion:
+    1792x1024 is the best any generator offers and its 4:3 crop is 1365px wide,
+    under the 1440 the hero rendition needs, so shopfront, counter and stock
+    cannot come from one. They have to be photographed.
+    """
+    short = []
+    for name in rendition_names:
+        ratio, widths = RENDITIONS[name]
+        want_w = max(widths)
+        want_h = round(want_w * ratio[1] / ratio[0])
+        have_w, have_h = crop_size(src, ratio)
+        if have_w < want_w or have_h < want_h:
+            short.append((name, want_w, want_h, have_w, have_h))
+    return short
+
+
 def process():
     try:
         from PIL import Image, ImageOps
@@ -261,6 +298,7 @@ def process():
     OUT.mkdir(parents=True, exist_ok=True)
     written = 0
     done = []
+    skipped = []
 
     for key, rendition_names, _ in plan:
         source = find_source(key)
@@ -276,6 +314,14 @@ def process():
             # JPEG cannot store an alpha channel and would fail on the way out.
             if upright.mode != "RGB":
                 upright = upright.convert("RGB")
+
+            # After exif_transpose, never before: a portrait photo reports
+            # its size the wrong way round until the flag has been applied,
+            # and would be measured against the wrong edge.
+            short = too_small(upright.size, rendition_names)
+            if short:
+                skipped.append((source.name, upright.size, short))
+                continue
 
             centering = focus_for(manifest.get(key))
 
@@ -305,6 +351,17 @@ def process():
               f"{OUT.relative_to(ROOT)}")
     else:
         print(f"Nothing to do — {INBOX.name}/ has none of the expected names.")
+
+    if skipped:
+        print()
+        print("Skipped, because enlarging these would publish a blurred photo:")
+        for name, (sw, sh), short in skipped:
+            print(f"  {name} is {sw}x{sh}")
+            for rendition, want_w, want_h, have_w, have_h in short:
+                print(f"    {rendition} needs {want_w}x{want_h}, "
+                      f"this gives {have_w}x{have_h}")
+        print("Supply a bigger original. Ask the generator for landscape, and")
+        print("do not enlarge it yourself first — that blurs it just the same.")
 
     if strays:
         print()
