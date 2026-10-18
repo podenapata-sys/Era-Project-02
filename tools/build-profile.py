@@ -630,9 +630,20 @@ def build_html(supply_only=False, update=None):
         return SHELL % (esc(biz['name']), font_face_css(), CSS, render_pages())
 
     if supply_only:
-        page('en', supply_header('en') + supply('en', slice(0, 4)),
+        # Three pages, 2/3/2. It was two until the C-PVC list doubled from the
+        # supplier's catalogue, and seven categories no longer fit in two.
+        #
+        # .cats is a two-column grid, so what costs height is rows, not cards:
+        # three cards and four cards are both two rows. Page 1 carries the
+        # identity band as well, so it gets one row. 4/3 overflowed by 75px and
+        # 3/4 still by 10px for that reason; 2/5 cleared page 1 and put 33px
+        # onto page 2. Tightening the gaps or the type to force two pages would
+        # buy about 15px and cost legibility on the document whose whole job is
+        # being read on a phone. The content grew, so the sheet grew.
+        page('en', supply_header('en') + supply('en', slice(0, 2)),
              copy['en']['supplyTitle'])
-        page('en', supply('en', slice(4, 7)), copy['en']['supplyTitle'])
+        page('en', supply('en', slice(2, 5)), copy['en']['supplyTitle'])
+        page('en', supply('en', slice(5, 7)), copy['en']['supplyTitle'])
         return SHELL % (esc(biz['name']), font_face_css(), CSS, render_pages())
 
     for lang in ('en', 'bn'):
