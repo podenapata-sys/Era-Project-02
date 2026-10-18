@@ -54,6 +54,12 @@ PAGES = [
     # site with a fixed-width box inside the text column — the one shape that
     # can push a narrow phone sideways. In Bengali, which sets wider.
     ('bn', 'bn/about.html'),
+    # The products page, in both languages. It carries the item grid — eighty-
+    # two cards, each one a tap target, and the densest layout on the site.
+    # It was not in this sweep before the grid existed, which is exactly when a
+    # page most needs to be in it.
+    ('en', 'products.html'),
+    ('bn', 'bn/products.html'),
 ]
 
 fails = []

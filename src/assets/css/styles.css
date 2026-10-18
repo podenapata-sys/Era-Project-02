@@ -451,6 +451,69 @@ table { border-collapse: collapse; width: 100%; }
   background: var(--surface); color: var(--muted); font-size: 14px;
 }
 
+/* ---------- Product items ----------
+   One card per catalogue item, with the plain chip list kept underneath as the
+   reference. Each category keeps its own grid inside its own <article>, so
+   nothing here is shared between sections and opening one item leaves every
+   other section exactly where it was.
+
+   No letter-spacing on .item__name on purpose. Tracking breaks Bengali
+   conjuncts, and while html[lang="bn"] body * would reset it anyway at (0,1,2),
+   a rule that never sets it cannot be the one that gets overridden wrongly
+   later. Eighty-two Bengali labels is not where to find that out. */
+.items {
+  display: grid; gap: 12px; margin: 0 0 18px; padding: 0; list-style: none;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+}
+.item {
+  display: flex; flex-direction: column; overflow: hidden;
+  border: 1px solid var(--line-2); border-radius: var(--r);
+  background: var(--surface);
+}
+.item__name {
+  padding: 8px 10px 10px; font-size: 13px; line-height: 1.35;
+  color: var(--muted); text-align: center;
+}
+
+/* The whole picture is the control, so the tap target is the card, never a
+   small icon on it — this grid is read on a phone. */
+.item__hit {
+  display: block; width: 100%; padding: 0; border: 0; background: none;
+  cursor: zoom-in; color: inherit; font: inherit;
+}
+.item__hit .photo, .item__hit .slot { border-radius: 0; }
+.item__hit:focus-visible { outline: 3px solid var(--amber); outline-offset: -3px; }
+
+.photo--item { aspect-ratio: 1 / 1; border-radius: 0; }
+.slot--item {
+  aspect-ratio: 1 / 1; min-height: 0; padding: 10px; border: 0;
+  border-bottom: 1px dashed var(--line-2); border-radius: 0;
+}
+
+/* The reference list, now sitting under the cards rather than instead of them.
+   Quieter than it was, because the pictures carry the page and this is the
+   thing you scan when you already know the name of the part you want. */
+.chips--ref { margin-top: 4px; }
+.chips--ref li { font-size: 13px; padding: 5px 11px; color: var(--muted-2); }
+
+/* One dialog per page, reused by every card. */
+.lightbox {
+  width: min(92vw, 560px); padding: 0; border: 1px solid var(--line-2);
+  border-radius: var(--r-lg); background: var(--surface); color: var(--text);
+}
+.lightbox::backdrop { background: rgb(0 0 0 / 72%); }
+.lightbox__img { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
+.lightbox__cap {
+  margin: 0; padding: 14px 16px; text-align: center;
+  font-family: var(--font-display); font-weight: 600;
+}
+.lightbox__close {
+  position: absolute; inset-block-start: 10px; inset-inline-end: 10px;
+  min-height: 44px; min-width: 44px; padding: 0 14px;
+  border: 1px solid var(--line-ui); border-radius: 999px;
+  background: var(--bg-2); color: var(--text); font: inherit; cursor: pointer;
+}
+
 /* ---------- About ---------- */
 .about__grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: clamp(26px, 3.5vw, 48px); align-items: start; padding-block: clamp(32px, 4vw, 52px); }
 .about__copy p { color: var(--muted); }

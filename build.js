@@ -37,6 +37,32 @@ const upFor = page => (page === 'trade' ? '../../' : '');
 
 const ETC = new Set(['etc.', 'ইত্যাদি']);
 
+/* The photo key for one catalogue item: item-<category>-<item>.
+ *
+ * Items in copy.json are plain strings, and they stay that way. Giving each one
+ * an explicit slug would mean turning them into objects, which ripples into
+ * supply() in tools/build-profile.py, the PDF content guard and the EN/BN
+ * parity guard — a far larger change than the pictures are worth.
+ *
+ * Derived from the ENGLISH name only, so the key is stable no matter what the
+ * Bengali list says. Renaming an item orphans its photograph; checkPhotos()
+ * fails on the leftover file rather than letting it sit there unnoticed.
+ *
+ * tools/add-photos.py derives the same name and the two MUST agree. If this
+ * changes, change it there too — checkPhotos() is what catches you if you do
+ * not. */
+const itemSlug = name => name
+  .toLowerCase()
+  .replace(/&/g, ' ')
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '');
+
+const itemKey = (catSlug, name) => `item-${catSlug}-${itemSlug(name)}`;
+
+/* Every item that gets a card. "etc." is not a product: it is the shrug at the
+   end of a list, and it keeps its chip and gets no picture. */
+const carded = c => c.items.filter(it => !ETC.has(it));
+
 const esc = s => String(s ?? '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -232,6 +258,12 @@ const RENDITIONS = {
   /* The owner's portrait, and the only square: it is drawn as a 120px circle,
      so sizes is a constant rather than a share of the viewport. */
   face:  { w: 1,  h: 1,  widths: [240, 480],  sizes: '120px' },
+  /* One product item, in the grid on the products page. Square, because a grid
+     of thumbnails reads best square, and because an item photographed on its
+     own has nothing in the frame worth a wider crop. The 960 is not for the
+     grid — it is what the lightbox opens. */
+  item:  { w: 1,  h: 1,  widths: [240, 480, 960],
+           sizes: '(max-width: 560px) 44vw, (max-width: 900px) 30vw, 150px' },
 };
 
 const PHOTO_DIR = path.join(ROOT, 'src', 'assets', 'img', 'photos');
@@ -340,14 +372,34 @@ function reviewsSection(t, lang) {
 
    The placeholder branch emits exactly what it always did, byte for byte, so
    this can ship before a single photograph exists without touching the site. */
-function photo(key, rend, lang, base, label, cls) {
+/* The largest rendition of this key that actually exists, or '' if none does.
+   photo() answers "what do I draw"; this answers "is there anything to open",
+   which is what decides whether an item card is a button at all. Shipping 82
+   controls that do nothing would be worse than shipping none. */
+function fullPhoto(key, rend, base) {
+  const have = RENDITIONS[rend].widths.filter(w =>
+    fs.existsSync(path.join(PHOTO_DIR, `${key}-${rend}-${w}.webp`)));
+  if (!have.length) return '';
+  const w = have[have.length - 1];
+  return `${base}assets/img/photos/${key}-${rend}-${w}.webp`;
+}
+
+
+/* decorative: the caller already prints this label right next to the picture,
+   so the picture must not repeat it. An item card shows the name underneath, and
+   without this every placeholder printed its name twice on screen and every
+   photograph announced it twice to a screen reader — alt, then the caption
+   saying the same words again. */
+function photo(key, rend, lang, base, label, cls, decorative) {
   const spec = RENDITIONS[rend];
   const stem = `${key}-${rend}-`;
   const have = spec.widths.filter(w =>
     fs.existsSync(path.join(PHOTO_DIR, `${stem}${w}.webp`)));
 
   if (!have.length) {
-    return `<div class="slot${cls ? ' ' + cls : ''}" role="img" aria-label="${attr(label)}"><span>${esc(label)}</span></div>`;
+    return decorative
+      ? `<div class="slot${cls ? ' ' + cls : ''}" aria-hidden="true"></div>`
+      : `<div class="slot${cls ? ' ' + cls : ''}" role="img" aria-label="${attr(label)}"><span>${esc(label)}</span></div>`;
   }
 
   const url = (w, ext) => `${base}assets/img/photos/${stem}${w}.${ext}`;
@@ -364,9 +416,10 @@ function photo(key, rend, lang, base, label, cls) {
     ? 'loading="eager" fetchpriority="high"'
     : 'loading="lazy"';
 
+  const alt = decorative ? '' : photoAlt(key, lang, label);
   return `<picture class="photo${cls ? ' photo--' + cls.replace('slot--', '') : ''}">
         <source type="image/webp" srcset="${attr(webp)}" sizes="${attr(spec.sizes)}">
-        <img src="${attr(url(width, 'jpg'))}" alt="${attr(photoAlt(key, lang, label))}"
+        <img src="${attr(url(width, 'jpg'))}" alt="${attr(alt)}"
          width="${width}" height="${height}" ${loading} decoding="async"></picture>`;
 }
 
@@ -624,6 +677,34 @@ ${reviewsSection(t, lang)}
 </section>`;
 }
 
+/* One card per item, with the plain list kept below it as the reference.
+ *
+ * The key comes from the English name and the label from the page's own
+ * language, index for index — the EN/BN parity guard is what makes that safe.
+ * A card with no photograph is a labelled placeholder and is NOT a button: it
+ * is not focusable and does nothing, because an item nobody has photographed
+ * yet has nothing to open. */
+function itemGrid(c, cEn, lang, base) {
+  const cards = cEn.items
+    .map((en, j) => ({ en, label: c.items[j] }))
+    .filter(x => !ETC.has(x.en) && !ETC.has(x.label));
+
+  const cells = cards.map(({ en, label }) => {
+    const key = itemKey(cEn.slug, en);
+    const pic = photo(key, 'item', lang, base, label, 'slot--item', true);
+    const full = fullPhoto(key, 'item', base);
+    const body = full
+      ? `<button class="item__hit" type="button" aria-haspopup="dialog"
+           aria-label="${attr(label)}"
+           data-full="${attr(full)}" data-label="${attr(label)}">${pic}</button>`
+      : pic;
+    return `<li class="item">${body}<span class="item__name">${esc(label)}</span></li>`;
+  }).join('');
+
+  return `<ul class="items">${cells}</ul>`;
+}
+
+
 function productsPage(t, lang, base) {
   const blocks = t.categories.map((c, i) => `
     <article class="cat" id="${attr(c.slug)}">
@@ -632,7 +713,8 @@ function productsPage(t, lang, base) {
         <p class="cat__n"><span>${String(i + 1).padStart(2, '0')}</span> ${esc(c.size)}</p>
         <h2>${esc(c.title)}</h2>
         <p class="cat__long">${esc(c.long)}</p>
-        <ul class="chips">${c.items.map(it => `<li${ETC.has(it) ? ' class="is-etc"' : ''}>${esc(it)}</li>`).join('')}</ul>
+        ${itemGrid(c, copy.en.categories[i], lang, base)}
+        <ul class="chips chips--ref">${c.items.map(it => `<li${ETC.has(it) ? ' class="is-etc"' : ''}>${esc(it)}</li>`).join('')}</ul>
       </div>
     </article>`).join('');
 
@@ -645,6 +727,12 @@ function productsPage(t, lang, base) {
 </section>
 
 <div class="shell cats">${blocks}</div>
+
+<dialog class="lightbox" id="lightbox" aria-label="${attr(t.supplyTitle)}">
+  <button class="lightbox__close" type="button" data-close>${esc(t.close)}</button>
+  <img class="lightbox__img" alt="" width="960" height="960">
+  <p class="lightbox__cap"></p>
+</dialog>
 
 <section class="band">
   <div class="shell band__inner">
@@ -1369,6 +1457,26 @@ function checkPhotos() {
   for (const c of copy.en.categories) known.add('cat-' + c.slug);
   for (const sv of copy.en.services) known.add('trade-' + sv.slug);
 
+  /* One slot per catalogue item, and the slugs must be unique inside their
+     category or two different products quietly share one photograph. */
+  for (const c of copy.en.categories) {
+    const seen = new Map();
+    for (const it of carded(c)) {
+      const slug = itemSlug(it);
+      if (!slug) {
+        throw new Error(`copy.json: item "${it}" in ${c.slug} has no letters or ` +
+          `digits in it, so it cannot have a photograph. Rename it.`);
+      }
+      if (seen.has(slug)) {
+        throw new Error(`copy.json: "${it}" and "${seen.get(slug)}" in ${c.slug} ` +
+          `both become "${slug}", so they would share one photograph. ` +
+          `Make one of the two names more specific.`);
+      }
+      seen.set(slug, it);
+      known.add(itemKey(c.slug, it));
+    }
+  }
+
   for (const [key, entry] of Object.entries(photos)) {
     if (key.startsWith('_')) continue;          // _readme and friends
     if (!known.has(key)) {
@@ -1386,12 +1494,28 @@ function checkPhotos() {
   /* A file whose name matches no slot is one the site will never load — almost
      always a slug renamed with the photos left behind. Not fatal: it costs
      nothing but the disk it sits on, and failing the build over it would block
-     a deploy for a stale file. */
+     a deploy for a stale file.
+
+     With one exception, and it is not stale-file pedantry. tools/add-photos.py
+     derives item-<category>-<item> independently of itemSlug() above, in
+     Python. If the two ever disagree, add-photos.py writes files under names
+     this build never asks for, and the symptom is the client sending eighty-two
+     photographs and still seeing eighty-two placeholders — with nothing but a
+     NOTE in the build output to say why. A leftover cat-* file is harmless; an
+     item-* file nobody loads means the pictures are not on the site. */
   if (fs.existsSync(PHOTO_DIR)) {
     const orphans = fs.readdirSync(PHOTO_DIR).filter(f => {
       const m = f.match(/^(.+)-([a-z0-9]+)-(\d+)\.(webp|jpg)$/);
       return !m || !known.has(m[1]) || !RENDITIONS[m[2]];
     });
+    const items = orphans.filter(f => f.startsWith('item-'));
+    if (items.length) {
+      throw new Error(`${items.length} file(s) in src/assets/img/photos/ are ` +
+        `named item-… but match no item on this site, so they are never ` +
+        `loaded: ${items.slice(0, 4).join(', ')}${items.length > 4 ? ', …' : ''}\n` +
+        `Either an item was renamed in copy.json, or tools/add-photos.py and ` +
+        `itemSlug() in this file no longer agree on how a name becomes a slug.`);
+    }
     if (orphans.length) {
       console.warn(`NOTE: ${orphans.length} file(s) in src/assets/img/photos/ ` +
         `match no slot and are never loaded: ${orphans.slice(0, 4).join(', ')}` +

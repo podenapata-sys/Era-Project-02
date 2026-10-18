@@ -47,6 +47,7 @@ WHAT IT DOES TO EACH PHOTO, AND WHY
 """
 import argparse
 import json
+import re
 import pathlib
 import sys
 
@@ -70,6 +71,9 @@ RENDITIONS = {
     "trade": ((16, 10), (720, 1440)),
     # The owner's portrait, drawn as a 120px circle: 1x and 2x of that, square.
     "face":  ((1, 1),   (240, 480)),
+    # One catalogue item, in the grid on the products page. The 960 is not for
+    # the grid — it is what the lightbox opens when the card is tapped.
+    "item":  ((1, 1),   (240, 480, 960)),
 }
 
 # Which shapes each kind of photo has to be cut to. These mirror the call sites
@@ -78,6 +82,21 @@ RENDITIONS = {
 SHOP_RENDITIONS = ("hero", "wide")
 CATEGORY_RENDITIONS = ("card", "sq43")
 TRADE_RENDITIONS = ("sq43", "trade")
+ITEM_RENDITIONS = ("item",)
+
+# Items in copy.json are plain strings, so their photo key is derived from the
+# ENGLISH name: item-<category>-<item>.
+#
+# build.js derives exactly the same name in itemSlug(), and the two MUST agree.
+# If they ever stop agreeing, this script writes files under names the site
+# never asks for, and the client sees every placeholder still empty after
+# sending eighty-two photographs. build.js fails the build on an item-* file it
+# cannot place, which is what catches it — but keep these two in step by hand.
+ETC = {"etc.", "ইত্যাদি"}
+
+
+def item_slug(name):
+    return re.sub(r"[^a-z0-9]+", "-", name.lower().replace("&", " ")).strip("-")
 
 # The owner, on his own, because he is cut to a shape nothing else uses. Kept
 # out of SHOP_KEYS deliberately: those are all shot wide and get hero + wide,
@@ -118,7 +137,9 @@ def slugs():
     copy = json.loads(COPY.read_text(encoding="utf-8"))
     en = copy["en"]
     return ([(c["slug"], c["title"]) for c in en["categories"]],
-            [(s["slug"], s["title"]) for s in en["services"]])
+            [(s["slug"], s["title"]) for s in en["services"]],
+            [(c["slug"], c["title"], it)
+             for c in en["categories"] for it in c["items"] if it not in ETC])
 
 
 def expected():
@@ -126,11 +147,13 @@ def expected():
     the shop itself, then the man who runs it, then what it sells, then what it
     does. The description is what gets sent to the client, so it names the thing
     rather than its slug."""
-    cats, trades = slugs()
+    cats, trades, items = slugs()
     plan = [(k, SHOP_RENDITIONS, SHOP_KEYS[k]) for k in SHOP_KEYS]
     plan += [(OWNER_KEY, OWNER_RENDITIONS, OWNER_DESC)]
     plan += [("cat-" + s, CATEGORY_RENDITIONS, t) for s, t in cats]
     plan += [("trade-" + s, TRADE_RENDITIONS, t) for s, t in trades]
+    plan += [(f"item-{cs}-{item_slug(it)}", ITEM_RENDITIONS, f"{it} ({ct})")
+             for cs, ct, it in items]
     return plan
 
 

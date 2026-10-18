@@ -267,3 +267,54 @@
     window.location.href = (mark.getAttribute('data-admin') || 'admin/');
   });
 })();
+
+/* ---------- Product item lightbox ----------
+   One <dialog> per page, reused by every card, so opening an item leaves every
+   other category section exactly where it was — nothing expands, nothing
+   collapses, nothing is shared between sections but this one box.
+
+   One delegated listener rather than eighty-two, and build.js only renders
+   .item__hit for items that actually have a photograph, so a card that is still
+   a placeholder is not a button and cannot be focused or clicked. */
+(function () {
+  'use strict';
+
+  var box = document.getElementById('lightbox');
+  if (!box) return;                       // every page but /products/
+
+  var img = box.querySelector('.lightbox__img');
+  var cap = box.querySelector('.lightbox__cap');
+  var modal = typeof box.showModal === 'function';
+
+  document.addEventListener('click', function (e) {
+    var hit = e.target.closest ? e.target.closest('.item__hit') : null;
+    if (!hit) return;
+
+    var src = hit.getAttribute('data-full');
+    var label = hit.getAttribute('data-label') || '';
+    if (!src) return;
+
+    /* No <dialog> in this browser: send them to the picture itself rather than
+       leaving a button that visibly does nothing. */
+    if (!modal) { window.location.href = src; return; }
+
+    img.src = src;
+    img.alt = label;
+    cap.textContent = label;
+    box.showModal();
+  });
+
+  /* Esc and the focus ring come free with showModal(); this is the click on the
+     backdrop, which arrives on the dialog itself rather than on its contents. */
+  box.addEventListener('click', function (e) {
+    if (e.target === box || e.target.hasAttribute('data-close')) box.close();
+  });
+
+  /* Drop the full-size image on close, so the next card does not flash the
+     previous one while its own bytes are still arriving. */
+  box.addEventListener('close', function () {
+    img.removeAttribute('src');
+    img.alt = '';
+    cap.textContent = '';
+  });
+})();
