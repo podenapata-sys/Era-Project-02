@@ -45,6 +45,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONTS = os.path.join(ROOT, 'tools', '.fonts')
 OUT = os.path.join(ROOT, 'era-company-profile.pdf')
 OUT_SUPPLY = os.path.join(ROOT, 'era-supply-list.pdf')
+UPDATES = os.path.join(ROOT, 'updates')
 
 # Which UI string render_pages() prints in the top-right of every page. The
 # profile says "Company profile"; the supply sheet must not, and hardcoding a
@@ -143,6 +144,7 @@ UI = {
     'en': {
         'profile': 'Company profile',
         'productList': 'Product list',
+        'update': 'Update',
         'since': 'Supplying Dhaka since',
         'contact': 'Contact',
         'phone': 'Phone / WhatsApp',
@@ -164,6 +166,7 @@ UI = {
     'bn': {
         'profile': 'কোম্পানি প্রোফাইল',
         'productList': 'পণ্যের তালিকা',
+        'update': 'আপডেট',
         'since': 'ঢাকায় সরবরাহ করছি',
         'contact': 'যোগাযোগ',
         'phone': 'ফোন / হোয়াটসঅ্যাপ',
@@ -314,6 +317,86 @@ def supply(lang, slice_):
     head = ('<h2 class="h2">%s</h2><p class="lede">%s</p>'
             % (esc(t['supplyTitle']), esc(t['productsIntro']))) if slice_.start in (0, None) else ''
     return head + '<div class="cats">%s</div>' % cards
+
+
+def load_update(date=None):
+    """The newest file in updates/, or the one named by --date.
+
+    Kept out of content/ deliberately: content/ is what the website is built
+    from and build.js guards it. A dated status report is neither, and putting
+    it there would mean a progress note could fail a site content check.
+    """
+    if not os.path.isdir(UPDATES):
+        sys.exit('there is no updates/ directory.  Add updates/<date>.json first.')
+    files = sorted(f for f in os.listdir(UPDATES) if f.endswith('.json'))
+    if not files:
+        sys.exit('updates/ has no .json file to render.')
+    name = (date + '.json') if date else files[-1]
+    path = os.path.join(UPDATES, name)
+    if not os.path.exists(path):
+        sys.exit('no such update: %s\nHave: %s' % (name, ', '.join(files)))
+    return json.load(io.open(path, encoding='utf-8'))
+
+
+def update_asks(d):
+    """Page 1: what the client has to send, before anything we have done.
+
+    The order is the whole point. This document exists to collect three things;
+    a reader who has to reach page 2 to find them will not reach page 2.
+    """
+    asks = ''.join("""
+      <div class="ask">
+        <div class="ask__n">{n}</div>
+        <div class="ask__body">
+          <h3>{title}</h3>
+          <p class="ask__how">{how}</p>
+          {items}
+          <p class="ask__why">{why}</p>
+        </div>
+      </div>""".format(
+        n=esc(a['n']), title=esc(a['title']), how=esc(a['how']),
+        why=esc(a['why']),
+        items=('<ul class="bullets">%s</ul>'
+               % ''.join('<li>%s</li>' % esc(i) for i in a['items']))
+              if a['items'] else '')
+        for a in d['asks'])
+
+    return """
+      <h2 class="h2">{asksTitle}</h2>
+      <p class="lede">{lede}</p>
+      <div class="asks">{asks}</div>""".format(
+        asksTitle=esc(d['asksTitle']), lede=esc(d['lede']), asks=asks)
+
+
+def update_status(d):
+    """Page 2: the question, the decision, then what exists.
+
+    The question and the decision were on page 1 with the asks and pushed the
+    body 47px past its box, printing the last line across the footer. They
+    belong here anyway: page 1 asks for three things, and a fourth and fifth
+    item under them dilutes exactly the thing the document is for.
+    """
+    def ul(items):
+        return '<ul class="bullets">%s</ul>' % ''.join(
+            '<li>%s</li>' % esc(i) for i in items)
+    side = ''.join(
+        '<div class="side"><span class="side__label">%s</span><p>%s</p></div>'
+        % (esc(x['label']), esc(x['text'])) for x in d['side'])
+    return """
+      <h2 class="h2">{sideTitle}</h2>
+      {side}
+
+      <h2 class="h2 h2--sp">{todayTitle}</h2>
+      {today}
+
+      <h2 class="h2 h2--sp">{doneTitle}</h2>
+      {done}
+
+      <div class="closing"><p>{closing}</p></div>""".format(
+        todayTitle=esc(d['todayTitle']), today=ul(d['today']),
+        doneTitle=esc(d['doneTitle']), done=ul(d['done']),
+        sideTitle=esc(d['sideTitle']), side=side,
+        closing=esc(d['closing']))
 
 
 def works(lang):
@@ -490,6 +573,25 @@ h3{margin:0 0 1.8mm;font-size:11.2pt;font-weight:700;color:var(--ink)}
 .bullets{margin:0;padding-left:4.5mm;font-size:9.8pt;color:var(--ink)}
 .bullets li{margin-bottom:1.6mm}
 
+/* ---- client update ---- */
+.asks{display:flex;flex-direction:column;gap:5mm}
+.ask{display:flex;gap:4mm;break-inside:avoid;background:var(--wash);
+     border-left:2.5pt solid var(--gold);padding:3.5mm 4mm}
+.ask__n{flex:0 0 9mm;height:9mm;border-radius:50%;background:var(--blue-deep);
+        color:#fff;font-weight:800;font-size:12pt;display:flex;
+        align-items:center;justify-content:center;line-height:1}
+.ask__body{flex:1 1 auto;min-width:0}
+.ask__how{font-size:9.8pt;color:var(--ink);margin:0 0 2mm}
+.ask__why{font-size:9pt;color:var(--muted);margin:2mm 0 0;font-style:italic}
+.ask .bullets{margin:0 0 1mm}
+.side{border-left:1.5pt solid var(--blue);padding-left:3.5mm;margin-bottom:4mm}
+.side__label{font-size:8pt;font-weight:800;color:var(--blue-ink);
+             letter-spacing:.08em}
+.side p{font-size:9.8pt;color:var(--muted);margin:.8mm 0 0}
+.closing{margin-top:10mm;background:var(--wash);border-left:2.5pt solid var(--blue);
+         padding:4mm}
+.closing p{margin:0;font-size:11pt;font-weight:600;color:var(--blue-deep)}
+
 /* ---- contact ---- */
 .kv{width:100%;border-collapse:collapse;font-size:10.6pt}
 .kv td{padding:3.4mm 0;border-bottom:.75pt solid var(--line);vertical-align:top}
@@ -514,7 +616,7 @@ SHELL = """<!doctype html>
 <body>%s</body></html>"""
 
 
-def build_html(supply_only=False):
+def build_html(supply_only=False, update=None):
     """The profile, or — with --supply — just the product list in English.
 
     The supply sheet reuses supply() and the same 4/3 split the profile already
@@ -522,6 +624,11 @@ def build_html(supply_only=False):
     wrapper differs: an identity band instead of a cover, and no about,
     services, reach or contact pages.
     """
+    if update is not None:
+        page('bn', supply_header('bn') + update_asks(update), update['dateDisplay'])
+        page('bn', update_status(update), update['dateDisplay'])
+        return SHELL % (esc(biz['name']), font_face_css(), CSS, render_pages())
+
     if supply_only:
         page('en', supply_header('en') + supply('en', slice(0, 4)),
              copy['en']['supplyTitle'])
@@ -541,7 +648,7 @@ def build_html(supply_only=False):
     return SHELL % (esc(biz['name']), font_face_css(), CSS, render_pages())
 
 
-def check_everything_rendered(html, supply_only=False):
+def check_everything_rendered(html, supply_only=False, update=None):
     """Every catalogue item, trade and area from content/ is in the markup.
 
     Checked against the HTML and not the finished PDF, because pdftotext is not
@@ -552,6 +659,34 @@ def check_everything_rendered(html, supply_only=False):
     generated from content/ directly, so this is the exact comparison.
     """
     missing = []
+    # An update carries no catalogue at all, so the loop below would fail a
+    # perfectly correct document. Scoped, not skipped — and the thing worth
+    # asserting here is different: this document exists to carry three asks, so
+    # an ask silently dropped is the failure to catch. Every ask, every status
+    # line, and the message that goes with them.
+    if update is not None:
+        wanted = ([a['title'] for a in update['asks']]
+                  + [a['how'] for a in update['asks']]
+                  + [i for a in update['asks'] for i in a['items']]
+                  + [x['text'] for x in update['side']]
+                  + list(update['today']) + list(update['done'])
+                  + [update['lede'], update['closing']])
+        missing = [w for w in wanted if esc(w) not in html]
+        if missing:
+            sys.exit('content missing from the update:\n  ' + '\n  '.join(missing))
+        # Matched on the title alone, never on a['n']. The numeral arm that
+        # used to be here could not fail: ৩ occurs five times in the ordinary
+        # prose of this very message — ৩২টি পেজ, ৩টি জিনিস, ৩টি ছবি, ৩টি পেলে,
+        # ছবি ৩টিই — so the `or` always matched and an ask deleted outright
+        # from the message still built clean. A title is a distinctive phrase;
+        # a digit in Bengali prose is noise.
+        for a in update['asks']:
+            if a['title'] not in update['whatsapp']:
+                sys.exit('ask %s (%s) is in the PDF but not in the WhatsApp '
+                         'message.\nBoth come from the same file so they cannot '
+                         'disagree; add it to "whatsapp".' % (a['n'], a['title']))
+        return
+
     # The supply sheet is English, and carries the catalogue and nothing else —
     # so the services, areas, payments and amenities are legitimately absent and
     # checking for them would fail a correct document. Scoped, not skipped: a
@@ -582,8 +717,20 @@ def check_nothing_clipped(pg):
     category to content/ is enough to do it, and the person who adds it is not
     going to count items in a 14-page PDF. So measure it.
     """
+    # Both boxes, and .body is the one that actually catches things. .page is a
+    # fixed 297mm box, but .body inside it is flex:1 1 auto with min-height:0 —
+    # so a body that outgrows its share does NOT push .page's scrollHeight out.
+    # It just draws over the footer, which is how the first client update went
+    # out with its last line printed across the page number. Measuring .page
+    # alone said that document was fine.
     over = pg.evaluate("""() => Array.from(document.querySelectorAll('.page'))
-        .map((p, i) => ({ i: i + 1, over: Math.round(p.scrollHeight - p.clientHeight) }))
+        .map((p, i) => ({
+            i: i + 1,
+            over: Math.max(
+                Math.round(p.scrollHeight - p.clientHeight),
+                ...Array.from(p.querySelectorAll('.body'))
+                    .map(b => Math.round(b.scrollHeight - b.clientHeight))),
+        }))
         .filter(x => x.over > 1)""")
     if over:
         sys.exit('content is being clipped off the bottom of %d page(s):\n  '
@@ -594,14 +741,24 @@ def check_nothing_clipped(pg):
 
 def main():
     global DOC
-    supply_only = '--supply' in sys.argv[1:]
-    if supply_only:
+    args = sys.argv[1:]
+    supply_only = '--supply' in args
+    update = None
+
+    if '--update' in args:
+        date = next((a.split('=', 1)[1] for a in args if a.startswith('--date=')), None)
+        update = load_update(date)
+        DOC = 'update'
+        out = os.path.join(ROOT, 'era-update-%s.pdf' % update['date'])
+    elif supply_only:
         DOC = 'productList'          # the running head, top-right of every page
-    out = OUT_SUPPLY if supply_only else OUT
+        out = OUT_SUPPLY
+    else:
+        out = OUT
 
     fetch_fonts()
-    html = build_html(supply_only)
-    check_everything_rendered(html, supply_only)
+    html = build_html(supply_only, update)
+    check_everything_rendered(html, supply_only, update)
     tmp = os.path.join(ROOT, 'tools', '.profile.html')
     io.open(tmp, 'w', encoding='utf-8').write(html)
 
@@ -628,6 +785,15 @@ def main():
 
     print('Wrote %s (%.0f KB, %d pages)'
           % (os.path.relpath(out, ROOT), os.path.getsize(out) / 1024, len(PAGES)))
+
+    # The message travels with the PDF, so it is written from the same file and
+    # at the same moment. A message typed separately drifts from the document
+    # it is attached to within one revision.
+    if update is not None:
+        msg = os.path.join(ROOT, 'era-update-%s.txt' % update['date'])
+        io.open(msg, 'w', encoding='utf-8').write(update['whatsapp'] + '\n')
+        print('Wrote %s (the WhatsApp message, ready to copy)'
+              % os.path.relpath(msg, ROOT))
 
 
 if __name__ == '__main__':

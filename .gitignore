@@ -24,6 +24,13 @@ photos-inbox/
 era-company-profile.pdf
 era-supply-list.pdf
 
+# Dated client updates, built by tools/build-profile.py --update from
+# updates/<date>.json. The JSON IS committed — it is the record of what was
+# promised and when. The rendered PDF and the WhatsApp message are not, for the
+# same reason as above: regenerate them, do not carry a stale copy.
+era-update-*.pdf
+era-update-*.txt
+
 # Fonts the PDF profile embeds, fetched on first run. Barlow and Hind Siliguri
 # are both OFL and redistributable, but committing them means carrying the
 # licence text for something a one-second download replaces.
