@@ -340,7 +340,18 @@ unaffected by all of them.
 
 **FRAME-SITE** — for anything going into `photos-inbox/`:
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape image, 1536×1024 or larger. A catalogue photograph of SUBJECT. The subject sits in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or to a square without cutting anything off.
+> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape image, 1536×1024 or larger, at least 960 pixels tall. A catalogue photograph of SUBJECT. Where the subject is more than one piece, keep them as a compact group, overlapping slightly and turned towards the camera, never spread out in a line across the frame. The whole subject sits in the middle of the frame with generous empty margin to the left and to the right, so it can be cropped to a square without cutting anything off.
+
+**Why the arrangement sentence is in there.** An item image is cropped to a
+**square**, and a square cut out of a 1536-wide frame throws away **256px from
+each side**. The first one generated — three C-PVC pipes — came back as a
+diagonal line running off to the right, and the square crop took the far ends of
+two of the three. Pipes survive that; a tee loses a branch and a row of three
+angle valves loses a valve outright. **44 of the 81 subjects have more than one
+piece in frame**, and this is the same failure that wrecked `cat-ceramic`,
+`cat-bathroom-fittings` and `cat-accessories` and had to be rescued by padding.
+The seven category prompts have carried a clause against it since then; the item
+frame did not, until it was tested.
 
 **FRAME-POSTER** — for a Facebook or WhatsApp post, never for the website:
 
