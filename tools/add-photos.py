@@ -81,6 +81,19 @@ RENDITIONS = {
 # is a card in the services grid and a wide strip on its own page.
 SHOP_RENDITIONS = ("hero", "wide")
 CATEGORY_RENDITIONS = ("card", "sq43")
+
+# The home page's hero is the stock photograph — a wall of pipe and fittings,
+# the picture that answers "will they have my size". Until that photograph
+# exists, the page would open on a dashed placeholder filling half the first
+# screen on a desktop, which is the worst thing a visitor can see first.
+#
+# So one category image stands in, and it is honest about what it is: a picture
+# of products the shop sells, captioned as products, claiming nothing about the
+# premises. It needs the bigger 4:3 shape as well as its own two.
+#
+# build.js names the same key. When the real stock photograph arrives, change it
+# back there and this line can go.
+HOME_HERO = "cat-bathroom-fittings"
 TRADE_RENDITIONS = ("sq43", "trade")
 ITEM_RENDITIONS = ("item",)
 
@@ -150,7 +163,9 @@ def expected():
     cats, trades, items = slugs()
     plan = [(k, SHOP_RENDITIONS, SHOP_KEYS[k]) for k in SHOP_KEYS]
     plan += [(OWNER_KEY, OWNER_RENDITIONS, OWNER_DESC)]
-    plan += [("cat-" + s, CATEGORY_RENDITIONS, t) for s, t in cats]
+    plan += [("cat-" + s,
+              CATEGORY_RENDITIONS + (("hero",) if "cat-" + s == HOME_HERO else ()),
+              t) for s, t in cats]
     plan += [("trade-" + s, TRADE_RENDITIONS, t) for s, t in trades]
     plan += [(f"item-{cs}-{item_slug(it)}", ITEM_RENDITIONS, f"{it} ({ct})")
              for cs, ct, it in items]

@@ -266,6 +266,20 @@ const RENDITIONS = {
            sizes: '(max-width: 560px) 44vw, (max-width: 900px) 30vw, 150px' },
 };
 
+/* The home page hero wants the stock photograph — a wall of pipe and fittings,
+   the one that answers "will they have my size". Until that photograph exists,
+   the page opened on a dashed placeholder filling half the first screen on a
+   desktop, which is the worst possible first impression.
+   
+   So a category image stands in. It is honest about what it is: products the
+   shop sells, captioned as products, claiming nothing about the premises —
+   unlike shopfront, counter and stock, whose alt text in photos.json names the
+   address and so cannot be stood in for by anything generated.
+   
+   tools/add-photos.py names the same key and gives it the extra 4:3 shape. When
+   the real photograph arrives, put 'stock' back here and drop HOME_HERO there. */
+const HOME_HERO = 'cat-bathroom-fittings';
+
 const PHOTO_DIR = path.join(ROOT, 'src', 'assets', 'img', 'photos');
 const photos = fs.existsSync(path.join(ROOT, 'content', 'photos.json'))
   ? require('./content/photos.json') : {};
@@ -618,7 +632,7 @@ function homePage(t, lang, base) {
       <ul class="facts">${facts}</ul>
     </div>
     <div class="hero__media">
-      ${photo('stock', 'hero', lang, base, t.nav.products + ' — ' + t.supplyTitle, 'slot--hero')}
+      ${photo(HOME_HERO, 'hero', lang, base, t.nav.products + ' — ' + t.supplyTitle, 'slot--hero')}
     </div>
   </div>
 </section>
@@ -1833,6 +1847,11 @@ ${['en', 'bn'].map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="$
   if (!biz.email) console.log('NOTE: business.email is null — no email is shown anywhere on the site.');
   if (!fb().projectId) console.log('NOTE: business.firebase.projectId is empty — the quote form opens WhatsApp only, nothing is recorded. Create a Firebase project (free, no card) and paste its ID; see README.');
   else if (!(fb().webConfig || {}).apiKey) console.log('NOTE: business.firebase.webConfig is empty — /admin/ shows setup instructions instead of the leads. Firebase Console -> Project settings -> Your apps -> Web app.');
+  if (!fs.existsSync(path.join(PHOTO_DIR, `${HOME_HERO}-hero-720.webp`))) {
+    console.log(`NOTE: the home page hero stands in with ${HOME_HERO}, but its ` +
+      `4:3 files are missing, so the hero is a placeholder. Run ` +
+      `\`python3 tools/add-photos.py\` to cut them.`);
+  }
   if (!biz.reviewUrl) console.log('NOTE: business.reviewUrl is empty — the Google review block and QR are omitted from every page.');
 }
 
