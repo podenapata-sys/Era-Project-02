@@ -16,10 +16,20 @@
     "",
     "owner has no alt here on purpose. The About page passes the owner's name",
     "and title as the label, so the alt text is whatever copy.json says in the",
-    "page's own language and cannot fall out of step with the caption beside it."
+    "page's own language and cannot fall out of step with the caption beside it.",
+    "",
+    "counter and stock are worded WITHOUT the shop's name or address, because",
+    "they may be filled by a generated image. Alt text is a description of the",
+    "picture, so it must not claim a picture of a specific premises that the",
+    "picture cannot support. shopfront keeps its address precisely because it",
+    "stays a real photograph — it is the image a customer uses to recognise the",
+    "shop from the street, and a generated one would send them past it."
   ],
   "owner": {
-    "focus": [0.5, 0.0]
+    "focus": [
+      0.5,
+      0.0
+    ]
   },
   "shopfront": {
     "alt": {
@@ -29,14 +39,14 @@
   },
   "counter": {
     "alt": {
-      "en": "The counter at ERA Sanitary, Rampura",
-      "bn": "ইরা স্যানিটারির কাউন্টার, রামপুরা"
+      "en": "A plumbing and sanitary supply counter",
+      "bn": "প্লাম্বিং ও স্যানিটারি সরবরাহের দোকানের কাউন্টার"
     }
   },
   "stock": {
     "alt": {
-      "en": "Pipes and fittings in stock at ERA Sanitary",
-      "bn": "ইরা স্যানিটারিতে মজুত পাইপ ও ফিটিংস"
+      "en": "Shelves of pipes and fittings in a supply shop",
+      "bn": "সরবরাহের দোকানে তাকে সাজানো পাইপ ও ফিটিংস"
     }
   }
 }
