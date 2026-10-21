@@ -28,6 +28,11 @@ photos-inbox/
 # tools/build-profile.py from content/ (the sheet with --supply). Not committed,
 # for the same reason dist/ is not: they are generated, and a committed copy
 # starts lying the moment business.json or copy.json changes.
+# Ready-to-paste item prompts, assembled by tools/build-prompts.py from
+# PHOTO-PROMPTS.md. Generated, like the PDFs: the wording lives in one file and
+# a committed copy starts lying the moment that file is edited.
+prompts/
+
 era-company-profile.pdf
 era-supply-list.pdf
 
