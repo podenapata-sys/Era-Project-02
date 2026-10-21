@@ -3,6 +3,13 @@ Thumbs.db
 .vscode/
 .idea/
 node_modules/
+
+# Python bytecode. The tools in tools/ are run as scripts, but reading one with
+# importlib — which is how its rendition table and size guard get checked
+# without duplicating them — leaves a cache behind. Compiled output, never
+# source.
+__pycache__/
+*.pyc
 .cache/
 *.log
 .env
