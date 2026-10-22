@@ -89,9 +89,31 @@ lands on:
 Which is how a batch gets diagnosed without asking anyone: multiply the two
 numbers and see which square it is near. The fourteen bathroom-fittings images
 came back at 1264×848 from prompts that asked in writing for 1536×1024 or
-larger, because no wording reaches that control. **Set it to 2K.** Every
-rendition on this site clears at 2K; 4K is four times the file for pixels
-nothing displays.
+larger, because no wording reaches that control.
+
+The app's own settings panel offers five aspect ratios and no resolution at
+all, so the tier may not be reachable from there. Run through the guard, the
+five ratios at the default tier come out:
+
+| at 1K | pixels | item (1:1) | category | trade |
+| --- | --- | --- | --- | --- |
+| 16:9 | 1365×768 | fails, 768 | fails | fails |
+| 4:3 | 1182×887 | fails, 887 | fails | fails |
+| **1:1** | **1024×1024** | **passes** | fails | fails |
+| 3:4 | 887×1182 | fails, 887 | fails | fails |
+| 9:16 | 768×1365 | fails, 768 | fails | fails |
+
+**So item images are asked for as 1:1 and nothing else.** That is the one shape
+large enough at the default tier, it is also large enough at 2K, and it is the
+only shape an item is ever shown in — asking for landscape and cutting a square
+out of it was always the long way round, and it is what sliced the first C-PVC
+banner. Square in, square out, nothing cropped, no tier to remember.
+
+Category and trade images have no such escape: they are cut to 4:3, 5:4, 16:9
+and 16:10, so the source must be landscape, and no landscape ratio is big
+enough at 1K. Those need 2K, and if the tier cannot be reached the picture
+cannot come from that surface. 4K is never needed — four times the file for
+pixels nothing displays.
 
 The shop photographs are a separate matter and not a resolution one. `shopfront`
 says "The ERA Sanitary shop on D.I.T Road, Rampura", `counter` and `stock`
@@ -198,31 +220,31 @@ it rather than publishing a blurred crop.
 
 ### `cat-cpvc.jpg` — C-PVC pipes & fittings (1/2"–6")
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Set the output to 2K resolution and a 3:2 landscape aspect ratio before generating — 1K is too small and the picture will be rejected.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 4:3 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A catalogue photograph of cream-beige C-PVC plumbing parts: several lengths of cream pipe standing upright at the back in stepped heights, each with a thin red identification stripe running along it, and in front of them 90-degree and 45-degree elbows, tees, sockets, reducers, a union, a brass-threaded adapter and a ball valve with a red lever handle, arranged as a compact, roughly square group in two staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. The group stands on a polished pale concrete floor in a bright modern interior, a large plain pale concrete wall behind it, a tall window out of frame to one side throwing soft daylight and a gentle diagonal patch of light across the wall, and a blurred green plant at the far edge, well out of focus. Soft reflection of the pieces in the polished floor, gentle contact shadows, shallow depth of field behind. Sharp focus on the products. Every surface plain, smooth and unmarked, with no writing, lettering, headline, tagline or logo anywhere in the picture. The whole group sits in the centre of the frame with generous empty margin to the left and to the right, so it can be cropped to a wide strip or to a square without cutting anything off.
 
 ### `cat-upvc.jpg` — U-PVC pipes & fittings (1.25"–12")
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Set the output to 2K resolution and a 3:2 landscape aspect ratio before generating — 1K is too small and the picture will be rejected.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 4:3 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A catalogue photograph of U-PVC soil and drainage parts: three wide drainage pipes of different diameters standing at the back, one grey and the others white, and in front of them a long-radius bend, a Y-tee, a P-trap, a pipe clip and a vent cowl, all plain unmarked plastic, arranged as a compact, roughly square group in two staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. The group stands on a polished pale concrete floor in a bright modern interior, a large plain pale concrete wall behind it, a tall window out of frame to one side throwing soft daylight and a gentle diagonal patch of light across the wall, and a blurred green plant at the far edge, well out of focus. Soft reflection of the pieces in the polished floor, gentle contact shadows, shallow depth of field behind. Sharp focus on the products. Every surface plain, smooth and unmarked, with no writing, lettering, headline, tagline or logo anywhere in the picture. The whole group sits in the centre of the frame with generous empty margin to the left and to the right, so it can be cropped to a wide strip or to a square without cutting anything off.
 
 ### `cat-pressure.jpg` — Pressure PVC-U (1/2"–4")
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Set the output to 2K resolution and a 3:2 landscape aspect ratio before generating — 1K is too small and the picture will be rejected.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 4:3 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A catalogue photograph of grey pressure PVC-U plumbing parts: two thick-walled grey pressure pipes of different diameters standing at the back, and in front of them sockets, elbows, tees, an end cap, a flange adapter and a threaded adapter, the walls visibly heavier than drainage pipe, arranged as a compact, roughly square group in two staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. The group stands on a polished pale concrete floor in a bright modern interior, a large plain pale concrete wall behind it, a tall window out of frame to one side throwing soft daylight and a gentle diagonal patch of light across the wall, and a blurred green plant at the far edge, well out of focus. Soft reflection of the pieces in the polished floor, gentle contact shadows, shallow depth of field behind. Sharp focus on the products. Every surface plain, smooth and unmarked, with no writing, lettering, headline, tagline or logo anywhere in the picture. The whole group sits in the centre of the frame with generous empty margin to the left and to the right, so it can be cropped to a wide strip or to a square without cutting anything off.
 
 ### `cat-bathroom-fittings.jpg` — Bathroom fittings (brass & CP finish)
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Set the output to 2K resolution and a 3:2 landscape aspect ratio before generating — 1K is too small and the picture will be rejected.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 4:3 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A catalogue photograph of polished chrome bathroom taps, mixers and fittings: a basin mixer, a bath mixer, a shower mixer, a pillar cock, a bib cock, a long-body tap, a concealed stop cock, a small angle valve, a round rain shower head, a push shower, a hand-shower set on its slide rail with a flexible hose, a health faucet, a bottle trap and a basin waste, arranged as a compact, roughly square group in two staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. The group stands on a polished pale concrete floor in a bright modern interior, a large plain pale concrete wall behind it, a tall window out of frame to one side throwing soft daylight and a gentle diagonal patch of light across the wall, and a blurred green plant at the far edge, well out of focus. Soft reflection of the pieces in the polished floor, gentle contact shadows, shallow depth of field behind. Sharp focus on the products. Every surface plain, smooth and unmarked, with no writing, lettering, headline, tagline or logo anywhere in the picture. The whole group sits in the centre of the frame with generous empty margin to the left and to the right, so it can be cropped to a wide strip or to a square without cutting anything off.
 
 ### `cat-accessories.jpg` — Plumbing accessories & hardware
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Set the output to 2K resolution and a 3:2 landscape aspect ratio before generating — 1K is too small and the picture will be rejected.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 4:3 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A catalogue photograph of bathroom hardware and plumbing fittings: a straight stainless towel rail, a towel rack with a shelf above its rail, a towel ring, a soap dish, a tissue holder with a plain white roll, a tumbler holder with a clear glass, a coat hook, a clear glass shelf on its brackets, a square floor grating, a plain white roll of PTFE thread tape, a short braided connector hose, a water tank connector, a brass float valve with its ball, a long braided flexible hose and two pipe clamps, arranged as a compact, roughly square group in three staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. The group stands on a polished pale concrete floor in a bright modern interior, a large plain pale concrete wall behind it, a tall window out of frame to one side throwing soft daylight and a gentle diagonal patch of light across the wall, and a blurred green plant at the far edge, well out of focus. Soft reflection of the pieces in the polished floor, gentle contact shadows, shallow depth of field behind. Sharp focus on the products. Every surface plain, smooth and unmarked, with no writing, lettering, headline, tagline or logo anywhere in the picture. The whole group sits in the centre of the frame with generous empty margin to the left and to the right, so it can be cropped to a wide strip or to a square without cutting anything off.
 
@@ -234,7 +256,7 @@ it rather than publishing a blurred crop.
 > already in the list. If ERA means a low-level cistern WC instead, the image
 > would misrepresent the stock — which is rule 2. One question answers it.
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Set the output to 2K resolution and a 3:2 landscape aspect ratio before generating — 1K is too small and the picture will be rejected.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 4:3 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A catalogue photograph of white ceramic sanitaryware: a wall-hung commode, a floor-standing commode with its cistern, a squat pan set flat with moulded foot platforms either side, a wall-hung urinal, a taller floor-standing urinal, a full-size pedestal basin, a round counter-top basin and a small compact cloakroom basin, arranged as a compact, roughly square group in two staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. The group stands on a polished pale concrete floor in a bright modern interior, a large plain pale concrete wall behind it, a tall window out of frame to one side throwing soft daylight and a gentle diagonal patch of light across the wall, and a blurred green plant at the far edge, well out of focus. Soft reflection of the pieces in the polished floor, gentle contact shadows, shallow depth of field behind. Sharp focus on the products. Every surface plain, smooth and unmarked, with no writing, lettering, headline, tagline or logo anywhere in the picture. The whole group sits in the centre of the frame with generous empty margin to the left and to the right, so it can be cropped to a wide strip or to a square without cutting anything off.
 
@@ -245,7 +267,7 @@ it rather than publishing a blurred crop.
 > claim about specific stock. Showing a subset of the list is fine; showing
 > something the shop may not carry is not.
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Set the output to 2K resolution and a 3:2 landscape aspect ratio before generating — 1K is too small and the picture will be rejected.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 4:3 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A catalogue photograph of kitchen fittings: a double-bowl stainless steel sink, a single-bowl stainless steel sink, a dark grey moulded fibre sink, a white ceramic sink, a stainless workstation sink with a chopping board resting on its inner ledge, a tall chrome sink mixer with a curved spout, a basket strainer waste, a stainless steel gas stove with two burners and plain black burner caps, and a stainless steel chimney-style kitchen hood, arranged as a compact, roughly square group in three staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. The group stands on a polished pale concrete floor in a bright modern interior, a large plain pale concrete wall behind it, a tall window out of frame to one side throwing soft daylight and a gentle diagonal patch of light across the wall, and a blurred green plant at the far edge, well out of focus. Soft reflection of the pieces in the polished floor, gentle contact shadows, shallow depth of field behind. Sharp focus on the products. Every surface plain, smooth and unmarked, with no writing, lettering, headline, tagline or logo anywhere in the picture. The whole group sits in the centre of the frame with generous empty margin to the left and to the right, so it can be cropped to a wide strip or to a square without cutting anything off.
 
@@ -265,67 +287,67 @@ person is your crew, and avoids the mangled faces these models produce.
 
 ### `trade-plumbing.jpg` — Plumbing & sanitary work
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A documentary photograph of plumbing work in progress inside an unfinished concrete apartment in Dhaka, Bangladesh. Close on a pair of working hands tightening a fitting on a run of cream C-PVC pipe clipped to a bare plaster wall; a pipe wrench and a coil of thread tape rest on the floor nearby. Daylight from an open window, warm and slightly dusty, natural shadows. The hands and the pipe junction sit in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Plain unmarked pipe and tools. Realistic, sharp, no faces in the picture.
 
 ### `trade-tiles-marble-granite.jpg` — Tiles, marble & granite work
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A documentary photograph of floor tiling in progress in an unfinished room in Dhaka, Bangladesh. Close on working hands lowering a large polished tile into fresh adhesive, a notched trowel and tile spacers beside them, a straight line of already-laid tiles running away to one side. Daylight from a window, warm natural tone, fine dust in the air. The hands and the tile sit in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Plain unmarked tiles and tools. Realistic, sharp, no faces in the picture.
 
 ### `trade-core-cutting.jpg` — Core cutting work
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A documentary photograph of concrete core drilling in an unfinished building in Dhaka, Bangladesh. A core drilling rig bolted to a bare concrete wall, its cylindrical diamond core bit part-way through, a clean circular hole already cut beside it with the concrete core lying on the floor, water running down the wall from the cut. Gloved hands on the rig handle. Daylight, grey concrete, wet surfaces catching the light. The drill head and the cut hole sit in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Plain unmarked equipment. Realistic, sharp, no faces in the picture.
 
 ### `trade-deep-tube-well.jpg` — Deep tube well work
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A documentary photograph of tube well boring on an open building site in Dhaka, Bangladesh. A vertical drilling mast over a bore hole, lengths of steel casing pipe stacked on the ground, muddy water pooled around the hole, a submersible pump and coiled discharge pipe waiting to one side. Working hands guiding a casing pipe into the bore. Bright overcast daylight, wet earth, plain steel. The bore hole and the casing sit in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Plain unmarked equipment. Realistic, sharp, no faces in the picture.
 
 ### `trade-swimming-pool.jpg` — Swimming pool work
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A documentary photograph of swimming pool plumbing under construction in Dhaka, Bangladesh. An empty concrete pool shell with white PVC circulation pipes running along the floor and up the wall to inlet fittings, a filter housing and valve manifold standing at the poolside, working hands fitting a union onto the manifold. Bright daylight, grey concrete, clean white pipe. The valve manifold sits in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Plain unmarked pipe and equipment. Realistic, sharp, no faces in the picture.
 
 ### `trade-damp-proofing.jpg` — Damp proofing work
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A documentary photograph of damp proofing work on a ground-floor wall in Dhaka, Bangladesh. Close on working hands brushing a thick dark bituminous damp-proof coating onto bare brickwork at floor level, the treated section visibly darker than the untreated brick beside it, a bucket of coating and a wide brush on the floor. Daylight from one side, raking across the wall to show texture. The brush and the edge between treated and untreated wall sit in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Plain unmarked tools and containers. Realistic, sharp, no faces in the picture.
 
 ### `trade-water-proofing.jpg` — Water proofing work
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A documentary photograph of roof waterproofing in progress in Dhaka, Bangladesh. Working hands rolling a grey cementitious waterproof membrane onto a flat concrete roof slab, the coated area a clearly different shade from the bare concrete, a roller tray and a parapet upstand already coated behind. Strong daylight, flat concrete, long shadows. The roller and the coating edge sit in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Plain unmarked tools and containers. Realistic, sharp, no faces in the picture.
 
 ### `trade-electric.jpg` — Electric work
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A documentary photograph of electrical work in an unfinished apartment in Dhaka, Bangladesh. Close on working hands terminating coloured wires into a wall-mounted consumer unit with a neat row of plain circuit breakers, conduit running up the bare plaster wall, a screwdriver and a wire stripper resting on the board. Daylight from a window, cool neutral tone. The consumer unit and the hands sit in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Plain unmarked breakers and tools, no writing on anything. Realistic, sharp, no faces in the picture.
 
 ### `trade-painting.jpg` — Painting work
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A documentary photograph of interior painting in progress in Dhaka, Bangladesh. Close on working hands rolling pale paint onto a prepared interior wall, a crisp wet edge between the fresh coat and the duller putty-filled surface beside it, a roller tray and a putty knife on a dust sheet below. Soft daylight from a window, clean and bright. The roller and the wet edge sit in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Plain unmarked tins and tools. Realistic, sharp, no faces in the picture.
 
 ### `trade-thai-glass.jpg` — Thai Glass work
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A documentary photograph of glass partition installation in Dhaka, Bangladesh. Two pairs of gloved hands guiding a large clear glass panel into a slim aluminium frame, suction cup handles gripping the glass, a finished glass partition visible behind. Bright daylight through the glass, clean reflections, pale aluminium. The panel edge and the frame channel sit in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Plain unmarked glass and framing. Realistic, sharp, no faces in the picture.
 
 ### `trade-civil.jpg` — Civil work
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Generate a landscape (1792×1024) image.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
 > A documentary photograph of brickwork and plastering in Dhaka, Bangladesh. Close on working hands laying a red clay brick into a fresh mortar bed on a rising wall, a trowel and a spirit level in frame, a half-plastered section of the same wall behind showing the smooth grey finish over the brick. Warm daylight, dusty air, red brick against grey mortar. The hands and the brick course sit in the middle of the frame with generous empty margin on all four sides, so it can be cropped to a wide strip or a square without cutting anything off. Plain unmarked tools. Realistic, sharp, no faces in the picture.
 
@@ -358,7 +380,7 @@ unaffected by all of them.
 
 **FRAME-SITE** — for anything going into `photos-inbox/`:
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Set the output to 2K resolution and a 3:2 landscape aspect ratio before generating — 1K is too small and the picture will be rejected. A catalogue photograph of SUBJECT. Where the subject is more than one piece, keep them as a compact group, overlapping slightly and turned towards the camera, never spread out in a line across the frame. The whole subject sits in the middle of the frame with generous empty margin to the left and to the right, so it can be cropped to a square without cutting anything off.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 1:1 square before generating — this picture is used as a square, and a landscape one comes out too short to use. A catalogue photograph of SUBJECT. Where the subject is more than one piece, keep them as a compact group, overlapping slightly and turned towards the camera, never spread out in a line across the frame. The whole subject sits in the middle of the frame with a comfortable margin on every side, so nothing touches the edge.
 
 **Why the arrangement sentence is in there.** An item image is cropped to a
 **square**, and a square cut out of a 1536-wide frame throws away **256px from
@@ -373,7 +395,7 @@ frame did not, until it was tested.
 
 **FRAME-POSTER** — for a Facebook or WhatsApp post, never for the website:
 
-> Use this prompt exactly as written; do not rewrite or embellish it. Set the output to 2K resolution and a 3:2 landscape aspect ratio before generating — 1K is too small and the picture will be rejected. A catalogue photograph of SUBJECT. The subject sits in the left 60% of the frame. The right third is empty background — no product, no props, nothing in it — leaving clear space for a headline to be added later.
+> Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 16:9 before generating. A catalogue photograph of SUBJECT. The subject sits in the left 60% of the frame. The right third is empty background — no product, no props, nothing in it — leaving clear space for a headline to be added later.
 
 They must be **separate generations**. Shifting the subject left to make room for
 text puts it straight under the 4:3 centre crop, so a poster plate cannot be
