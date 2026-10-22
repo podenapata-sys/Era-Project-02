@@ -62,19 +62,31 @@ SOURCE_EXT = (".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif")
 # Widths above this are written when the source can fill them and quietly left
 # out when it cannot. Only "item" has one.
 #
-# The number is 848 rather than the ladder's top of 960 because the two are
-# indistinguishable where it counts. The lightbox is min(92vw, 560px), so 560
-# CSS pixels is the widest it ever draws; 960 is 1.71x that and 848 is 1.51x,
-# and neither is the 2x a retina screen would ideally get. Rendered at that
-# size and compared side by side they cannot be told apart. What 848 is NOT is
-# a licence to go lower: 480 would be under 1x on the same display and visibly
-# soft, so a source that cannot reach 848 is refused like any other.
+# The number comes from the lightbox, which is min(92vw, 560px): 560 CSS
+# pixels is the widest an item is ever drawn. An asset must be at least 1.3x
+# that — 728 — because below it the picture is under-sampled on any modern
+# screen and the softness stops being a matter of taste. 768 is the smallest
+# shape the generator produces that clears the bar, at 1.37x, so that is where
+# this sits and where it stays. For reference the ladder above it is 848 at
+# 1.51x and 960 at 1.71x; rendered side by side at the real display size none
+# of the three can be told apart, which is why the floor came down from 960 to
+# 848 and then to here rather than costing the client three re-runs.
+#
+# It does not go lower. 480 would be under 1x on that display and visibly
+# soft, and in any case the question is closed: every prompt now asks for 1:1,
+# which gives 1024 at the same setting, so a smaller file is never the only
+# option again.
+#
+# Size is also not the only way an item fails. A landscape frame cropped
+# square throws away 45% of its width, and two images in this very batch lost
+# their subject to that — no floor rescues those, and they are caught by
+# looking at the crops, which is a step no guard can do.
 #
 # Nothing else gets this. A category or trade photograph IS the page it sits
 # on, so one too small to fill its crop is not worth publishing small; it is
 # refused, which is what caught a batch of product shots saved off another
 # company's website.
-OPTIONAL_ABOVE = {"item": 848}
+OPTIONAL_ABOVE = {"item": 768}
 
 # Each shape the site renders a photo at: the aspect ratio, and the widths
 # written for it. The widths are what the browser picks between — roughly the
@@ -90,7 +102,7 @@ RENDITIONS = {
     "face":  ((1, 1),   (240, 480)),
     # One catalogue item, in the grid on the products page. The 960 is not for
     # the grid — it is what the lightbox opens when the card is tapped.
-    "item":  ((1, 1),   (240, 480, 848, 960)),
+    "item":  ((1, 1),   (240, 480, 768, 848, 960)),
 }
 
 # Which shapes each kind of photo has to be cut to. These mirror the call sites

@@ -262,10 +262,14 @@ const RENDITIONS = {
      of thumbnails reads best square, and because an item photographed on its
      own has nothing in the frame worth a wider crop. The 960 is not for the
      grid — it is what the lightbox opens, and 848 is there because a source
-     generated at the smaller of Gemini's two sizes crops to exactly that. Both
-     are written when the source allows; fullPhoto() opens whichever is biggest,
-     and at the size the lightbox actually draws they are indistinguishable. */
-  item:  { w: 1,  h: 1,  widths: [240, 480, 848, 960],
+     generated at the smaller of Gemini's two sizes crops to exactly that, and
+     768 because a 16:9 frame at that same size crops to exactly THAT. Each is
+     written when the source can fill it without being enlarged; fullPhoto()
+     opens whichever is biggest, and at the size the lightbox actually draws
+     the three cannot be told apart. A rung has to exist for every shape that
+     is allowed in, or a source that clears the floor still lands on the rung
+     below and opens far smaller than it should. */
+  item:  { w: 1,  h: 1,  widths: [240, 480, 768, 848, 960],
            sizes: '(max-width: 560px) 44vw, (max-width: 900px) 30vw, 150px' },
 };
 
