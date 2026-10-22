@@ -261,8 +261,11 @@ const RENDITIONS = {
   /* One product item, in the grid on the products page. Square, because a grid
      of thumbnails reads best square, and because an item photographed on its
      own has nothing in the frame worth a wider crop. The 960 is not for the
-     grid — it is what the lightbox opens. */
-  item:  { w: 1,  h: 1,  widths: [240, 480, 960],
+     grid — it is what the lightbox opens, and 848 is there because a source
+     generated at the smaller of Gemini's two sizes crops to exactly that. Both
+     are written when the source allows; fullPhoto() opens whichever is biggest,
+     and at the size the lightbox actually draws they are indistinguishable. */
+  item:  { w: 1,  h: 1,  widths: [240, 480, 848, 960],
            sizes: '(max-width: 560px) 44vw, (max-width: 900px) 30vw, 150px' },
 };
 

@@ -59,6 +59,23 @@ OUT = ROOT / "src" / "assets" / "img" / "photos"
 
 SOURCE_EXT = (".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif")
 
+# Widths above this are written when the source can fill them and quietly left
+# out when it cannot. Only "item" has one.
+#
+# The number is 848 rather than the ladder's top of 960 because the two are
+# indistinguishable where it counts. The lightbox is min(92vw, 560px), so 560
+# CSS pixels is the widest it ever draws; 960 is 1.71x that and 848 is 1.51x,
+# and neither is the 2x a retina screen would ideally get. Rendered at that
+# size and compared side by side they cannot be told apart. What 848 is NOT is
+# a licence to go lower: 480 would be under 1x on the same display and visibly
+# soft, so a source that cannot reach 848 is refused like any other.
+#
+# Nothing else gets this. A category or trade photograph IS the page it sits
+# on, so one too small to fill its crop is not worth publishing small; it is
+# refused, which is what caught a batch of product shots saved off another
+# company's website.
+OPTIONAL_ABOVE = {"item": 848}
+
 # Each shape the site renders a photo at: the aspect ratio, and the widths
 # written for it. The widths are what the browser picks between — roughly the
 # displayed size, and double it for a high-density screen, which every phone
@@ -73,7 +90,7 @@ RENDITIONS = {
     "face":  ((1, 1),   (240, 480)),
     # One catalogue item, in the grid on the products page. The 960 is not for
     # the grid — it is what the lightbox opens when the card is tapped.
-    "item":  ((1, 1),   (240, 480, 960)),
+    "item":  ((1, 1),   (240, 480, 848, 960)),
 }
 
 # Which shapes each kind of photo has to be cut to. These mirror the call sites
@@ -299,7 +316,7 @@ def too_small(src, rendition_names):
     short = []
     for name in rendition_names:
         ratio, widths = RENDITIONS[name]
-        want_w = max(widths)
+        want_w = OPTIONAL_ABOVE.get(name, max(widths))
         want_h = round(want_w * ratio[1] / ratio[0])
         have_w, have_h = crop_size(src, ratio)
         if have_w < want_w or have_h < want_h:
@@ -365,8 +382,15 @@ def process():
 
             for name in rendition_names:
                 (rw, rh), widths = RENDITIONS[name]
-                for i, width in enumerate(widths):
+                have_w, have_h = crop_size(upright.size, (rw, rh))
+                first = True
+                for width in widths:
                     height = round(width * rh / rw)
+                    # Never enlarge. too_small() has already refused anything
+                    # that cannot fill this rendition's required width, so what
+                    # is dropped here is only ever an optional top width.
+                    if have_w < width or have_h < height:
+                        continue
                     cut = ImageOps.fit(upright, (width, height),
                                        method=Image.LANCZOS, centering=centering)
                     stem = OUT / f"{key}-{name}-{width}"
@@ -374,11 +398,12 @@ def process():
                     cut.save(stem.with_suffix(".webp"), "WEBP",
                              quality=WEBP_QUALITY, method=6)
                     written += 1
-                    if i == 0:
+                    if first:
                         cut.save(stem.with_suffix(".jpg"), "JPEG",
                                  quality=JPEG_QUALITY, optimize=True,
                                  progressive=True)
                         written += 1
+                        first = False
 
         done.append(key)
         print(f"  {source.name} -> {', '.join(rendition_names)}")
