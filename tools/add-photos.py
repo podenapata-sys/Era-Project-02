@@ -423,8 +423,21 @@ def process():
             for rendition, want_w, want_h, have_w, have_h in short:
                 print(f"    {rendition} needs {want_w}x{want_h}, "
                       f"this gives {have_w}x{have_h}")
-        print("Supply a bigger original. Ask the generator for landscape, and")
-        print("do not enlarge it yourself first — that blurs it just the same.")
+        # The advice depends on the shape that fell short, and the two are
+        # opposites. An item is cropped square, so a landscape frame is what
+        # wasted the height; the generator should be asked for 1:1. A category
+        # or trade image is cropped wide and has to stay landscape, so there is
+        # nothing to change but the size.
+        if any(r == "item" for _, _, short in skipped for r, *_ in short):
+            print("For an item, ask the generator for a 1:1 square. A landscape")
+            print("frame spends its pixels on width, and the square crop throws")
+            print("that width away: 16:9 gives 1376x768 where 1:1 gives")
+            print("1024x1024 at the very same setting.")
+        if any(r != "item" for _, _, short in skipped for r, *_ in short):
+            print("For a category or trade image, keep it landscape — it is cut")
+            print("to 4:3, 5:4, 16:9 and 16:10 — and ask for a larger size. No")
+            print("landscape shape is big enough at the smaller of the two.")
+        print("Do not enlarge it yourself first — that blurs it just the same.")
 
     if strays:
         print()
