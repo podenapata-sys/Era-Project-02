@@ -321,9 +321,10 @@
 
 
 /* ---------- Hero rotator ----------
-   The seven category pictures in the home page hero. The track is one flex row
-   and moving between slides is a single transform, so there is no per-slide
-   animation to keep in step.
+   The seven category pictures in the home page hero. They are stacked in one
+   fixed box and only the class moves: CSS cross-fades whichever slide carries
+   is-on. Nothing slides, so the picture stays exactly where the single hero
+   photograph used to sit.
 
    What this has to get right is not the motion, it is the interruptions. Any
    content that moves on its own has to be stoppable (WCAG 2.2.2), it must not
@@ -335,11 +336,10 @@
   var rot = document.querySelector('[data-rot]');
   if (!rot) return;
 
-  var track = rot.querySelector('.rot__track');
   var slides = Array.prototype.slice.call(rot.querySelectorAll('.rot__slide'));
   var dots = Array.prototype.slice.call(rot.querySelectorAll('[data-go]'));
   var toggle = rot.querySelector('[data-rot-toggle]');
-  if (!track || slides.length < 2) return;
+  if (slides.length < 2) return;
 
   var DWELL = 5500;
   var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -349,9 +349,9 @@
 
   function show(i) {
     at = (i + slides.length) % slides.length;
-    track.style.transform = 'translateX(' + (-at * 100) + '%)';
     slides.forEach(function (s, n) {
       var link = s.querySelector('a');
+      s.classList.toggle('is-on', n === at);
       if (n === at) { s.removeAttribute('inert'); if (link) link.removeAttribute('tabindex'); }
       else { s.setAttribute('inert', ''); if (link) link.setAttribute('tabindex', '-1'); }
     });

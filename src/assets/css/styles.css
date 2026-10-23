@@ -279,75 +279,92 @@ table { border-collapse: collapse; width: 100%; }
 .slot--why, .slot--about { min-height: 300px; }
 
 /* ---------- Hero rotator ----------
-   Seven category pictures in the slot where one used to sit. The track is a
-   flex row seven slides wide and the viewport clips it, so moving between them
-   is one transform rather than seven elements fading over each other.
+   Seven category pictures taking turns in the one slot the hero photograph
+   used to occupy. Nothing travels: the slides are stacked on top of each other
+   inside a box fixed at the same 4:3 the single picture had, and changing
+   slide is a cross-fade in place. The box therefore sits exactly where the
+   photograph sat, and the rest of the hero does not move when it changes.
 
-   The slides that are not showing carry `inert`, which takes them out of the
-   tab order and out of the accessibility tree; their links also carry
-   tabindex="-1" so a browser without inert does not let the keyboard walk into
-   a picture nobody can see. */
-.rot { position: relative; }
-/* The clipping has to be on a wrapper, not on the track. Put overflow: hidden
-   on the element that is also being transformed and the clipping box travels
-   with it — translateX(-400%) then carries the whole visible window four panel
-   widths off to the left and the hero reads as empty. */
-.rot__view { overflow: hidden; border-radius: var(--r); }
-.rot__track {
-  display: flex; margin: 0; padding: 0; list-style: none;
-  transition: transform .55s cubic-bezier(.4, 0, .2, 1);
+   Hidden slides get visibility: hidden as well as opacity: 0, delayed until
+   the fade is over. Opacity alone leaves them hit-testable and still in the
+   accessibility tree, so a pointer or a screen reader would find seven
+   overlapping pictures where a visitor sees one. */
+.rot { position: relative; aspect-ratio: 4 / 3; border-radius: var(--r); }
+.rot__stack { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; }
+.rot__slide {
+  position: absolute; inset: 0;
+  opacity: 0; visibility: hidden;
+  transition: opacity .6s ease, visibility 0s .6s;
 }
-.rot__slide { flex: 0 0 100%; min-width: 0; }
-.rot__link { display: block; position: relative; text-decoration: none; }
-.rot__link .photo, .rot__link .slot { border-radius: var(--r); }
+.rot__slide.is-on { opacity: 1; visibility: visible; transition: opacity .6s ease; }
 
-/* The name sits on the picture rather than under it, so the panel keeps the
-   same height whichever category is showing and the page does not reflow
-   every five seconds. The gradient is there to keep it readable over a photo
-   whose bottom edge is a different brightness in all seven. */
+.rot__link { display: block; position: relative; height: 100%; text-decoration: none; }
+.rot__link .photo, .rot__link .slot { height: 100%; border-radius: var(--r); }
+
+/* The name sits on the picture, not under it, so the panel is the same height
+   whichever category is showing. The gradient keeps it readable over seven
+   photographs whose bottom edges are seven different brightnesses. */
 .rot__name {
   position: absolute; left: 0; right: 0; bottom: 0;
   display: flex; align-items: center; gap: 8px;
-  padding: 44px 18px 16px;
+  /* The bottom padding is clearance for the control row, which sits on the
+     same gradient underneath. Share a line with it and a long name — "Plumbing
+     accessories & hardware" — collides with the pause button, because seven
+     44px dots plus the button leave about 170px of a 546px panel. */
+  padding: 60px 18px 54px;
   border-radius: 0 0 var(--r) var(--r);
-  background: linear-gradient(to top, rgb(0 0 0 / 72%), rgb(0 0 0 / 0%));
+  background: linear-gradient(to top, rgb(0 0 0 / 78%), rgb(0 0 0 / 0%));
   color: #fff; font-family: var(--font-display); font-weight: 600;
   font-size: clamp(15px, 1.5vw, 18px); line-height: 1.3;
 }
 .rot__name svg { flex: none; transition: transform .2s ease; }
 .rot__link:hover .rot__name svg, .rot__link:focus-visible .rot__name svg { transform: translateX(4px); }
 
-/* Hidden until the script says it is live. A pause button that pauses nothing
-   is worse than no pause button, and without JavaScript nothing rotates, so
-   there is nothing to control. */
-.rot__bar { display: none; align-items: center; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+/* The controls ride on the picture too. Put them underneath and they add their
+   own height, which pushes the picture off the spot the single photograph
+   held — the one thing this change was not allowed to do. Hidden until the
+   script marks the rotator live: a pause button that pauses nothing is worse
+   than no pause button, and without JavaScript nothing rotates. */
+.rot__bar {
+  position: absolute; right: 8px; bottom: 4px; z-index: 1;
+  display: none; align-items: center;
+}
 .rot.is-live .rot__bar { display: flex; }
-.rot__dots { display: flex; flex-wrap: wrap; }
+.rot__dots { display: flex; }
 
-/* Both controls are 44px boxes because that is the smallest comfortable tap
-   target and tools/check-mobile.py fails the build below it. The visible dot
-   is drawn by ::before, so it can be small without the thing you have to hit
-   being small. */
+/* 44px boxes because that is the smallest comfortable tap target and
+   tools/check-mobile.py fails the build below it; flex: none because a target
+   flex has shaved to 43px is not a 44px target. The visible dot is drawn by
+   ::before, so it stays small while the thing you have to hit does not. */
 .rot__dot, .rot__pause {
-  /* flex: none, because a 44px target that flex has shaved to 43px is not a
-     44px target — tools/check-mobile.py measures the rendered box and says so.
-     At 390px the seven dots plus the button want 352px and the panel is a
-     little under that, so they wrap to a second row rather than shrink. */
   flex: none; width: 44px; height: 44px; padding: 0;
   display: inline-flex; align-items: center; justify-content: center;
-  border: 0; background: none; cursor: pointer; color: var(--muted);
+  border: 0; background: none; cursor: pointer; color: rgb(255 255 255 / 70%);
 }
 .rot__dot::before {
-  content: ""; width: 9px; height: 9px; border-radius: 50%;
-  background: var(--line-2); transition: background .2s ease, transform .2s ease;
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: rgb(255 255 255 / 45%);
+  box-shadow: 0 0 2px rgb(0 0 0 / 45%);
+  transition: background .2s ease, transform .2s ease;
 }
-.rot__dot:hover::before { background: var(--muted); }
-.rot__dot[aria-current]::before { background: var(--amber); transform: scale(1.25); }
-.rot__pause svg { width: 15px; height: 15px; fill: currentColor; }
-.rot__pause:hover { color: var(--text); }
+.rot__dot:hover::before { background: #fff; }
+.rot__dot[aria-current]::before { background: var(--amber); transform: scale(1.3); }
+.rot__pause svg { width: 14px; height: 14px; fill: currentColor; filter: drop-shadow(0 0 2px rgb(0 0 0 / 45%)); }
+.rot__pause:hover { color: #fff; }
 .rot__ico--play { display: none; }
 .rot.is-paused .rot__ico--pause { display: none; }
 .rot.is-paused .rot__ico--play { display: inline; }
+
+/* On a phone the seven dots plus the button want 352px and the picture is
+   about 350px wide, so the dots go and the pause button — the part that has to
+   be there — stays. It moves to the top as well: at 350x263 the bottom right
+   corner is both where the name is and where the fixed call bar sits over the
+   page, so a control left down there is cramped and sometimes covered. */
+@media (max-width: 620px) {
+  .rot__dots { display: none; }
+  .rot__bar { top: 4px; bottom: auto; }
+  .rot__name { padding-bottom: 18px; }
+}
 
 /* ---------- Google reviews ----------
    Real reviews, typed into content/reviews.json by hand. The section is left

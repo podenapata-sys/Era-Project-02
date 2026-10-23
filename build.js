@@ -625,7 +625,7 @@ ${reviewBlock(t, base, 'footer')}
    for seven pictures when one is visible. */
 function heroRotator(t, lang, base) {
   const slides = t.categories.map((c, i) => `
-          <li class="rot__slide"${i ? ' inert' : ''}>
+          <li class="rot__slide${i ? '' : ' is-on'}"${i ? ' inert' : ''}>
             <a class="rot__link" href="products.html#${attr(c.slug)}"${i ? ' tabindex="-1"' : ''}>
               ${photo('cat-' + c.slug, 'sq43', lang, base, c.title, 'slot--hero', false, i === 0,
                       RENDITIONS.hero.sizes)}
@@ -642,10 +642,8 @@ function heroRotator(t, lang, base) {
 
   return `
       <div class="rot" data-rot>
-        <div class="rot__view">
-          <ul class="rot__track">${slides}
-          </ul>
-        </div>
+        <ul class="rot__stack">${slides}
+        </ul>
         <div class="rot__bar">
           <button class="rot__pause" type="button" data-rot-toggle
            aria-label="${attr(t.pause)}"
