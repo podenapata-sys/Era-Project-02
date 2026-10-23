@@ -85,6 +85,12 @@ const mapsUrl = biz.maps
   : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(`${biz.name}, ${addressLine}`);
 const directionsUrl = (biz.maps && biz.maps.directionsUrl) || mapsUrl;
 const waLink = (text, phone) => `https://wa.me/${(phone || primary).whatsapp}?text=${encodeURIComponent(text)}`;
+/* A WhatsApp message that names the trade the visitor is actually looking at.
+   Every button on the site used to send the same orderMsg, so someone on the
+   core cutting page opened WhatsApp with "I want to order plumbing items."
+   Site-wide buttons — header, call bar, hero, the closing bands, the form —
+   keep orderMsg, because they are not about one trade. */
+const tradeWaLink = (t, title) => waLink(t.tradeWa.replace('{work}', title));
 
 /* ------------------------------------------------------------------ icons */
 const icon = (d, opts = {}) =>
@@ -799,11 +805,22 @@ function productsPage(t, lang, base) {
       </div>
     </article>`).join('');
 
+  /* This page is 22.7 phone screens long and every category already carries an
+     id, so the only thing missing was a way in. Not sticky: a second strip
+     under a header that is already sticky costs permanent height on a phone
+     that also has a fixed call bar, and the case that matters is arriving here
+     from the hero rotator or a home page card, which a row at the top serves. */
+  const jump = t.categories.map(c =>
+    `<li><a href="#${attr(c.slug)}">${esc(c.title)}</a></li>`).join('');
+
   return `
 <section class="section page-head">
   <div class="shell">
     <h1>${esc(t.supplyTitle)}</h1>
     <p class="lede">${esc(t.productsIntro)}</p>
+    <nav aria-label="${attr(t.jumpLabel)}">
+      <ul class="jump">${jump}</ul>
+    </nav>
   </div>
 </section>
 
@@ -865,6 +882,7 @@ function servicesPage(t, lang, base) {
           <span class="link-more">${esc(t.seeAll)} ${ICONS.arrow}</span>
           <p class="svc__cta">
             <a class="btn btn--accent" href="${FILE.contact}?for=${attr(sv.slug)}">${esc(t.ctaQuote)}</a>
+            <a class="btn btn--ghost" href="${attr(tradeWaLink(t, sv.title))}" target="_blank" rel="noopener">${ICONS.whatsapp}${esc(t.whatsapp)}</a>
           </p>
         </div>
       </article>`).join('');
@@ -931,7 +949,7 @@ function tradePage(t, lang, base, slug) {
     <p class="lede">${esc(sv.blurb)}</p>
     <div class="hero__actions">
       <a class="btn btn--accent" href="../../contact.html?for=${attr(slug)}">${esc(t.tradeQuoteCta)} ${ICONS.arrow}</a>
-      <a class="btn btn--ghost" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">${ICONS.whatsapp}${esc(t.whatsapp)}</a>
+      <a class="btn btn--ghost" href="${attr(tradeWaLink(t, sv.title))}" target="_blank" rel="noopener">${ICONS.whatsapp}${esc(t.whatsapp)}</a>
     </div>
   </div>
 </section>
@@ -1045,7 +1063,22 @@ function aboutPage(t, lang, base) {
 ${biz.reviewUrl ? `
 <section class="section review-band">
   <div class="shell">${reviewBlock(t, base, 'page')}</div>
-</section>` : ''}`;
+</section>` : ''}
+
+<!-- Four screens of who we are and, until now, nothing to do at the end of it.
+     Same closing band the other pages carry. -->
+<section class="band">
+  <div class="shell band__inner">
+    <div>
+      <h2>${esc(t.bandTitle)}</h2>
+      <p>${esc(t.bandBody)}</p>
+    </div>
+    <div class="band__actions">
+      <a class="btn btn--accent" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">${ICONS.whatsapp}${esc(t.bandWa)}</a>
+      <a class="btn btn--ghost" href="contact.html">${esc(t.ctaQuote)} ${ICONS.arrow}</a>
+    </div>
+  </div>
+</section>`;
 }
 
 function contactPage(t, lang) {

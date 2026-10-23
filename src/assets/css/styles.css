@@ -120,7 +120,13 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+/* scroll-padding-top is what keeps an in-page jump from parking its heading
+   under the header, which is sticky at 85px. Without it #ceramic lands with the
+   section at 0 and its heading at 34 — fifty pixels of the heading hidden. One
+   declaration covers every anchor on the site: the category jump nav, the hero
+   rotator's links into products.html, the home page's category cards, the
+   services anchors and the skip link. */
+html { scroll-behavior: smooth; scroll-padding-top: 100px; -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   background: var(--bg);
@@ -538,6 +544,20 @@ table { border-collapse: collapse; width: 100%; }
   padding: 7px 14px; border: 1px solid var(--line-2); border-radius: 999px;
   background: var(--surface); color: var(--muted); font-size: 14px;
 }
+
+/* The jump nav on the products page, which is 22.7 phone screens long. Same
+   chip shape as .chips, but these are links, so they need a 44px target rather
+   than the 31px a text chip gets away with — tools/check-mobile.py measures the
+   rendered box and fails the build below it. */
+.jump { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+.jump a {
+  display: inline-flex; align-items: center; min-height: 44px;
+  padding: 0 16px; border: 1px solid var(--line-2); border-radius: 999px;
+  background: var(--surface); color: var(--muted);
+  font-family: var(--font-display); font-weight: 600; font-size: 14px;
+  transition: color .15s ease, border-color .15s ease;
+}
+.jump a:hover { color: var(--text); border-color: var(--line-ui); }
 
 /* ---------- Product items ----------
    One card per catalogue item, with the plain chip list kept underneath as the

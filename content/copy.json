@@ -18,6 +18,8 @@
     "ctaOrder": "Order on WhatsApp",
     "ctaQuote": "Request a quote",
     "orderMsg": "Hello ERA Sanitary, I want to order plumbing items.",
+    "jumpLabel": "Jump to a category",
+    "tradeWa": "Hello ERA Sanitary, I want to ask about {work}.",
     "heroFacts": [
       {
         "value": "2003",
@@ -453,6 +455,8 @@
     "ctaOrder": "হোয়াটসঅ্যাপে অর্ডার করুন",
     "ctaQuote": "দাম জানতে চাই",
     "orderMsg": "আসসালামু আলাইকুম, ইরা স্যানিটারি — আমি প্লাম্বিং সামগ্রী অর্ডার করতে চাই।",
+    "jumpLabel": "ক্যাটাগরিতে যান",
+    "tradeWa": "আসসালামু আলাইকুম, ইরা স্যানিটারি — আমি {work} সম্পর্কে জানতে চাই।",
     "heroFacts": [
       {
         "value": "২০০৩",
