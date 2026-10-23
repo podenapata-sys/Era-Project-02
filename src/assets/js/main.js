@@ -318,3 +318,91 @@
     cap.textContent = '';
   });
 })();
+
+
+/* ---------- Hero rotator ----------
+   The seven category pictures in the home page hero. The track is one flex row
+   and moving between slides is a single transform, so there is no per-slide
+   animation to keep in step.
+
+   What this has to get right is not the motion, it is the interruptions. Any
+   content that moves on its own has to be stoppable (WCAG 2.2.2), it must not
+   move at all for someone who has asked their system for less motion, it must
+   not keep ticking in a tab nobody is looking at, and it must not slide out
+   from under a finger or a cursor that is already on it. Each of those is a
+   few lines; together they are most of this file. */
+(function () {
+  var rot = document.querySelector('[data-rot]');
+  if (!rot) return;
+
+  var track = rot.querySelector('.rot__track');
+  var slides = Array.prototype.slice.call(rot.querySelectorAll('.rot__slide'));
+  var dots = Array.prototype.slice.call(rot.querySelectorAll('[data-go]'));
+  var toggle = rot.querySelector('[data-rot-toggle]');
+  if (!track || slides.length < 2) return;
+
+  var DWELL = 5500;
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+  var at = 0;
+  var timer = null;
+  var stopped = calm && calm.matches;   /* asked for less motion: start still */
+
+  function show(i) {
+    at = (i + slides.length) % slides.length;
+    track.style.transform = 'translateX(' + (-at * 100) + '%)';
+    slides.forEach(function (s, n) {
+      var link = s.querySelector('a');
+      if (n === at) { s.removeAttribute('inert'); if (link) link.removeAttribute('tabindex'); }
+      else { s.setAttribute('inert', ''); if (link) link.setAttribute('tabindex', '-1'); }
+    });
+    dots.forEach(function (d, n) {
+      if (n === at) d.setAttribute('aria-current', 'true');
+      else d.removeAttribute('aria-current');
+    });
+  }
+
+  function tick() { show(at + 1); }
+  function run() { if (!stopped && timer === null) timer = setInterval(tick, DWELL); }
+  function halt() { if (timer !== null) { clearInterval(timer); timer = null; } }
+
+  /* The button is the real control and it latches: once someone has pressed
+     pause, hovering away must not quietly start it moving again. */
+  function setStopped(v) {
+    stopped = v;
+    rot.classList.toggle('is-paused', v);
+    if (toggle) toggle.setAttribute('aria-label',
+      toggle.getAttribute(v ? 'data-label-play' : 'data-label-pause') || '');
+    if (v) halt(); else run();
+  }
+
+  if (toggle) toggle.addEventListener('click', function () { setStopped(!stopped); });
+
+  dots.forEach(function (d) {
+    d.addEventListener('click', function () {
+      show(+d.getAttribute('data-go'));
+      if (!stopped) { halt(); run(); }   /* restart the dwell, do not jump */
+    });
+  });
+
+  /* Hover and focus only suspend it; they do not change what the button says,
+     because the visitor has not chosen anything. */
+  ['mouseenter', 'focusin', 'touchstart'].forEach(function (e) {
+    rot.addEventListener(e, halt, e === 'touchstart' ? { passive: true } : false);
+  });
+  ['mouseleave', 'focusout'].forEach(function (e) {
+    rot.addEventListener(e, function () { if (!stopped) run(); });
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) halt(); else if (!stopped) run();
+  });
+
+  /* If the preference changes while the page is open, follow it. */
+  if (calm && calm.addEventListener) {
+    calm.addEventListener('change', function (e) { setStopped(e.matches); });
+  }
+
+  rot.classList.add('is-live');
+  show(0);
+  setStopped(stopped);
+})();

@@ -273,19 +273,15 @@ const RENDITIONS = {
            sizes: '(max-width: 560px) 44vw, (max-width: 900px) 30vw, 150px' },
 };
 
-/* The home page hero wants the stock photograph — a wall of pipe and fittings,
-   the one that answers "will they have my size". Until that photograph exists,
-   the page opened on a dashed placeholder filling half the first screen on a
-   desktop, which is the worst possible first impression.
-   
-   So a category image stands in. It is honest about what it is: products the
-   shop sells, captioned as products, claiming nothing about the premises —
-   unlike shopfront, counter and stock, whose alt text in photos.json names the
-   address and so cannot be stood in for by anything generated.
-   
-   tools/add-photos.py names the same key and gives it the extra 4:3 shape. When
-   the real photograph arrives, put 'stock' back here and drop HOME_HERO there. */
-const HOME_HERO = 'cat-bathroom-fittings';
+/* The home page hero used to want the stock photograph — a wall of pipe and
+   fittings, the one that answers "will they have my size" — and stood in with a
+   single category image until it arrived. heroRotator() replaced that: all
+   seven categories now take turns in the slot, which says more about the range
+   than any one picture did and needs no stand-in.
+
+   What has not changed is why the stock photograph still cannot be generated.
+   shopfront, counter and stock have alt text in photos.json that names the
+   address, and nothing drawn by a model makes those sentences true. */
 
 const PHOTO_DIR = path.join(ROOT, 'src', 'assets', 'img', 'photos');
 const photos = fs.existsSync(path.join(ROOT, 'content', 'photos.json'))
@@ -411,7 +407,7 @@ function fullPhoto(key, rend, base) {
    without this every placeholder printed its name twice on screen and every
    photograph announced it twice to a screen reader — alt, then the caption
    saying the same words again. */
-function photo(key, rend, lang, base, label, cls, decorative) {
+function photo(key, rend, lang, base, label, cls, decorative, eager, sizes) {
   const spec = RENDITIONS[rend];
   const stem = `${key}-${rend}-`;
   const have = spec.widths.filter(w =>
@@ -432,14 +428,24 @@ function photo(key, rend, lang, base, label, cls, decorative) {
      the one worth fetching early; everything else waits until it is near the
      viewport. width and height are on the img so the box is reserved before the
      bytes arrive and the page does not jump as each one lands. */
-  const eager = cls === 'slot--hero';
+  /* The caller can override: the hero rotator holds seven pictures in the
+     same slot and only the first one is the thing the browser should race
+     for. Fetching all seven eagerly would cost six images nobody has asked to
+     see yet. */
+  if (eager === undefined) eager = cls === 'slot--hero';
+  /* sizes describes the slot, not the file, so the same rendition shown in two
+     different slots needs two different answers. The hero rotator reuses the
+     sq43 files at 46vw where the product grid shows them at 33vw; left to the
+     rendition's own string the browser would pick for the smaller box and the
+     hero would arrive soft. */
+  if (sizes === undefined) sizes = spec.sizes;
   const loading = eager
     ? 'loading="eager" fetchpriority="high"'
     : 'loading="lazy"';
 
   const alt = decorative ? '' : photoAlt(key, lang, label);
   return `<picture class="photo${cls ? ' photo--' + cls.replace('slot--', '') : ''}">
-        <source type="image/webp" srcset="${attr(webp)}" sizes="${attr(spec.sizes)}">
+        <source type="image/webp" srcset="${attr(webp)}" sizes="${attr(sizes)}">
         <img src="${attr(url(width, 'jpg'))}" alt="${attr(alt)}"
          width="${width}" height="${height}" ${loading} decoding="async"></picture>`;
 }
@@ -597,6 +603,63 @@ ${reviewBlock(t, base, 'footer')}
 }
 
 /* ------------------------------------------------------------------ pages */
+/* The hero picture cycles through the seven product categories.
+
+   It is a showcase, not a navigation carousel, and the difference decides the
+   markup. The heading, the lede and both buttons do not move, because they are
+   the conversion path and nothing a visitor is trying to read or press should
+   slide out from under them. What changes is the picture and the name beneath
+   it, and each slide is a link to that category's own section further down the
+   products page — so the motion earns its place by being a way in rather than
+   decoration.
+
+   Every slide uses sq43, not hero. They are the same 4:3 shape; hero simply
+   runs to 1440 where sq43 stops at 1120. Only cat-bathroom-fittings ever had
+   hero files cut, and the category sources were lost when a container
+   restarted, so 1120 is what all seven can actually offer. The panel is 46vw,
+   about 662 CSS pixels on a wide screen, which makes 1120 a 1.69x asset — the
+   same bargain the lightbox already makes at 960.
+
+   Only the first slide is eager. The other six are lazy and clipped by
+   overflow, so the browser fetches them as they are needed rather than racing
+   for seven pictures when one is visible. */
+function heroRotator(t, lang, base) {
+  const slides = t.categories.map((c, i) => `
+          <li class="rot__slide"${i ? ' inert' : ''}>
+            <a class="rot__link" href="products.html#${attr(c.slug)}"${i ? ' tabindex="-1"' : ''}>
+              ${photo('cat-' + c.slug, 'sq43', lang, base, c.title, 'slot--hero', false, i === 0,
+                      RENDITIONS.hero.sizes)}
+              <span class="rot__name">${esc(c.title)} ${ICONS.arrow}</span>
+            </a>
+          </li>`).join('');
+
+  /* aria-current marks the dot, aria-label names the category it goes to, so a
+     screen reader hears "C-PVC pipes & fittings, current" rather than "button
+     one of seven". */
+  const dots = t.categories.map((c, i) => `
+            <button class="rot__dot" type="button" data-go="${i}"
+             aria-label="${attr(c.title)}"${i ? '' : ' aria-current="true"'}></button>`).join('');
+
+  return `
+      <div class="rot" data-rot>
+        <div class="rot__view">
+          <ul class="rot__track">${slides}
+          </ul>
+        </div>
+        <div class="rot__bar">
+          <button class="rot__pause" type="button" data-rot-toggle
+           aria-label="${attr(t.pause)}"
+           data-label-pause="${attr(t.pause)}" data-label-play="${attr(t.play)}">
+            <svg class="rot__ico rot__ico--pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="4" y="3" width="3" height="10" rx="1"/><rect x="9" y="3" width="3" height="10" rx="1"/></svg>
+            <svg class="rot__ico rot__ico--play" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3.5l7 4.5-7 4.5z"/></svg>
+          </button>
+          <div class="rot__dots">${dots}
+          </div>
+        </div>
+      </div>`;
+}
+
+
 function homePage(t, lang, base) {
   const facts = t.heroFacts.map(f =>
     `<li><strong>${esc(f.value)}</strong><span>${esc(f.label)}</span></li>`).join('');
@@ -638,8 +701,7 @@ function homePage(t, lang, base) {
       </div>
       <ul class="facts">${facts}</ul>
     </div>
-    <div class="hero__media">
-      ${photo(HOME_HERO, 'hero', lang, base, t.nav.products + ' — ' + t.supplyTitle, 'slot--hero')}
+    <div class="hero__media">${heroRotator(t, lang, base)}
     </div>
   </div>
 </section>
@@ -1854,10 +1916,17 @@ ${['en', 'bn'].map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="$
   if (!biz.email) console.log('NOTE: business.email is null — no email is shown anywhere on the site.');
   if (!fb().projectId) console.log('NOTE: business.firebase.projectId is empty — the quote form opens WhatsApp only, nothing is recorded. Create a Firebase project (free, no card) and paste its ID; see README.');
   else if (!(fb().webConfig || {}).apiKey) console.log('NOTE: business.firebase.webConfig is empty — /admin/ shows setup instructions instead of the leads. Firebase Console -> Project settings -> Your apps -> Web app.');
-  if (!fs.existsSync(path.join(PHOTO_DIR, `${HOME_HERO}-hero-720.webp`))) {
-    console.log(`NOTE: the home page hero stands in with ${HOME_HERO}, but its ` +
-      `4:3 files are missing, so the hero is a placeholder. Run ` +
-      `\`python3 tools/add-photos.py\` to cut them.`);
+  /* Every category that has no 4:3 file shows a dashed placeholder as one of
+     the seven hero slides, which is a hole in the first screen rather than a
+     missing thumbnail further down. Worth naming. */
+  const heroGaps = copy.en.categories
+    .filter(c => !fs.existsSync(path.join(PHOTO_DIR, `cat-${c.slug}-sq43-400.webp`)))
+    .map(c => c.slug);
+  if (heroGaps.length) {
+    console.log(`NOTE: the home page hero rotates through all seven categories, ` +
+      `but ${heroGaps.join(', ')} ${heroGaps.length === 1 ? 'has' : 'have'} no ` +
+      `4:3 file, so ${heroGaps.length === 1 ? 'that slide is' : 'those slides are'} ` +
+      `a placeholder. Run \`python3 tools/add-photos.py\`.`);
   }
   if (!biz.reviewUrl) console.log('NOTE: business.reviewUrl is empty — the Google review block and QR are omitted from every page.');
 }

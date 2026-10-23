@@ -122,7 +122,8 @@ CATEGORY_RENDITIONS = ("card", "sq43")
 #
 # build.js names the same key. When the real stock photograph arrives, change it
 # back there and this line can go.
-HOME_HERO = "cat-bathroom-fittings"
+# The home page hero now rotates through every category using the 4:3 files
+# they all have, so no single category needs the taller "hero" shape any more.
 TRADE_RENDITIONS = ("sq43", "trade")
 ITEM_RENDITIONS = ("item",)
 
@@ -193,7 +194,7 @@ def expected():
     plan = [(k, SHOP_RENDITIONS, SHOP_KEYS[k]) for k in SHOP_KEYS]
     plan += [(OWNER_KEY, OWNER_RENDITIONS, OWNER_DESC)]
     plan += [("cat-" + s,
-              CATEGORY_RENDITIONS + (("hero",) if "cat-" + s == HOME_HERO else ()),
+              CATEGORY_RENDITIONS,
               t) for s, t in cats]
     plan += [("trade-" + s, TRADE_RENDITIONS, t) for s, t in trades]
     plan += [(f"item-{cs}-{item_slug(it)}", ITEM_RENDITIONS, f"{it} ({ct})")
