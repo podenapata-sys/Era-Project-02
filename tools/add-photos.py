@@ -393,6 +393,7 @@ def process():
 
             centering = focus_for(manifest.get(key))
 
+            fresh = set()
             for name in rendition_names:
                 (rw, rh), widths = RENDITIONS[name]
                 have_w, have_h = crop_size(upright.size, (rw, rh))
@@ -410,13 +411,27 @@ def process():
                     # Saving without passing exif= is what drops it, GPS included.
                     cut.save(stem.with_suffix(".webp"), "WEBP",
                              quality=WEBP_QUALITY, method=6)
+                    fresh.add(stem.with_suffix(".webp"))
                     written += 1
                     if first:
                         cut.save(stem.with_suffix(".jpg"), "JPEG",
                                  quality=JPEG_QUALITY, optimize=True,
                                  progressive=True)
+                        fresh.add(stem.with_suffix(".jpg"))
                         written += 1
                         first = False
+
+        # Anything already on disk for this key that this source did not just
+        # produce is stale, and stale is not harmless: replacing a 2528x1696
+        # source with a 1672x940 one stops the 960 rung being written, and the
+        # 960 left behind is the OLD picture. build.js opens the biggest file
+        # there is, so the card would show the new photograph and the lightbox
+        # would open the previous one. Only keys processed in this run are
+        # touched; a key whose source is absent keeps everything it has.
+        for stale in sorted(OUT.glob(f"{key}-*")):
+            if stale not in fresh:
+                stale.unlink()
+                print(f"  {source.name} -> removed stale {stale.name}")
 
         done.append(key)
         print(f"  {source.name} -> {', '.join(rendition_names)}")
