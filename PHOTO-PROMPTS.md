@@ -502,7 +502,7 @@ plate, a workstation sink with its stepped inner ledge is an unmistakable shape.
 | **Stoves** | one stainless steel table-top gas stove with two burners, plain black burner caps and two round control knobs on the front |
 | **Kitchen hoods** | one stainless steel chimney-style kitchen hood, a wide angled canopy narrowing into a vertical flue, a plain front |
 
-## C-PVC pipes & fittings — 19
+## C-PVC pipes & fittings — 28
 
 Written from the supplier catalogue page the client sent, so these describe what
 ERA actually stocks rather than a generic C-PVC range: the pipe carries a red
@@ -516,24 +516,33 @@ brass against cream plastic is what makes them readable at thumbnail size.
 | item | SUBJECT |
 | --- | --- |
 | **Pipes** | three short lengths of cream-beige C-PVC pipe in different diameters lying together, each with a thin red identification stripe running along it, open ends toward the camera |
-| **Elbows 90°/45°** | two cream C-PVC elbows side by side, one a right-angle bend and one a shallow 45-degree bend, both with plain socket openings |
-| **Tees** | three cream C-PVC tees in descending size, each with three plain socket openings, the largest at the left |
 | **Sockets** | three plain cream C-PVC sockets in different diameters, short straight sleeves open at both ends |
-| **Reducers** | a cream C-PVC reducing socket, a reducing elbow and a reducing tee together, each with one opening visibly larger than the other |
-| **Reducing bushes** | one cream C-PVC reducing bush seen slightly from above, a thick ring with a wide flange and a smaller bore through the middle |
-| **Male & female adapters** | one cream C-PVC male adapter with an external thread and one female adapter with an internal thread, standing side by side |
-| **Unions** | one cream C-PVC union in three parts, a socket at each end and a large knurled ring nut in the middle |
-| **Gate & ball valves** | a cream C-PVC ball valve with a red lever handle beside a C-PVC gate valve with a round wheel handle |
-| **Tank connectors** | one cream C-PVC tank adapter, a long externally threaded barrel with a wide flange, its black rubber sealing washer lying loose beside it |
-| **Adhesive gum** | three small plain metal tins of yellow C-PVC pipe cement with nothing printed on them, one open with a brush standing in it |
-| **Cross tees** | one cream C-PVC cross tee, four plain socket openings meeting at right angles in one plane |
-| **End caps** | three plain cream C-PVC end caps in different diameters, each a short closed cup |
-| **Threaded plugs** | three cream C-PVC threaded plugs, each an external thread below a solid hexagonal head |
+| **Reducing sockets** | two cream C-PVC reducing sockets, each a short sleeve with one opening visibly wider than the other and a step between them |
+| **Elbows 90°** | three cream C-PVC right-angle elbows in descending size, each with two plain socket openings |
+| **Reducing elbows** | two cream C-PVC reducing elbows, each a right-angle bend with one opening visibly wider than the other |
+| **Elbows 45°** | three cream C-PVC forty-five degree elbows in descending size, each a shallow bend with two plain socket openings |
+| **Tees** | three cream C-PVC tees in descending size, each with three plain socket openings, the largest at the left |
+| **Reducing tees** | two cream C-PVC reducing tees, each with three socket openings of which the branch is visibly smaller than the run |
+| **Reducing bushes** | three cream C-PVC reducing bushes in different sizes, each a thick ring with a wide flange and a smaller bore through the middle |
+| **Male adapters** | three cream C-PVC male adapters in different sizes, each a socket at one end and a plain external thread at the other |
+| **Female adapters** | three cream C-PVC female adapters in different sizes, each a socket at one end and an internal thread at the other |
+| **Brass female adapters** | three cream C-PVC female adapters with brass inserts, the bright brass internal thread set into the cream plastic body |
+| **Brass male adapters** | three cream C-PVC male adapters with brass inserts, the bright brass external thread projecting from the cream plastic body |
+| **Brass female elbows** | two cream C-PVC right-angle elbows, each with a brass female threaded insert in one opening and a plain socket in the other |
+| **Brass female threaded tees** | two cream C-PVC tees, each with a brass female threaded insert in the branch and plain sockets on the run |
+| **Brass male threaded tees** | two cream C-PVC tees, each with a brass male thread projecting from the branch and plain sockets on the run |
+| **Brass male threaded elbows** | two cream C-PVC right-angle elbows, each with a brass male thread projecting from one opening and a plain socket in the other |
+| **Unions** | two cream C-PVC unions in different sizes, each in three parts with a socket at either end and a large knurled ring nut in the middle |
 | **Pipe clips** | three cream C-PVC pipe clips in different sizes, each a small open saddle with a screw hole at either side |
-| **Step over bands** | one cream C-PVC step over band, a short pipe with a flattened offset loop in the middle that carries it over another pipe |
-| **Brass male & female adapters** | two cream C-PVC adapters with brass inserts, one a male brass thread and one a female brass thread, the bright brass against the cream plastic |
-| **Brass threaded elbows & tees** | a cream C-PVC elbow and a cream C-PVC tee, each with a brass threaded insert in one of its openings |
-| **Brass unions** | one union with a cream C-PVC socket at one end and a large hexagonal brass body with a female thread at the other |
+| **Step over bands** | two cream C-PVC step over bands, each a short pipe with a flattened offset loop in the middle that carries it over another pipe |
+| **Threaded plugs** | three cream C-PVC threaded plugs, each an external thread below a solid hexagonal head |
+| **End caps** | three plain cream C-PVC end caps in different diameters, each a short closed cup |
+| **Ball valves** | two cream C-PVC ball valves in different sizes, each with a red lever handle across the body and a plain socket at either end |
+| **Cross tees** | one cream C-PVC cross tee, four plain socket openings meeting at right angles in one plane |
+| **Adhesive gum** | three small plain metal tins of yellow C-PVC pipe cement with nothing printed on them, one open with a brush standing in it |
+| **Brass unions** | two unions, each with a cream C-PVC socket at one end and a large hexagonal brass body with a female thread at the other |
+| **Tank adapters** | one cream C-PVC tank adapter, a long externally threaded barrel with a wide flange, its black rubber sealing washer lying loose beside it |
+| **Pipe cutters** | one plastic pipe cutter with a red handle and a steel blade, its jaw open around a short length of cream C-PVC pipe |
 
 ## U-PVC pipes & fittings — 11
 
