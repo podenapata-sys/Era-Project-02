@@ -211,19 +211,18 @@ table { border-collapse: collapse; width: 100%; }
 .nav__list a[aria-current="page"] { background: var(--surface-2); color: var(--amber); }
 .nav__aside { display: flex; align-items: center; gap: 14px; }
 
-/* The switch is a direct child of .header__inner, so above the breakpoint it
-   would sit right after the brand. order puts it back at the end of the row,
-   where it has always been — after the nav rather than before the WhatsApp
-   button, which is the one visible difference from when it lived inside
-   .nav__aside. */
-.langswitch { order: 3; }
-.nav { order: 2; }
-
 .langswitch { display: flex; align-items: center; gap: 2px; margin: 0; padding: 3px; border: 1px solid var(--line-2); border-radius: 999px; }
 .langswitch > * {
   display: block; padding: 6px 14px; border-radius: 999px;
   font-family: var(--font-display); font-weight: 700; font-size: 13px;
 }
+/* After .langswitch above, not before it: that rule sets display at the same
+   specificity, so a hide written earlier loses and the bar copy shows up
+   beside the brand on a desktop. Above the breakpoint only the .nav__aside
+   copy is shown, between the links and the WhatsApp button; below it they
+   swap. */
+.langswitch--bar { display: none; }
+
 .langswitch__on { background: var(--amber); color: var(--ink); }
 .langswitch a { color: var(--muted-2); }
 .langswitch a:hover { color: var(--amber); }
@@ -762,9 +761,9 @@ table { border-collapse: collapse; width: 100%; }
 
   /* The nav is out of flow here, so the bar is brand | switch | toggle. The
      auto margin moves from the toggle to the switch, which now opens the
-     right-hand cluster; a gap of its own keeps the two apart without the
-     22px the header uses between brand and bar. */
-  .langswitch { order: 0; margin-left: auto; }
+     right-hand cluster. */
+  .langswitch--bar { display: flex; margin-left: auto; }
+  .langswitch--nav { display: none; }
   .nav-toggle { margin-left: 0; }
   /* 10px, not 12: at 360px the brand came to 199px against the 201px that
      keeps "ERA SANITARY" on one line, and split it over two for want of two
@@ -786,6 +785,23 @@ table { border-collapse: collapse; width: 100%; }
      says — what the switch is for is the other one. */
   .langswitch__on { display: none; }
   .langswitch a { color: var(--text); }
+}
+
+/* Measured: the brand needs 231px to hold the Bengali tagline on one line,
+   201px for the English one, and the bar leaves the brand (width - 159px)
+   once the gutters, gaps, switch and toggle are taken. So from 390px up both
+   fit, and below it only the Bengali wraps — which grew the header from 85px
+   to 104px and dropped the switch 9px the moment a reader tapped বাং, on the
+   360px screens that are most of the audience here. The tagline comes off
+   both languages below that width instead, so the header is the same height
+   whichever one you are reading. It is still in the footer on every page. */
+@media (max-width: 389px) {
+  .brand__text small { display: none; }
+  /* The Bengali pages draw "ERA SANITARY" 2px wider than the English ones —
+     a slightly narrower logo and the lang-specific face — which was enough to
+     wrap it and leave the two headers 6px apart at 360px. Two gaps of 8px
+     rather than 10px give back the four it needs. */
+  .header__inner { gap: 8px; }
 
   .hero__grid, .why__grid, .about__grid { grid-template-columns: 1fr; }
   .cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -127,8 +127,11 @@ async def check_langswitch_in_bar(pg, path):
     shut, inside the header's own box, and right of the brand.
     """
     d = await pg.evaluate("""() => {
-      const sw = document.querySelector('.langswitch');
-      if (!sw) return { missing: true };
+      // Two are in the markup, one per breakpoint; take whichever is on.
+      const all = [...document.querySelectorAll('.langswitch')];
+      const on = all.filter(e => getComputedStyle(e).display !== 'none');
+      if (on.length !== 1) return { shownCount: on.length };
+      const sw = on[0];
       const nav = document.querySelector('.nav');
       const head = document.querySelector('.site-header');
       const r = sw.getBoundingClientRect();
@@ -147,8 +150,9 @@ async def check_langswitch_in_bar(pg, path):
     }""")
 
     where = f'{path} @{PHONE}'
-    if d.get('missing'):
-        fail(f'{where}: there is no language switch on the page')
+    if 'shownCount' in d:
+        fail(f"{where}: {d['shownCount']} language switches are visible — "
+             f'exactly one of the bar and nav copies must be shown')
         return
     if d['inNav']:
         fail(f'{where}: the language switch is back inside the nav panel — '
@@ -208,6 +212,43 @@ async def check_targets_and_bar(pg, path, width):
     else:
         if d['barShown']:
             fail(f'{where}: the Call/WhatsApp bar should not show at desktop')
+
+
+async def check_header_matches_across_languages(browser, widths):
+    """Tapping the switch must not move the switch.
+
+    The header is the one block that redraws in a different script, and the
+    Bengali brand is wider than the English one. At 360px the Bengali tagline
+    wrapped and the header went 85px -> 104px, so the control a reader had
+    just tapped jumped 9px down the moment the new page painted. Nothing else
+    here would catch it: each page on its own is fine, and the two are only
+    wrong next to each other.
+    """
+    for width in widths:
+        box = {}
+        for lang, path in (('en', 'index.html'), ('bn', 'bn/index.html')):
+            ctx = await browser.new_context(viewport={'width': width, 'height': 760},
+                                            is_mobile=True, has_touch=True)
+            pg = await ctx.new_page()
+            await pg.goto(f'http://127.0.0.1:{PORT}/{path}', wait_until='load')
+            await pg.evaluate('document.fonts.ready')
+            box[lang] = await pg.evaluate("""() => {
+              const h = document.querySelector('.site-header').getBoundingClientRect();
+              const sw = [...document.querySelectorAll('.langswitch')]
+                .find(e => getComputedStyle(e).display !== 'none');
+              const r = sw.getBoundingClientRect();
+              return { head: Math.round(h.height), top: Math.round(r.top) };
+            }""")
+            await ctx.close()
+
+        if box['en']['head'] != box['bn']['head']:
+            fail(f"@{width}: the header is {box['en']['head']}px in English and "
+                 f"{box['bn']['head']}px in Bengali — switching language moves "
+                 f"everything under it")
+        if box['en']['top'] != box['bn']['top']:
+            fail(f"@{width}: the language switch sits at y={box['en']['top']} in "
+                 f"English and y={box['bn']['top']} in Bengali — it jumps out "
+                 f"from under the finger that just tapped it")
 
 
 async def check_category_columns(pg, path):
@@ -277,6 +318,10 @@ async def main():
                         await check_category_columns(pg, path)
                     await check_targets_and_bar(pg, path, width)
                     await ctx.close()
+            # 320 and 360 are below the width where the Bengali tagline fits,
+            # 390 and 412 above it; the header has to match across the switch
+            # on both sides of that line.
+            await check_header_matches_across_languages(browser, (320, 360, 375, 390, 412))
             await browser.close()
     finally:
         srv.terminate()
@@ -291,7 +336,8 @@ async def main():
           f'and the WhatsApp button inside it at both scroll positions; no tap '
           f'target under 44px; call bar present at {PHONE}px and absent at '
           f'{DESKTOP}px; no horizontal scroll; every category stacked with at '
-          f'least two item cards to a row. Checked {len(PAGES)} pages.')
+          f'least two item cards to a row; the header the same height in both '
+          f'languages at 320-412px. Checked {len(PAGES)} pages.')
 
 
 if __name__ == '__main__':

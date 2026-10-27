@@ -489,6 +489,16 @@ function openBadge(t) {
      data-l-closed="${attr(t.closedNow)}" data-l-opens="${attr(t.closedOpens)}"><span></span></span>`;
 }
 
+/* One switch, emitted at two places in the header; see the call sites for why
+   it cannot be a single element. `where` is 'bar' or 'nav', and styles.css
+   shows exactly one of the two at any width. */
+function langSwitch(lang, other, otherHref, where) {
+  return `<p class="langswitch langswitch--${where}">
+          <span class="langswitch__on" aria-current="true">${esc(LANG_LABEL[lang])}</span>
+          <a href="${otherHref}" hreflang="${other}" lang="${other}" data-lang-link="${other}">${esc(LANG_LABEL[other])}</a>
+        </p>`;
+}
+
 function header(t, lang, page, base, slug) {
   const up = upFor(page);
   const nav = PAGES.map(id =>
@@ -514,15 +524,19 @@ function header(t, lang, page, base, slug) {
       ${brandText(t)}
     </a>
 
-    <!-- Outside the <nav> on purpose. Below 1025px the nav is a fixed panel
-         that fades out behind opacity:0, and opacity makes a stacking context
-         a child cannot escape — so a switch left inside it can only ever be
-         reached by opening the menu first. Out here it sits in the bar next to
-         the toggle, visible on every page without a tap. -->
-    <p class="langswitch">
-      <span class="langswitch__on" aria-current="true">${esc(LANG_LABEL[lang])}</span>
-      <a href="${otherHref}" hreflang="${other}" lang="${other}" data-lang-link="${other}">${esc(LANG_LABEL[other])}</a>
-    </p>
+    <!-- The switch is written twice, and exactly one of the two is ever
+         display:none away from the other's breakpoint, so only one is in the
+         accessibility tree at a time.
+
+         It cannot be one element in one place. Inside the nav is where it
+         belongs on a desktop — between the links and the WhatsApp button —
+         but below 1025px the nav is a fixed panel that fades behind
+         opacity:0, and opacity makes a stacking context a child cannot
+         escape, so a switch left in there can only be reached by opening the
+         menu first. Out in the bar is where it belongs on a phone. The two
+         places are in different containers, so a CSS order cannot carry one
+         element between them. -->
+    ${langSwitch(lang, other, otherHref, 'bar')}
 
     <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="primaryNav" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -531,6 +545,7 @@ function header(t, lang, page, base, slug) {
     <nav class="nav" id="primaryNav" aria-label="Primary">
       <ul class="nav__list">${nav}</ul>
       <div class="nav__aside">
+        ${langSwitch(lang, other, otherHref, 'nav')}
         <a class="btn btn--accent btn--sm" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">
           ${ICONS.whatsapp}${esc(t.whatsapp)}
         </a>
