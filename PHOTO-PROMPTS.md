@@ -234,7 +234,7 @@ it rather than publishing a blurred crop.
 
 > Use this prompt exactly as written; do not rewrite or embellish it. Set the aspect ratio to 4:3 and the output to 2K before generating — at the default 1K every landscape shape comes out too small to use.
 >
-> A catalogue photograph of grey pressure PVC-U plumbing parts: two thick-walled grey pressure pipes of different diameters standing at the back, and in front of them sockets, elbows, tees, an end cap, a flange adapter and a threaded adapter, the walls visibly heavier than drainage pipe, arranged as a compact, roughly square group in two staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. The group stands on a polished pale concrete floor in a bright modern interior, a large plain pale concrete wall behind it, a tall window out of frame to one side throwing soft daylight and a gentle diagonal patch of light across the wall, and a blurred green plant at the far edge, well out of focus. Soft reflection of the pieces in the polished floor, gentle contact shadows, shallow depth of field behind. Sharp focus on the products. Every surface plain, smooth and unmarked, with no writing, lettering, headline, tagline or logo anywhere in the picture. The whole group sits in the centre of the frame with generous empty margin to the left and to the right, so it can be cropped to a wide strip or to a square without cutting anything off.
+> A catalogue photograph of white pressure PVC-U plumbing parts: two thick-walled white pressure pipes of different diameters standing at the back, and in front of them a plain coupling, a reducing coupling, a female socket with an internal thread, a plain ninety-degree elbow, an elbow with a brass female thread, a plain tee, a reducing tee, a union with its ring nut, a male adapter, an end cap and a white ball valve with a red lever handle, the walls visibly heavier than drainage pipe, arranged as a compact, roughly square group in two staggered rows — the tallest pieces at the back, the smallest in front — with clear space between the pieces but the group as a whole kept tight rather than spread into a line. The group stands on a polished pale concrete floor in a bright modern interior, a large plain pale concrete wall behind it, a tall window out of frame to one side throwing soft daylight and a gentle diagonal patch of light across the wall, and a blurred green plant at the far edge, well out of focus. Soft reflection of the pieces in the polished floor, gentle contact shadows, shallow depth of field behind. Sharp focus on the products. Every surface plain, smooth and unmarked, with no writing, lettering, headline, tagline or logo anywhere in the picture. The whole group sits in the centre of the frame with generous empty margin to the left and to the right, so it can be cropped to a wide strip or to a square without cutting anything off.
 
 ### `cat-bathroom-fittings.jpg` — Bathroom fittings (brass & CP finish)
 
@@ -576,11 +576,12 @@ photograph. Check those four against the shop before generating.
 
 ## Pressure PVC-U — 16
 
-**One thing to confirm before generating these.** The catalogue shows pressure
-fittings in two colours: the fittings page has them near-white, while the
-range photograph shows a dark grey set. These are written **grey**, to match
-`cat-pressure.jpg` already on the site. If the shop stocks the white line
-instead, say so and it is one word in each of the sixteen.
+**The colour question is settled.** It used to say grey here, to match the
+`cat-pressure.jpg` that was on the site. The client's own sixteen photographs
+came back **white**, so white is what the shop stocks and white is what these
+say. `cat-pressure.jpg` is the one now out of step and is being regenerated;
+until it is, the category photograph shows a dark grey and blue range that
+matches nothing beneath it.
 
 **And one thing to confirm with the shop.** The supplier's list sells a
 *female socket*, a *coupling*, a *reducing coupling* and a *brass female
@@ -591,22 +592,22 @@ customer the same box for two of these, two cards should be merged.
 
 | item | SUBJECT |
 | --- | --- |
-| **Pipes** | three short lengths of thick-walled grey pressure PVC-U pipe in different diameters lying together, walls visibly heavier than drainage pipe |
-| **Male adapters** | three grey pressure PVC-U male adapters in descending size, each a socket at one end and an external thread at the other |
-| **Reducing tees** | one grey pressure PVC-U reducing tee, thick-walled, its branch socket visibly narrower than its run |
-| **Brass female threaded tees** | one grey pressure PVC-U tee with a brass female thread set into its branch socket, the brass bright against the grey |
-| **Female sockets** | three grey pressure PVC-U female sockets in different diameters, short thick-walled sleeves threaded on the inside |
-| **Unions** | one grey pressure PVC-U union in three parts, two socket halves and the knurled ring nut that draws them together |
-| **Brass female elbows** | one grey pressure PVC-U right-angle elbow with a brass female thread in one opening |
-| **Elbows 90°** | three plain grey pressure PVC-U right-angle elbows in descending size, each with two plain sockets |
-| **Plain tees** | three plain grey pressure PVC-U tees in descending size, each thick-walled with three equal sockets |
-| **Brass female couplings** | two grey pressure PVC-U couplings, each with a brass female thread set into one end |
-| **Couplings** | three plain grey pressure PVC-U couplings in different diameters, short straight sleeves open and plain at both ends |
-| **Reducing couplings** | two grey pressure PVC-U reducing couplings, each stepping from a wide socket down to a narrower one |
+| **Pipes** | three short lengths of thick-walled white pressure PVC-U pipe in different diameters lying together, walls visibly heavier than drainage pipe |
+| **Male adapters** | three white pressure PVC-U male adapters in descending size, each a socket at one end and an external thread at the other |
+| **Reducing tees** | one white pressure PVC-U reducing tee, thick-walled, its branch socket visibly narrower than its run |
+| **Brass female threaded tees** | one white pressure PVC-U tee with a brass female thread set into its branch socket, the brass bright against the grey |
+| **Female sockets** | three white pressure PVC-U female sockets in different diameters, short thick-walled sleeves threaded on the inside |
+| **Unions** | one white pressure PVC-U union in three parts, two socket halves and the knurled ring nut that draws them together |
+| **Brass female elbows** | one white pressure PVC-U right-angle elbow with a brass female thread in one opening |
+| **Elbows 90°** | three plain white pressure PVC-U right-angle elbows in descending size, each with two plain sockets |
+| **Plain tees** | three plain white pressure PVC-U tees in descending size, each thick-walled with three equal sockets |
+| **Brass female couplings** | two white pressure PVC-U couplings, each with a brass female thread set into one end |
+| **Couplings** | three plain white pressure PVC-U couplings in different diameters, short straight sleeves open and plain at both ends |
+| **Reducing couplings** | two white pressure PVC-U reducing couplings, each stepping from a wide socket down to a narrower one |
 | **Solvent cement** | three plain metal tins of pressure solvent cement with nothing printed on them, one open with a brush standing in it |
-| **End caps** | three plain grey pressure PVC-U end caps in different diameters, each a thick closed cup |
+| **End caps** | three plain white pressure PVC-U end caps in different diameters, each a thick closed cup |
 | **Pressure reducing valves** | one brass pressure reducing valve with a domed adjusting cap on top and a round pressure gauge on its side |
-| **Ball valves** | two grey pressure PVC-U ball valves with plain lever handles, one handle in line with the body and one across it |
+| **Ball valves** | two white pressure PVC-U ball valves with plain lever handles, one handle in line with the body and one across it |
 
 ## What is deliberately absent
 
