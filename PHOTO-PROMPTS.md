@@ -544,7 +544,7 @@ brass against cream plastic is what makes them readable at thumbnail size.
 | **Tank adapters** | one cream C-PVC tank adapter, a long externally threaded barrel with a wide flange, its black rubber sealing washer lying loose beside it |
 | **Pipe cutters** | one plastic pipe cutter with a red handle and a steel blade, its jaw open around a short length of cream C-PVC pipe |
 
-## U-PVC pipes & fittings — 11
+## U-PVC pipes & fittings — 21
 
 Four of these are not pictured on the catalogue page — cowls, pipe clips, tube
 wells and vents — so they are written from the part rather than from a
@@ -552,13 +552,23 @@ photograph. Check those four against the shop before generating.
 
 | item | SUBJECT |
 | --- | --- |
-| **Pipes** | two short lengths of U-PVC drainage pipe lying together, one grey and one white, plain and unmarked, open ends toward the camera |
-| **Bends** | two white U-PVC bends side by side, one a long-radius 90-degree bend and one a 45-degree bend, plain socket ends |
-| **Single & double Y-tees** | two white U-PVC Y-branches, one with a single angled branch and one with a branch on each side, plain sockets |
-| **P & S traps** | a white U-PVC P-trap with its outlet turning away horizontally beside an S-trap with its outlet turning down |
+| **Grey pipes** | three short lengths of grey U-PVC drainage pipe in different diameters lying together, plain and unmarked, open ends toward the camera |
+| **White pipes** | three short lengths of white U-PVC drainage pipe in different diameters lying together, plain and unmarked, open ends toward the camera |
+| **U-traps** | one white U-PVC U-trap, a deep U-shaped water seal with a plain socket at each end standing upright |
+| **Long traps** | one white U-PVC long trap, a U-shaped seal with one leg drawn out into a long straight arm ending in a plain socket |
+| **90° side door bends** | one white U-PVC ninety-degree bend with a bolted oval inspection door set in its flank rather than on the outer curve |
+| **90° door bends** | one white U-PVC ninety-degree bend with a bolted round inspection door on the outer curve of the bend |
+| **Plain cross tees** | one white U-PVC cross tee, four plain sockets meeting at right angles in one plane |
+| **Plain tees** | two white U-PVC equal tees in different sizes, each with three plain sockets of the same diameter |
+| **Door tees** | one white U-PVC tee with a bolted inspection door on the face of the branch, plain sockets on the run |
+| **Inspection ports** | one white U-PVC inspection port, a short socket closed by a round bolted cover plate |
+| **90° plain bends** | three white U-PVC ninety-degree bends in descending size, each with two plain sockets and no door |
+| **Reducing tees** | two white U-PVC reducing tees, each with three sockets of which the branch is visibly smaller than the run |
+| **Reducing Y-tees** | two white U-PVC Y-branches, each with an angled branch visibly smaller than the run |
+| **S-traps** | one white U-PVC S-trap, a water seal whose outlet turns downward, with a plain socket at each end |
+| **Side door tees** | one white U-PVC tee with a bolted inspection door on the side of the run, plain sockets elsewhere |
+| **45° plain bends** | three white U-PVC forty-five degree bends in descending size, each a shallow bend with two plain sockets |
 | **Cowls** | two white U-PVC vent cowls, each a short socket under a domed hood with open slots around the neck |
-| **Door bends** | one white U-PVC 90-degree bend with a round bolted inspection door on its outer curve, beside a side-door bend with the door on its flank |
-| **Reducers** | two white U-PVC reducers, each a short tapered sleeve with one large socket and one smaller |
 | **Pipe clips & clamps** | a group of white and grey U-PVC pipe clips in three sizes, saddle clamps and two-piece clamps, their screws beside them |
 | **Solvent cement** | two plain metal tins of solvent cement with nothing printed on them, one open with a brush standing in it |
 | **Tube wells** | two lengths of U-PVC tube-well pipe standing upright, one plain casing and one slotted screen with narrow horizontal slits cut along it |
