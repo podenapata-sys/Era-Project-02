@@ -167,6 +167,44 @@ async def check_targets_and_bar(pg, path, width):
             fail(f'{where}: the Call/WhatsApp bar should not show at desktop')
 
 
+async def check_category_columns(pg, path):
+    """Every category stacks, and its item cards sit at least two to a row.
+
+    .cat splits into two columns on a desktop and the even ones reverse that
+    split, which is a second rule setting the same property at higher
+    specificity. A phone override written as a bare `.cat` loses to it, and the
+    symptom is quiet: the page still fits, still scrolls straight, every tap
+    target is still 44px, so nothing else in this file notices. What happens is
+    that every second category keeps its desktop split and squeezes its items
+    into a single column half the width, while its neighbours show two.
+    """
+    d = await pg.evaluate("""() => {
+      return [...document.querySelectorAll('article.cat')].map(cat => {
+        const ul = cat.querySelector('ul.items');
+        const items = [...cat.querySelectorAll('li.item')];
+        const r0 = items[0] && items[0].getBoundingClientRect();
+        const r1 = items[1] && items[1].getBoundingClientRect();
+        return {
+          id: cat.id,
+          catCols: getComputedStyle(cat).gridTemplateColumns.split(' ').length,
+          itemCols: ul ? getComputedStyle(ul).gridTemplateColumns.split(' ').length : 0,
+          // Two cards on one row is the thing a reader actually sees; the
+          // computed column count alone could still lie about wrapping.
+          sideBySide: !!(r0 && r1) && Math.abs(r0.top - r1.top) < 2,
+        };
+      });
+    }""")
+
+    for c in d:
+        where = f"{path} @{PHONE} #{c['id']}"
+        if c['catCols'] != 1:
+            fail(f"{where}: the category is still {c['catCols']} columns wide on a "
+                 f"phone — it must stack to one")
+        if c['itemCols'] < 2 or not c['sideBySide']:
+            fail(f"{where}: item cards are {c['itemCols']} to a row — a phone "
+                 f"should fit at least two")
+
+
 async def main():
     if not os.path.isdir(DIST):
         sys.exit('dist/ is missing — run `node build.js` first.')
@@ -192,6 +230,7 @@ async def main():
                         # to survive either.
                         for scroll in (0, 600):
                             await check_menu(pg, path, scroll)
+                        await check_category_columns(pg, path)
                     await check_targets_and_bar(pg, path, width)
                     await ctx.close()
             await browser.close()
@@ -206,7 +245,8 @@ async def main():
     print(f'PASS — menu opens unclipped with every link, the language switch '
           f'and the WhatsApp button inside it at both scroll positions; no tap '
           f'target under 44px; call bar present at {PHONE}px and absent at '
-          f'{DESKTOP}px; no horizontal scroll. Checked {len(PAGES)} pages.')
+          f'{DESKTOP}px; no horizontal scroll; every category stacked with at '
+          f'least two item cards to a row. Checked {len(PAGES)} pages.')
 
 
 if __name__ == '__main__':

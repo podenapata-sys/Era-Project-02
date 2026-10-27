@@ -767,7 +767,10 @@ table { border-collapse: collapse; width: 100%; }
   .revs__grid { grid-template-columns: 1fr; }
   /* One per row on a phone, so nothing is clamped that does not need to be. */
   .rev blockquote { -webkit-line-clamp: none; }
-  .cat { grid-template-columns: 1fr; }
+  /* The even rule has to be named again, not just .cat: it sets the same
+     property at higher specificity, so a bare .cat here loses to it and every
+     second category keeps its two-column desktop split on a phone. */
+  .cat, .cat:nth-child(even) { grid-template-columns: 1fr; }
   .cat:nth-child(even) .slot { order: 0; }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .two-col { grid-template-columns: 1fr; }
