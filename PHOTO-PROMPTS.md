@@ -485,11 +485,18 @@ generating — see the note on `cat-ceramic.jpg` above.
 | **Floor urinals** | one tall white ceramic floor-standing urinal reaching the floor, a deep rounded bowl with a flat back |
 | **Wash basins — all types** | three white ceramic basins together: a full-size pedestal basin, a round counter-top basin and a small compact cloakroom basin |
 
-## Kitchen items — 8
+## Kitchen items — 9
 
 **Smart sinks** is included here although section 2 says it cannot be drawn
 distinctly. That was true of one item inside a crowded group shot. Alone on a
 plate, a workstation sink with its stepped inner ledge is an unmistakable shape.
+
+**Kitchen accessories** is no longer a catch-all. The client sent the
+supplier's sheet for it: basket strainers, loose strainer baskets in several
+patterns and a sink flange/adapter. It is the spares side of the waste — so it
+is drawn as **loose parts**, several baskets and a flange with no body, while
+**Sink wastes** above stays the complete assembly with its washer and backnut.
+Drawn any other way the two cards become the same photograph twice.
 
 | item | SUBJECT |
 | --- | --- |
@@ -501,6 +508,7 @@ plate, a workstation sink with its stepped inner ledge is an unmistakable shape.
 | **Sink wastes** | one stainless basket strainer waste: a round slotted flange with a removable basket, its rubber washer and backnut beside it |
 | **Stoves** | one stainless steel table-top gas stove with two burners, plain black burner caps and two round control knobs on the front |
 | **Kitchen hoods** | one stainless steel chimney-style kitchen hood, a wide angled canopy narrowing into a vertical flue, a plain front |
+| **Kitchen accessories** | a group of loose sink-waste spares with no pipework: three stainless strainer baskets side by side in different patterns — one straight-sided with round holes, one shallower with a black rubber stopper post through its centre, one with slotted holes and small feet — a fourth basket in white plastic, and a black plastic sink flange lying beside them with its rubber gasket |
 
 ## C-PVC pipes & fittings — 28
 
@@ -614,9 +622,8 @@ customer the same box for two of these, two cards should be merged.
 | left out | why |
 | --- | --- |
 | `etc.` ×7 | not an item |
-| Kitchen accessories | a catch-all — whatever it draws becomes a claim about specific stock |
 
-That is **81 of the 82 items**, every category covered. The seven category
+That is **all 109 items**, every category covered. The seven category
 photographs in section 2 are unchanged: these are the items inside them.
 
 ## If you switch tools
