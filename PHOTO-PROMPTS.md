@@ -574,24 +574,39 @@ photograph. Check those four against the shop before generating.
 | **Tube wells** | two lengths of U-PVC tube-well pipe standing upright, one plain casing and one slotted screen with narrow horizontal slits cut along it |
 | **Vents** | one white U-PVC vent fitting, a short straight pipe with a ventilated collar of open slots near the top |
 
-## Pressure PVC-U — 8
+## Pressure PVC-U — 16
 
 **One thing to confirm before generating these.** The catalogue shows pressure
 fittings in two colours: the fittings page has them near-white, while the
 range photograph shows a dark grey set. These are written **grey**, to match
 `cat-pressure.jpg` already on the site. If the shop stocks the white line
-instead, say so and it is one word in each of the eight.
+instead, say so and it is one word in each of the sixteen.
+
+**And one thing to confirm with the shop.** The supplier's list sells a
+*female socket*, a *coupling*, a *reducing coupling* and a *brass female
+coupling* as four separate lines. In most pressure ranges a socket and a
+coupling are the same part under two names. They are written here as four,
+because that is how the catalogue sells them — but if the shop hands a
+customer the same box for two of these, two cards should be merged.
 
 | item | SUBJECT |
 | --- | --- |
-| **Pressure pipes** | three short lengths of thick-walled grey pressure PVC-U pipe in different diameters lying together, walls visibly heavier than drainage pipe |
-| **Sockets** | three plain grey pressure PVC-U sockets in different diameters, short thick-walled sleeves open at both ends |
-| **Elbows** | two grey pressure PVC-U elbows, one a plain right angle and one with a brass female thread in one opening |
-| **Tees** | a grey pressure PVC-U plain tee beside a reducing tee, both thick-walled with three sockets |
+| **Pipes** | three short lengths of thick-walled grey pressure PVC-U pipe in different diameters lying together, walls visibly heavier than drainage pipe |
+| **Male adapters** | three grey pressure PVC-U male adapters in descending size, each a socket at one end and an external thread at the other |
+| **Reducing tees** | one grey pressure PVC-U reducing tee, thick-walled, its branch socket visibly narrower than its run |
+| **Brass female threaded tees** | one grey pressure PVC-U tee with a brass female thread set into its branch socket, the brass bright against the grey |
+| **Female sockets** | three grey pressure PVC-U female sockets in different diameters, short thick-walled sleeves threaded on the inside |
+| **Unions** | one grey pressure PVC-U union in three parts, two socket halves and the knurled ring nut that draws them together |
+| **Brass female elbows** | one grey pressure PVC-U right-angle elbow with a brass female thread in one opening |
+| **Elbows 90°** | three plain grey pressure PVC-U right-angle elbows in descending size, each with two plain sockets |
+| **Plain tees** | three plain grey pressure PVC-U tees in descending size, each thick-walled with three equal sockets |
+| **Brass female couplings** | two grey pressure PVC-U couplings, each with a brass female thread set into one end |
+| **Couplings** | three plain grey pressure PVC-U couplings in different diameters, short straight sleeves open and plain at both ends |
+| **Reducing couplings** | two grey pressure PVC-U reducing couplings, each stepping from a wide socket down to a narrower one |
+| **Solvent cement** | three plain metal tins of pressure solvent cement with nothing printed on them, one open with a brush standing in it |
 | **End caps** | three plain grey pressure PVC-U end caps in different diameters, each a thick closed cup |
-| **Flange adapters** | one grey pressure PVC-U flange adapter, a socket backed by a wide round flange with bolt holes around its edge |
-| **Threaded adapters** | a grey pressure PVC-U male adapter with an external thread beside a female adapter with an internal thread |
-| **Adhesive gum** | three plain metal tins of pressure solvent cement with nothing printed on them, one open with a brush standing in it |
+| **Pressure reducing valves** | one brass pressure reducing valve with a domed adjusting cap on top and a round pressure gauge on its side |
+| **Ball valves** | two grey pressure PVC-U ball valves with plain lever handles, one handle in line with the body and one across it |
 
 ## What is deliberately absent
 
