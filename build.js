@@ -514,6 +514,16 @@ function header(t, lang, page, base, slug) {
       ${brandText(t)}
     </a>
 
+    <!-- Outside the <nav> on purpose. Below 1025px the nav is a fixed panel
+         that fades out behind opacity:0, and opacity makes a stacking context
+         a child cannot escape — so a switch left inside it can only ever be
+         reached by opening the menu first. Out here it sits in the bar next to
+         the toggle, visible on every page without a tap. -->
+    <p class="langswitch">
+      <span class="langswitch__on" aria-current="true">${esc(LANG_LABEL[lang])}</span>
+      <a href="${otherHref}" hreflang="${other}" lang="${other}" data-lang-link="${other}">${esc(LANG_LABEL[other])}</a>
+    </p>
+
     <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="primaryNav" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -521,10 +531,6 @@ function header(t, lang, page, base, slug) {
     <nav class="nav" id="primaryNav" aria-label="Primary">
       <ul class="nav__list">${nav}</ul>
       <div class="nav__aside">
-        <p class="langswitch">
-          <span class="langswitch__on" aria-current="true">${esc(LANG_LABEL[lang])}</span>
-          <a href="${otherHref}" hreflang="${other}" lang="${other}" data-lang-link="${other}">${esc(LANG_LABEL[other])}</a>
-        </p>
         <a class="btn btn--accent btn--sm" href="${attr(waLink(t.orderMsg))}" target="_blank" rel="noopener">
           ${ICONS.whatsapp}${esc(t.whatsapp)}
         </a>

@@ -87,7 +87,6 @@ async def check_menu(pg, path, scroll):
       };
       const links = [...nav.querySelectorAll('.nav__list a')];
       const wa = nav.querySelector('.btn');
-      const lang = nav.querySelector('.langswitch a');
       return {
         open: nav.classList.contains('is-open'),
         height: Math.round(r.height),
@@ -96,7 +95,6 @@ async def check_menu(pg, path, scroll):
         linkCount: links.length,
         linksInside: links.filter(inside).length,
         waInside: wa ? inside(wa) : false,
-        langInside: lang ? inside(lang) : false,
       };
     }""")
 
@@ -114,11 +112,56 @@ async def check_menu(pg, path, scroll):
              f"are inside the open menu")
     if not d['waInside']:
         fail(f'{where}: the WhatsApp button is not inside the open menu')
-    if not d['langInside']:
-        fail(f'{where}: the language switch is not inside the open menu')
 
     await pg.click('#navToggle')
     await pg.wait_for_timeout(300)
+
+
+async def check_langswitch_in_bar(pg, path):
+    """The language switch rides in the header bar, not inside the menu.
+
+    It used to sit in .nav__aside, which below 1025px is a fixed panel behind
+    opacity:0 — so a Bengali reader landing on an English page had to work out
+    that the three-line button hid the way back. The switch is out in the bar
+    beside that button now, and this holds it there: visible with the menu
+    shut, inside the header's own box, and right of the brand.
+    """
+    d = await pg.evaluate("""() => {
+      const sw = document.querySelector('.langswitch');
+      if (!sw) return { missing: true };
+      const nav = document.querySelector('.nav');
+      const head = document.querySelector('.site-header');
+      const r = sw.getBoundingClientRect();
+      const h = head.getBoundingClientRect();
+      const brand = document.querySelector('.brand').getBoundingClientRect();
+      const cs = getComputedStyle(sw);
+      return {
+        inNav: !!(nav && nav.contains(sw)),
+        shown: cs.display !== 'none' && cs.visibility !== 'hidden' &&
+               parseFloat(cs.opacity) > 0 && r.width > 0 && r.height > 0,
+        inHeader: r.top >= h.top - 1 && r.bottom <= h.bottom + 1,
+        afterBrand: r.left >= brand.right - 1,
+        right: Math.round(r.right),
+        vw: document.documentElement.clientWidth,
+      };
+    }""")
+
+    where = f'{path} @{PHONE}'
+    if d.get('missing'):
+        fail(f'{where}: there is no language switch on the page')
+        return
+    if d['inNav']:
+        fail(f'{where}: the language switch is back inside the nav panel — '
+             f'behind opacity:0 it cannot be reached without opening the menu')
+    if not d['shown']:
+        fail(f'{where}: the language switch is not visible with the menu shut')
+    if not d['inHeader']:
+        fail(f'{where}: the language switch is outside the header bar')
+    if not d['afterBrand']:
+        fail(f'{where}: the language switch overlaps the brand')
+    if d['right'] > d['vw'] + 1:
+        fail(f"{where}: the language switch runs {d['right'] - d['vw']}px "
+             f"past the right edge")
 
 
 async def check_targets_and_bar(pg, path, width):
@@ -228,6 +271,7 @@ async def main():
                         # Both scroll positions: the header is sticky, so
                         # --header-bottom differs between them and the menu has
                         # to survive either.
+                        await check_langswitch_in_bar(pg, path)
                         for scroll in (0, 600):
                             await check_menu(pg, path, scroll)
                         await check_category_columns(pg, path)
@@ -242,7 +286,8 @@ async def main():
         for f in fails:
             print(f'  - {f}')
         sys.exit(1)
-    print(f'PASS — menu opens unclipped with every link, the language switch '
+    print(f'PASS — the language switch rides in the header bar with the menu '
+          f'shut; menu opens unclipped with every link '
           f'and the WhatsApp button inside it at both scroll positions; no tap '
           f'target under 44px; call bar present at {PHONE}px and absent at '
           f'{DESKTOP}px; no horizontal scroll; every category stacked with at '
