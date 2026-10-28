@@ -582,7 +582,7 @@ photograph. Check those four against the shop before generating.
 | **Tube wells** | two lengths of U-PVC tube-well pipe standing upright, one plain casing and one slotted screen with narrow horizontal slits cut along it |
 | **Vents** | one white U-PVC vent fitting, a short straight pipe with a ventilated collar of open slots near the top |
 
-## Pressure PVC-U — 16
+## Pressure PVC-U — 14
 
 **The colour question is settled.** It used to say grey here, to match the
 `cat-pressure.jpg` that was on the site. The client's own sixteen photographs
@@ -603,9 +603,7 @@ customer the same box for two of these, two cards should be merged.
 | **Pipes** | three short lengths of thick-walled white pressure PVC-U pipe in different diameters lying together, walls visibly heavier than drainage pipe |
 | **Male adapters** | three white pressure PVC-U male adapters in descending size, each a socket at one end and an external thread at the other |
 | **Reducing tees** | one white pressure PVC-U reducing tee, thick-walled, its branch socket visibly narrower than its run |
-| **Brass female threaded tees** | one white pressure PVC-U tee with a brass female thread set into its branch socket, the brass bright against the grey |
 | **Female sockets** | three white pressure PVC-U female sockets in different diameters, short thick-walled sleeves threaded on the inside |
-| **Unions** | one white pressure PVC-U union in three parts, two socket halves and the knurled ring nut that draws them together |
 | **Brass female elbows** | one white pressure PVC-U right-angle elbow with a brass female thread in one opening |
 | **Elbows 90°** | three plain white pressure PVC-U right-angle elbows in descending size, each with two plain sockets |
 | **Plain tees** | three plain white pressure PVC-U tees in descending size, each thick-walled with three equal sockets |
@@ -623,7 +621,7 @@ customer the same box for two of these, two cards should be merged.
 | --- | --- |
 | `etc.` ×7 | not an item |
 
-That is **all 109 items**, every category covered. The seven category
+That is **all 107 items**, every category covered. The seven category
 photographs in section 2 are unchanged: these are the items inside them.
 
 ## If you switch tools
