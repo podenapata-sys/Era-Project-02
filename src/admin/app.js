@@ -654,8 +654,16 @@ $('list').addEventListener('click', async (e) => {
 onAuthStateChanged(auth, (user) => {
   /* A UI gate, not a boundary. Firestore refuses a stranger's read whatever this
      does — this only keeps the page from drawing an empty shell and looking
-     broken when the rules are, correctly, saying no. */
-  const allowed = user && (!OWNERS.length || OWNERS.includes(user.uid));
+     broken when the rules are, correctly, saying no.
+
+     An empty OWNERS used to pass anyone signed in, on the reasoning that the
+     list being missing meant the gate was not configured yet. That is the
+     wrong way to be wrong, and it disagrees with isOwner() in firestore.rules,
+     where an empty allowlist means NOBODY — stated there as "the safe way to
+     be wrong". No data could leak either way, because the rules are the real
+     boundary, but a stranger who signed up was shown the dashboard shell and
+     told the project works like that. The two now fail the same direction. */
+  const allowed = !!user && OWNERS.includes(user.uid);
   $('signin').hidden = !!allowed;
   $('app').hidden = !allowed;
 
