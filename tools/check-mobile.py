@@ -251,6 +251,43 @@ async def check_header_matches_across_languages(browser, widths):
                  f"from under the finger that just tapped it")
 
 
+async def check_stacked_grids(pg, path):
+    """The page's big two-column grids are one column on a phone.
+
+    Each of these splits into columns on a desktop and is collapsed again in
+    the 1024px block. That block was once closed early by a narrower media
+    query opened inside it, which left six of its rules — these among them —
+    applying only below 390px. The hero then kept its desktop split from 390px
+    to 1024px: a 169px column of text beside a 153px picture, with every
+    heading and button inside it wrapping four lines deep.
+
+    Nothing here noticed, because nothing here had ever looked at the hero.
+    """
+    d = await pg.evaluate("""() => {
+      const out = [];
+      for (const sel of ['.hero__grid', '.why__grid', '.about__grid', '.contact__grid']) {
+        const el = document.querySelector(sel);
+        if (!el) continue;
+        const cols = getComputedStyle(el).gridTemplateColumns.trim().split(/\\s+/);
+        const kids = [...el.children].map(c => c.getBoundingClientRect());
+        out.push({
+          sel, n: cols.length,
+          // Two children on one row is what a reader sees; the column count
+          // alone could still be a single column that something else splits.
+          sideBySide: kids.length > 1 && Math.abs(kids[0].top - kids[1].top) < 2,
+          w: Math.round(kids.length ? kids[0].width : 0),
+        });
+      }
+      return out;
+    }""")
+
+    for g in d:
+        where = f"{path} @{PHONE} {g['sel']}"
+        if g['n'] != 1 or g['sideBySide']:
+            fail(f"{where}: still {g['n']} columns on a phone — its first child "
+                 f"is {g['w']}px wide. It must stack.")
+
+
 async def check_category_columns(pg, path):
     """Every category stacks, and its item cards sit at least two to a row.
 
@@ -315,6 +352,7 @@ async def main():
                         await check_langswitch_in_bar(pg, path)
                         for scroll in (0, 600):
                             await check_menu(pg, path, scroll)
+                        await check_stacked_grids(pg, path)
                         await check_category_columns(pg, path)
                     await check_targets_and_bar(pg, path, width)
                     await ctx.close()
@@ -336,7 +374,8 @@ async def main():
           f'and the WhatsApp button inside it at both scroll positions; no tap '
           f'target under 44px; call bar present at {PHONE}px and absent at '
           f'{DESKTOP}px; no horizontal scroll; every category stacked with at '
-          f'least two item cards to a row; the header the same height in both '
+          f'least two item cards to a row; the hero, why, about and contact '
+          f'grids stacked; the header the same height in both '
           f'languages at 320-412px. Checked {len(PAGES)} pages.')
 
 

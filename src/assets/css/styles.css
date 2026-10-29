@@ -785,6 +785,13 @@ table { border-collapse: collapse; width: 100%; }
      says — what the switch is for is the other one. */
   .langswitch__on { display: none; }
   .langswitch a { color: var(--text); }
+
+  .hero__grid, .why__grid, .about__grid { grid-template-columns: 1fr; }
+  .cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .contact__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card--form { grid-column: 1 / -1; }
+  .footer__grid { grid-template-columns: 1fr 1fr; }
+  .footer__brand { grid-column: 1 / -1; }
 }
 
 /* Measured: the brand needs 231px to hold the Bengali tagline on one line,
@@ -794,7 +801,13 @@ table { border-collapse: collapse; width: 100%; }
    to 104px and dropped the switch 9px the moment a reader tapped বাং, on the
    360px screens that are most of the audience here. The tagline comes off
    both languages below that width instead, so the header is the same height
-   whichever one you are reading. It is still in the footer on every page. */
+   whichever one you are reading. It is still in the footer on every page.
+
+   This block holds the header and nothing else. It was once opened in the
+   middle of the 1024px block above, which closed that block early and left
+   six of its rules in here — the hero kept its two-column desktop split from
+   390px to 1024px, which on a phone is a 169px column of text beside a 153px
+   picture. Anything added here applies ONLY below 390px. */
 @media (max-width: 389px) {
   .brand__text small { display: none; }
   /* The Bengali pages draw "ERA SANITARY" 2px wider than the English ones —
@@ -802,13 +815,6 @@ table { border-collapse: collapse; width: 100%; }
      wrap it and leave the two headers 6px apart at 360px. Two gaps of 8px
      rather than 10px give back the four it needs. */
   .header__inner { gap: 8px; }
-
-  .hero__grid, .why__grid, .about__grid { grid-template-columns: 1fr; }
-  .cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .contact__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .card--form { grid-column: 1 / -1; }
-  .footer__grid { grid-template-columns: 1fr 1fr; }
-  .footer__brand { grid-column: 1 / -1; }
 }
 
 @media (max-width: 760px) {
