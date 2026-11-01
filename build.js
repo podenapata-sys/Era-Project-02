@@ -792,7 +792,7 @@ ${reviewsSection(t, lang)}
  * A card with no photograph is a labelled placeholder and is NOT a button: it
  * is not focusable and does nothing, because an item nobody has photographed
  * yet has nothing to open. */
-function itemGrid(c, cEn, lang, base) {
+function itemGrid(c, cEn, lang, base, t) {
   const cards = cEn.items
     .map((en, j) => ({ en, label: c.items[j] }))
     .filter(x => !ETC.has(x.en) && !ETC.has(x.label));
@@ -806,7 +806,26 @@ function itemGrid(c, cEn, lang, base) {
            aria-label="${attr(label)}"
            data-full="${attr(full)}" data-label="${attr(label)}">${pic}</button>`
       : pic;
-    return `<li class="item">${body}<span class="item__name">${esc(label)}</span></li>`;
+
+    /* The card's second action: a WhatsApp message naming this one item.
+       The site lists no prices on purpose — "message us for current stock and
+       rates" — so the question every one of these cards raises is the same
+       one, and this is it, already typed.
+
+       An <a> and not a second <button>: it leaves the page. The card's first
+       action is the photograph, which opens the lightbox, and the two are
+       kept apart — the picture is the whole upper area, this is a labelled
+       row under the name with its own border.
+
+       aria-label carries the item, because "Ask price" repeated 107 times
+       tells a screen-reader user nothing about which price. */
+    const msg = (t.itemWa || '').replace('{item}', label);
+    const cta = msg
+      ? `<a class="item__cta" href="${attr(waLink(msg))}" target="_blank" rel="noopener"
+           aria-label="${attr(label)} — ${attr(t.itemCta || '')}"
+           >${ICONS.whatsapp}<span>${esc(t.itemCta || '')}</span></a>`
+      : '';
+    return `<li class="item">${body}<span class="item__name">${esc(label)}</span>${cta}</li>`;
   }).join('');
 
   return `<ul class="items">${cells}</ul>`;
@@ -821,7 +840,7 @@ function productsPage(t, lang, base) {
         <p class="cat__n"><span>${String(i + 1).padStart(2, '0')}</span> ${esc(c.size)}</p>
         <h2>${esc(c.title)}</h2>
         <p class="cat__long">${esc(c.long)}</p>
-        ${itemGrid(c, copy.en.categories[i], lang, base)}
+        ${itemGrid(c, copy.en.categories[i], lang, base, t)}
         <ul class="chips chips--ref">${c.items.map(it => `<li${ETC.has(it) ? ' class="is-etc"' : ''}>${esc(it)}</li>`).join('')}</ul>
       </div>
     </article>`).join('');

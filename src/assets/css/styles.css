@@ -1159,3 +1159,29 @@ html[lang="bn"] h1, html[lang="bn"] h2, html[lang="bn"] h3 {
   .trade__others { grid-template-columns: 1fr; }
   .review { flex-direction: column; align-items: flex-start; gap: 14px; }
 }
+
+/* The item card's second action. The picture above it opens the lightbox;
+   this asks the price of that one item on WhatsApp.
+
+   margin-top:auto pins it to the bottom of the card. Names run one or two
+   lines, the grid stretches every card in a row to the tallest, and without
+   this the buttons would sit at different heights across a row — the one
+   thing that makes a grid look broken rather than full.
+
+   min-height 44px because tools/check-mobile.py fails the build below that,
+   and this is the smallest control on the busiest page on the site. */
+.item__cta {
+  margin-top: auto;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 44px; padding: 0 8px;
+  border-top: 1px solid var(--line-2);
+  font-family: var(--font-display); font-size: 12.5px; font-weight: 600;
+  color: var(--muted-2); text-align: center;
+  transition: background-color .18s ease, color .18s ease;
+}
+.item__cta svg { flex: none; width: 15px; height: 15px; }
+/* The label is what goes when the card is narrow; the icon never does, so
+   the control still reads as "message us" at 132px. */
+.item__cta span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item__cta:hover, .item__cta:focus-visible { background: var(--amber); color: var(--ink); }
+.item__cta:focus-visible { outline: 3px solid var(--amber); outline-offset: -3px; }

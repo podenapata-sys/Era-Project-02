@@ -20,6 +20,8 @@
     "orderMsg": "Hello ERA Sanitary, I want to order plumbing items.",
     "jumpLabel": "Jump to a category",
     "tradeWa": "Hello ERA Sanitary, I want to ask about {work}.",
+    "itemWa": "Hello ERA Sanitary, I want to ask the price of {item}.",
+    "itemCta": "Ask price",
     "heroFacts": [
       {
         "value": "2003",
@@ -482,6 +484,8 @@
     "orderMsg": "আসসালামু আলাইকুম, ইরা স্যানিটারি — আমি প্লাম্বিং সামগ্রী অর্ডার করতে চাই।",
     "jumpLabel": "ক্যাটাগরিতে যান",
     "tradeWa": "আসসালামু আলাইকুম, ইরা স্যানিটারি — আমি {work} সম্পর্কে জানতে চাই।",
+    "itemWa": "আসসালামু আলাইকুম, ইরা স্যানিটারি — {item} এর দাম জানতে চাই।",
+    "itemCta": "দাম জানুন",
     "heroFacts": [
       {
         "value": "২০০৩",
