@@ -450,7 +450,7 @@ in-page links and asset paths are document-relative, so they work at any depth.
 local and non-Pages builds. When the custom domain is ready:
 
 ```bash
-SITE_URL=https://erasanitary.com.bd node build.js   # one-off check
+SITE_URL=https://www.erasanitarypl.com node build.js   # one-off check
 ```
 
 Then set `url` in `content/business.json` to the real domain, and on GitHub add

@@ -1963,6 +1963,23 @@ ${['en', 'bn'].map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="$
   fs.writeFileSync(path.join(OUT, 'robots.txt'),
     `User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: ${SITE}/sitemap.xml\n`);
 
+  /* GitHub Pages and the custom domain.
+     .github/workflows/deploy.yml publishes dist/ as a Pages ARTIFACT, not from
+     a branch, and the whole artifact replaces what is served. A custom domain
+     set in Settings is held by GitHub as a CNAME file at the root of what is
+     published — so unless this build writes one, every deploy ships an
+     artifact without it and the domain setting is dropped, sending the site
+     back to github.io until someone re-enters it by hand.
+
+     Written from business.json rather than the workflow's SITE_URL, because
+     SITE_URL is the Pages URL during a Pages build and that is the one value
+     this file must NOT contain. Hostname only: a CNAME carries no scheme and
+     no path. */
+  const host = (() => { try { return new URL(biz.url).hostname; } catch { return ''; } })();
+  if (host && !/\.github\.io$/.test(host)) {
+    fs.writeFileSync(path.join(OUT, 'CNAME'), host + '\n');
+  }
+
   console.log(`Built ${count} pages (${PAGES.length} × en/bn, plus ${trades} trade pages) + sitemap + robots into dist/`);
   console.log(`Site origin: ${SITE}${process.env.SITE_URL ? ' (from SITE_URL)' : ' (from business.json)'}`);
   if (!biz.email) console.log('NOTE: business.email is null — no email is shown anywhere on the site.');
